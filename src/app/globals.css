@@ -6,83 +6,94 @@
 @custom-variant dark (&:is(.dark *));
 
 .background {
-  background-color: #F5F0E6;
+  background-color: #f5f0e6;
 }
 
-.forground{
-  background-color: #123D2B;
+.forground {
+  background-color: #123d2b;
 }
 
 .card {
-  background-color: #FBF8F2;
+  background-color: #fbf8f2;
 }
 
 .card-foreground {
-  background-color: #123D2B;
+  background-color: #123d2b;
 }
 
 .popover {
-  background-color: #FBF8F2;
+  background-color: #fbf8f2;
 }
 
 .popover-foreground {
-  background-color: #123D2B;
+  background-color: #123d2b;
 }
 
 .primary {
-  background-color: #1F6B4A;
+  background-color: #1f6b4a;
 }
 
 .primary-foreground {
-  background-color: #F7F2E9;
+  background-color: #f7f2e9;
 }
 
 .secondary {
-  background-color: #E8E1D6;
+  background-color: #e8e1d6;
 }
 
 .secondary-foreground {
-  background-color: #123D2B;
+  background-color: #123d2b;
 }
 
-.muted{
-  background-color: #ECE7DF;
+.muted {
+  background-color: #ece7df;
 }
 
 .muted-foreground {
-  background-color: #6B7D74;
-} 
+  background-color: #6b7d74;
+}
 
 .accent {
-  background-color: #E6F2EC;
+  background-color: #e6f2ec;
 }
 
 .accent-foreground {
-  background-color: #15573C;
+  background-color: #15573c;
 }
 
 .destructive {
-  background-color: #DC2626;
+  background-color: #dc2626;
 }
 
 .destructive-foreground {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 .border {
-  border-color: #E1DBD2;
+  border-color: #e1dbd2;
 }
 
 .input {
-  background-color: #E1DBD2;
+  background-color: #e1dbd2;
 }
 
 .ring {
-  border-color: #1F6B4A;
+  border-color: #1f6b4a;
 }
 
 .landing-gradient {
-  background-color: linear-gradient(180deg, #F5F0E6 0%, #FBF8F2 100%);
+  background-color: linear-gradient(180deg, #f5f0e6 0%, #fbf8f2 100%);
+}
+
+.card-shadow-hover {
+  box-shadow: 0 10px 25px -5px rgba(20, 40, 30, 0.1),
+              0 8px 10px -6px rgba(20, 40, 30, 0.08);
+}
+
+.card-shadow-hover:hover {
+  box-shadow:
+    0 10px 25px -5px rgba(20, 40, 30, 0.1),
+    0 8px 10px -6px rgba(20, 40, 30, 0.08);
 }
 
 .radius {
@@ -90,64 +101,68 @@
 }
 
 /* text-colors  */
+.foreground-text {
+  color: #123d2b;
+}
+
 .card-text {
-  color: #FBF8F2;
+  color: #fbf8f2;
 }
 
 .card-foreground-text {
-  color: #123D2B;
+  color: #123d2b;
 }
 
 .popover-text {
-  background-color: #FBF8F2;
+  background-color: #fbf8f2;
 }
 
 .popover-foreground-text {
-  color: #123D2B;
+  color: #123d2b;
 }
 
 .primary-text {
-  color: #1F6B4A;
+  color: #1f6b4a;
 }
 
 .primary-foreground-text {
-  color: #F7F2E9;
+  color: #f7f2e9;
 }
 
 .secondary-text {
-  color: #E8E1D6;
+  color: #e8e1d6;
 }
 
 .secondary-foreground-text {
-  color: #123D2B;
+  color: #123d2b;
 }
 
-.muted-text{
-  color: #ECE7DF;
+.muted-text {
+  color: #ece7df;
 }
 
 .muted-foreground-text {
-  color: #6B7D74;
-} 
+  color: #6b7d74;
+}
 
 .accent-text {
-  color: #E6F2EC;
+  color: #e6f2ec;
 }
 
 .accent-foreground-text {
-  color: #15573C;
+  color: #15573c;
 }
 
 .destructive-text {
-  color: #DC2626;
+  color: #dc2626;
 }
 
 .destructive-foreground-text {
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .input-text {
-  color: #E1DBD2;
+  color: #e1dbd2;
 }
 
 /* ---break---  */

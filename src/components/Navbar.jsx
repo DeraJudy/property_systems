@@ -14,13 +14,13 @@ import { Button } from "./ui/button";
 
 export default function Navbar() {
   return (
-    <nav className="sticky top-0 z-50 border-b border-border/50 background/80 backdrop-blur-md">
-      <div className="container flex h-16 items-center justify-between px-20">
+    <nav className="sticky top-0 z-50 border-b border-border/50 background/80 backdrop-blur-md bg-[#f5f0e6]">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg primary">
             <Building2 className="h-5 w-5 primary-foreground-text" />
           </div>
-          <span className="text-lg font-bold foreground-text">Kenley Property Systems</span>
+          <span className="text-lg font-bold text-[#123D2B]">Kenley Property Systems</span>
         </Link>
 
         <div className="hidden items-center gap-8 md:flex">
