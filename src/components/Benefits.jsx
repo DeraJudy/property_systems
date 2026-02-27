@@ -41,7 +41,7 @@ const fadeUp = {
 export default function Benefits() {
   return (
       <section id="benefits" className="py-20">
-        <div className="mx-auto max-w-7xl ">
+        <div className="mx-auto max-w-7xl  px-5">
           <div className="grid items-center gap-12 lg:grid-cols-2">
             <motion.div
               initial="hidden"

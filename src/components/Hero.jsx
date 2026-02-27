@@ -42,7 +42,7 @@ export default function Hero() {
               in one place.
             </p>
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start px-5 sm:px-0">
               <Link href="/register">
                 <Button
                   size="lg"
