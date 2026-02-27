@@ -1,3 +1,4 @@
+"use client";
 import {
   Building2,
   Users,
@@ -15,7 +16,7 @@ import { Button } from "./ui/button";
 export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 border-b border-border/50 background/80 backdrop-blur-md bg-[#f5f0e6]">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg primary">
             <Building2 className="h-5 w-5 primary-foreground-text" />

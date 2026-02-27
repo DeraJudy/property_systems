@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Building2,
   Users,
@@ -19,7 +18,7 @@ import Image from "next/image";
 export default function Hero() {
   return (
     <main className="bg-[#f5f0e6] ">
-      <section className="mx-auto max-w-7xl px-4 py-24 md:py-32 ">
+      <section className="mx-auto max-w-7xl py-24 md:py-32">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
