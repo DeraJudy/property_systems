@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X } from "lucide-react";
+import { X, Settings, LogOut, Building2 } from "lucide-react";
 
 export default function MobileSidebar({ open, setOpen, navItems }) {
   const pathname = usePathname();
@@ -18,16 +18,24 @@ export default function MobileSidebar({ open, setOpen, navItems }) {
       />
 
       {/* Drawer */}
-      <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r lg:hidden flex flex-col">
+      <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r flex flex-col lg:hidden">
 
-        <div className="flex h-16 items-center justify-between px-5 border-b">
-          <span className="font-semibold">Kenley Property</span>
+        {/* Header */}
+        <div className="flex h-16 items-center justify-between px-5 border-b shrink-0">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#206c3c]">
+              <Building2 className="h-4 w-4 text-white" />
+            </div>
+            <span className="font-semibold text-sm">Kenley Property</span>
+          </div>
+
           <button onClick={() => setOpen(false)}>
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-1">
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
           {navItems.map((item) => {
             const isActive = pathname === item.url;
 
@@ -36,18 +44,39 @@ export default function MobileSidebar({ open, setOpen, navItems }) {
                 key={item.title}
                 href={item.url}
                 onClick={() => setOpen(false)}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm ${
+                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
                   isActive
                     ? "bg-[#206c3c] text-white"
                     : "text-gray-600 hover:bg-gray-100"
                 }`}
               >
-                <item.icon className="h-4 w-4" />
+                <item.icon className="h-4 w-4 shrink-0" />
                 {item.title}
               </Link>
             );
           })}
         </nav>
+
+        {/* Footer */}
+        <div className="border-t p-3 space-y-1 shrink-0">
+
+          <Link
+            href="/settings"
+            className="flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg font-medium text-gray-600 hover:bg-gray-100 transition"
+          >
+            <Settings className="h-4 w-4" />
+            Settings
+          </Link>
+
+          <Link
+            href="/"
+            className="flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg font-medium text-gray-600 hover:bg-gray-100 transition"
+          >
+            <LogOut className="h-4 w-4" />
+            Sign out
+          </Link>
+
+        </div>
 
       </aside>
     </>

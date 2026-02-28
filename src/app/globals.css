@@ -85,11 +85,13 @@
   background-color: #123D2B;
 }
 
+.sidebar-accent {
+  background-color: #184F38;
+}
 /* --sidebar-background: #123D2B;
 --sidebar-foreground: #E8E1D6;
 --sidebar-primary: #2E8B63;
 --sidebar-primary-foreground: #F7F2E9;
---sidebar-accent: #184F38;
 --sidebar-accent-foreground: #EDE6DA;
 --sidebar-border: #1E5A43;
 --sidebar-ring: #2E8B63; */
@@ -181,6 +183,18 @@
 .sidebar-foreground-text{
   color:  #E8E1D6;
 }
+
+.sidebar-accent-foreground-text {
+  color: #EDE6DA;
+}
+
+/* --sidebar-background: #123D2B;
+--sidebar-foreground: #E8E1D6;
+--sidebar-primary: #2E8B63;
+--sidebar-primary-foreground: #F7F2E9;
+--sidebar-accent: #184F38;
+--sidebar-border: #1E5A43;
+--sidebar-ring: #2E8B63; */
 
 /* ---break---  */
 
