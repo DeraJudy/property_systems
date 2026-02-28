@@ -36,17 +36,17 @@ import {
 
 const navItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Organisations", url: "/dashboard/organisations", icon: Building2 },
-  { title: "Users", url: "/dashboard/users", icon: Users },
-  { title: "Properties", url: "/dashboard/properties", icon: Home },
-  { title: "Service Users", url: "/dashboard/service-users", icon: UserCircle },
-  { title: "Support Logs", url: "/dashboard/support-logs", icon: FileText },
-  { title: "Cases", url: "/dashboard/cases", icon: AlertTriangle },
-  { title: "Finance", url: "/dashboard/finance", icon: PoundSterling },
-  { title: "Approvals", url: "/dashboard/approvals", icon: CheckSquare },
-  { title: "Documents", url: "/dashboard/documents", icon: FolderOpen },
-  { title: "Reports", url: "/dashboard/reports", icon: BarChart3 },
-]
+  { title: "Organisations", url: "/organisations", icon: Building2 },
+  { title: "Users", url: "/users", icon: Users },
+  { title: "Properties", url: "/properties", icon: Home },
+  { title: "Service Users", url: "/service-users", icon: UserCircle },
+  { title: "Support Logs", url: "/support-logs", icon: FileText },
+  { title: "Cases", url: "cases", icon: AlertTriangle },
+  { title: "Finance", url: "finance", icon: PoundSterling },
+  { title: "Approvals", url: "approvals", icon: CheckSquare },
+  { title: "Documents", url: "documents", icon: FolderOpen },
+  { title: "Reports", url: "reports", icon: BarChart3 },
+];
 
 export default function DashboardLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);

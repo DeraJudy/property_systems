@@ -81,6 +81,19 @@
   border-color: #1f6b4a;
 }
 
+.sidebar {
+  background-color: #123D2B;
+}
+
+/* --sidebar-background: #123D2B;
+--sidebar-foreground: #E8E1D6;
+--sidebar-primary: #2E8B63;
+--sidebar-primary-foreground: #F7F2E9;
+--sidebar-accent: #184F38;
+--sidebar-accent-foreground: #EDE6DA;
+--sidebar-border: #1E5A43;
+--sidebar-ring: #2E8B63; */
+
 .landing-gradient {
   background-color: linear-gradient(180deg, #f5f0e6 0%, #fbf8f2 100%);
 }
@@ -163,6 +176,10 @@
 
 .input-text {
   color: #e1dbd2;
+}
+
+.sidebar-foreground-text{
+  color:  #E8E1D6;
 }
 
 /* ---break---  */
