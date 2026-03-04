@@ -18,10 +18,39 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
-export default function RegisterForm() {
+export default function LoginForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+
+  const [error, setError] = useState(null);
+
+  async function handleLogin(e) {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+
+    const email = formData.get("email");
+    const password = formData.get("password");
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    toast.success("Account Log In successfully 🎉", {
+    description: "Welcome to Kenley Property Systems",
+  });
+
+    router.push("/dashboard");
+  }
 
   return (
     <div className="flex min-h-screen">
@@ -41,7 +70,9 @@ export default function RegisterForm() {
             </span>
           </Link>
 
-          <h1 className="mb-2 text-2xl font-bold foreground-text">Welcome back</h1>
+          <h1 className="mb-2 text-2xl font-bold foreground-text">
+            Welcome back
+          </h1>
           <p className="mb-8 text-sm muted-foreground-text ">
             Sign in to your account to continue
           </p>
@@ -107,8 +138,7 @@ export default function RegisterForm() {
             </span>
           </div>
 
-          <form className="space-y-4">
-
+          <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email" className="foreground-text">
                 Email
@@ -117,6 +147,7 @@ export default function RegisterForm() {
                 <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 muted-foreground-text " />
                 <Input
                   id="email"
+                  name="email"
                   type="email"
                   placeholder="name@organisation.com"
                   className="pl-10 h-11 
@@ -133,6 +164,7 @@ export default function RegisterForm() {
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 muted-foreground-text " />
                 <Input
                   id="password"
+                  name="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Min. 8 characters"
                   className="pl-10 pr-10 h-11 
@@ -162,7 +194,7 @@ export default function RegisterForm() {
           <p className="mt-6 text-center text-sm muted-foreground-text">
             Don't have an account?{" "}
             <Link
-              href="/Register"
+              href="/register"
               className="font-medium primary-text hover:underline"
             >
               Create account
@@ -193,8 +225,9 @@ export default function RegisterForm() {
               Supported housing management, simplified
             </h2>
             <p className="mb-8 text-[#f7f2e9]/80 leading-relaxed">
-              Manage properties, service users, cases, and finances all in one 
-              integrated platform designed for supported accommodation providers.
+              Manage properties, service users, cases, and finances all in one
+              integrated platform designed for supported accommodation
+              providers.
             </p>
             <div className="grid grid-cols-2 gap-4">
               {[
@@ -218,8 +251,6 @@ export default function RegisterForm() {
           </motion.div>
         </div>
       </div>
-
-      
     </div>
   );
 }

@@ -38,13 +38,13 @@ export default function Navbar() {
 
         {/* Desktop Buttons */}
         <div className="hidden items-center gap-3 md:flex">
-          <Link href="/Login">
+          <Link href="/login">
             <Button variant="ghost" size="sm">
               Sign In
             </Button>
           </Link>
 
-          <Link href="/Register">
+          <Link href="/register">
             <Button
               size="lg"
               className="bg-[#1F6B4A] hover:bg-[#17563B] text-[#F7F2E9]"
@@ -89,13 +89,13 @@ export default function Navbar() {
               </a>
 
               <div className="flex flex-col gap-3 pt-4 border-t border-border/40">
-                <Link href="/Login">
+                <Link href="/login">
                   <Button variant="outline" className="w-full">
                     Sign In
                   </Button>
                 </Link>
 
-                <Link href="/Register">
+                <Link href="/register">
                   <Button className="w-full bg-[#1F6B4A] hover:bg-[#17563B] text-[#F7F2E9]">
                     Get Started
                   </Button>

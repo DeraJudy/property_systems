@@ -18,10 +18,74 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 export default function RegisterForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+
+  const [error, setError] = useState(null);
+
+  async function handleRegister(e) {
+  e.preventDefault();
+  setError(null);
+
+  const formData = new FormData(e.target);
+
+  const full_name = formData.get("name");
+  const email = formData.get("email");
+  const password = formData.get("password");
+
+  console.log("Registering user:");
+  console.log("Name:", full_name);
+  console.log("Email:", email);
+
+ 
+  const { data, error: signUpError } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+
+  if (signUpError) {
+    console.error("Sign up error:", signUpError);
+
+    toast.error("Registration failed", {
+      description: signUpError.message,
+    });
+
+    return;
+  }
+
+  if (!data.user) {
+    toast.error("User creation failed");
+    return;
+  }
+
+  // Create profile
+  const { error: profileError } = await supabase.from("profiles").insert({
+    id: data.user.id,
+    full_name,
+  });
+
+  if (profileError) {
+    console.error("Profile creation error:", profileError);
+
+    toast.error("Profile creation failed", {
+      description: profileError.message,
+    });
+
+    return;
+  }
+
+  console.log("User + profile created successfully");
+
+  toast.success("Account created successfully 🎉", {
+    description: "Welcome to Kenley Property Systems",
+  });
+
+  router.push("/dashboard");
+}
 
   return (
     <div className="flex min-h-screen">
@@ -170,7 +234,7 @@ export default function RegisterForm() {
             </span>
           </div>
 
-          <form className="space-y-4">
+          <form onSubmit={handleRegister} className="space-y-4">
             <div className="space-y-2">
               <Label className="foreground-text" htmlFor="name">
                 Full name
@@ -179,6 +243,7 @@ export default function RegisterForm() {
                 <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 muted-foreground-text " />
                 <Input
                   id="name"
+                  name="name"
                   placeholder="John Smith"
                   className="pl-10 h-11 
                 focus-visible:ring-[#1F6B4A] focus-visible:border-[#1F6B4A]"
@@ -186,7 +251,7 @@ export default function RegisterForm() {
               </div>
             </div>
 
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label htmlFor="org" className="foreground-text">
                 Organisation name
               </Label>
@@ -199,7 +264,7 @@ export default function RegisterForm() {
                 focus-visible:ring-[#1F6B4A] focus-visible:border-[#1F6B4A]"
                 />
               </div>
-            </div>
+            </div> */}
 
             <div className="space-y-2">
               <Label htmlFor="email" className="foreground-text">
@@ -209,6 +274,7 @@ export default function RegisterForm() {
                 <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 muted-foreground-text " />
                 <Input
                   id="email"
+                  name="email"
                   type="email"
                   placeholder="name@organisation.com"
                   className="pl-10 h-11 
@@ -225,6 +291,7 @@ export default function RegisterForm() {
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 muted-foreground-text " />
                 <Input
                   id="password"
+                  name="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Min. 8 characters"
                   className="pl-10 pr-10 h-11 
@@ -244,6 +311,10 @@ export default function RegisterForm() {
               </div>
             </div>
 
+            {error && (
+              <p className="text-red-500 text-sm font-black">{error}</p>
+            )}
+
             <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
               <Button type="submit" className="w-full h-11 primary">
                 Create account <ArrowRight className="ml-2 h-4 w-4" />
@@ -254,7 +325,7 @@ export default function RegisterForm() {
           <p className="mt-6 text-center text-sm muted-foreground-text">
             Already have an account?{" "}
             <Link
-              href="/Login"
+              href="/login"
               className="font-medium primary-text hover:underline"
             >
               Sign in

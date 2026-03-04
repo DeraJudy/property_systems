@@ -69,7 +69,7 @@ export default function MobileSidebar({ open, setOpen, navItems }) {
           </Link>
 
           <Link
-            href="/"
+            href="/logout"
             className="flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg font-medium text-gray-600 hover:bg-gray-100 transition"
           >
             <LogOut className="h-4 w-4" />

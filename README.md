@@ -41,4 +41,8 @@ $ npx shadcn@latest add button
 npm install tailwindcss-animate
 $ npx shadcn@latest init
 
+ npm install sonner
 $ npm install lucide-react
+
+npm install @supabase/supabase-js
+

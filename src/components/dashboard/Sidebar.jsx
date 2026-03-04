@@ -79,7 +79,7 @@ export default function Sidebar() {
         </Link>
 
         <Link
-          href="/"
+          href="/logout"
           className="flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg font-medium text-[#E8E1D6]/70 hover:bg-[#184F38] hover:text-white transition"
         >
           <LogOut className="h-4 w-4" />

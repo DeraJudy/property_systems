@@ -2,11 +2,41 @@
 
 import { Bell, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export default function Header({ setSidebarOpen }) {
+  const [initials, setInitials] = useState("");
+
+  useEffect(() => {
+    async function getInitials() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+
+      if (profile?.full_name) {
+        const parts = profile.full_name.trim().split(" ");
+
+        const first = parts[0]?.charAt(0) || "";
+        const second = parts[1]?.charAt(0) || "";
+
+        setInitials((first + second).toUpperCase());
+      }
+    }
+
+    getInitials();
+  }, []);
+
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center border-b bg-white px-6">
-
       <Button
         variant="ghost"
         size="icon"
@@ -24,9 +54,8 @@ export default function Header({ setSidebarOpen }) {
       </Button>
 
       <div className="ml-4 flex h-8 w-8 items-center justify-center rounded-full bg-[#206c3c] text-xs font-semibold text-white">
-        JD
+        {initials || "U"}
       </div>
-
     </header>
   );
 }
