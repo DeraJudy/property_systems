@@ -52,6 +52,20 @@ export default function LoginForm() {
     router.push("/dashboard");
   }
 
+  // Google log In
+  async function handleGoogleLogin() {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${window.location.origin}/auth/callback`,
+    },
+  });
+
+  if (error) {
+    toast.error("Google login failed");
+  }
+}
+
   return (
     <div className="flex min-h-screen">
       <div className="flex flex-1 flex-col items-center justify-center px-6 py-12">
@@ -123,7 +137,7 @@ export default function LoginForm() {
                   variant="outline"
                   className="w-full h-11"
                   type="button"
-                  onClick={() => router.push("/dashboard")}
+                  onClick={handleGoogleLogin}
                 >
                   {icon}
                 </Button>
