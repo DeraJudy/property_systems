@@ -96,6 +96,30 @@
 --sidebar-border: #1E5A43;
 --sidebar-ring: #2E8B63; */
 
+.success{
+  background-color: #2FA36B
+}
+
+.success-foreground{
+  background-color: #FAF6EE;
+} 
+
+.warning{
+  background-color: #F59E0B;
+} 
+
+.warning-foreground{
+  background-color: #3B2A00;
+} 
+
+.info{
+  background-color: #2B7FFF;
+} 
+
+.info-foreground{
+  background-color: #FFFFFF;
+} 
+
 .landing-gradient {
   background-color: linear-gradient(180deg, #f5f0e6 0%, #fbf8f2 100%);
 }

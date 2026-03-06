@@ -143,7 +143,7 @@ export default function Sidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <aside className="hidden lg:flex h-screen w-64 flex-col bg-[#1E5A43] border-r border-[#184F38]">
+    <aside className="hidden lg:flex w-64 flex-col bg-[#1E5A43] border-r border-[#184F38]">
       {/* Logo */}
       <div className="flex h-16 items-center gap-2 px-5 border-b border-[#184F38] shrink-0">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#206c3c]">
@@ -174,7 +174,7 @@ export default function Sidebar() {
         })}
       </nav> */}
 
-      <nav className="flex-1 overflow-y-auto px-3 py-3">
+      <nav className="flex-1 px-3 py-3">
         {navSections.map((section) => (
           <div key={section.label} className="mb-4">
             <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-wider text-[#E8E1D6]">

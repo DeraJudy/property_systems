@@ -1,14 +1,10 @@
+import UsersTable from "@/components/dashboard/UsersTable";
+
 export default function UsersPage() {
   return (
     <div className="space-y-6">
       
-      <h1 className="text-2xl font-semibold">User</h1>
-
-      <div className="bg-white rounded-xl shadow-sm border p-6">
-        <p className="text-gray-600">
-          Manage and assign users and roles.
-        </p>
-      </div>
+    <UsersTable />
 
     </div>
   );
