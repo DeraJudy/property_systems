@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X, Settings, LogOut, Building2 } from "lucide-react";
 
-export default function MobileSidebar({ open, setOpen, navItems }) {
+export default function MobileSidebar({ open, setOpen, navItems, navSections, setSidebarOpen }) {
   const pathname = usePathname();
 
   if (!open) return null;
@@ -35,7 +35,7 @@ export default function MobileSidebar({ open, setOpen, navItems }) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+        {/* <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
           {navItems.map((item) => {
             const isActive = pathname === item.url;
 
@@ -55,7 +55,37 @@ export default function MobileSidebar({ open, setOpen, navItems }) {
               </Link>
             );
           })}
-        </nav>
+        </nav> */}
+
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+        {navSections.map((section) => (
+          <div key={section.label} className="mb-4">
+            <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-wider text-[#123d2b]/40">
+              {section.label}
+            </p>
+            <div className="space-y-0.5">
+              {section.items.map((item) => {
+                const isActive = pathname === item.url;
+                return (
+                  <Link
+                    key={item.title}
+                    href={item.url}
+                    onClick={() => setSidebarOpen(false)}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
+                      isActive
+                        ? "bg-[#206c3c] text-white"
+                        : "text-gray-600 hover:bg-gray-100  hover:text-sidebar-foreground"
+                    }`}
+                  >
+                    <item.icon className="h-3.5 w-3.5 shrink-0" />
+                    {item.title}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </nav>
 
         {/* Footer */}
         <div className="border-t p-3 space-y-1 shrink-0">

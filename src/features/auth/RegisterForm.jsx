@@ -219,7 +219,7 @@ export default function RegisterForm() {
                 variant="outline"
                 className="w-full h-11"
                 type="button"
-                onClick={handleGoogleLogin}
+                // onClick={handleGoogleLogin}
               >
                 <svg
                   key="gh"
@@ -237,7 +237,7 @@ export default function RegisterForm() {
                 variant="outline"
                 className="w-full h-11"
                 type="button"
-                onClick={handleGoogleLogin}
+                // onClick={handleGoogleLogin}
               >
                 <svg
                   key="a"
