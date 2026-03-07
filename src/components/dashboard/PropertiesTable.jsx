@@ -231,7 +231,10 @@ export default function PropertiesTable() {
           <h1 className="text-2xl font-bold text-foreground">Properties</h1>
           <p className="text-sm text-muted-foreground">Manage housing properties, rooms and void performance</p>
         </div>
-        <Button><Plus className="mr-2 h-4 w-4" />Add Property</Button>
+        {/* <Button><Plus className="mr-2 h-4 w-4" />Add Property</Button> */}
+        <Link href="/addProperties">
+          <Button><Plus className="mr-2 h-4 w-4" />Add Property</Button>
+        </Link>
       </motion.div>
 
       <motion.div variants={item} className="grid gap-4 grid-cols-2 md:grid-cols-5">

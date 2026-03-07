@@ -60,7 +60,7 @@ export default function ServiceUserTable() {
           <Input placeholder="Search service users..." className="pl-9" />
         </div>
         <Select defaultValue="all">
-          <SelectTrigger className="w-full sm:w-[160px]"><Filter className="mr-2 h-4 w-4" /><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-40"><Filter className="mr-2 h-4 w-4" /><SelectValue /></SelectTrigger>
           <SelectContent><SelectItem value="all">All Status</SelectItem><SelectItem value="active">Active</SelectItem><SelectItem value="moveout">Move Out</SelectItem></SelectContent>
         </Select>
       </motion.div>

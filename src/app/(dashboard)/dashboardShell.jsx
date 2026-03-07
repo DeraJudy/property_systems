@@ -52,6 +52,7 @@ const navItems = [
   { title: "Organisations", url: "/organisations", icon: Building2 },
   { title: "Users", url: "/users", icon: Users },
   { title: "Properties", url: "/properties", icon: Home },
+  { title: "AddProperties", url: "/addProperties", icon: Home },
   { title: "Service Users", url: "/service-users", icon: UserCircle },
   { title: "Support Logs", url: "/support-logs", icon: FileText },
   { title: "Cases", url: "/cases", icon: AlertTriangle },
