@@ -193,10 +193,12 @@ export default function UsersTable() {
                 <TableHead className="hidden sm:table-cell">Created</TableHead>
 
                 <TableHead>Status</TableHead>
+                
+                <TableHead>Action</TableHead>
 
                 <TableHead>Assign Role</TableHead>
 
-                <TableHead>Action</TableHead>
+                
 
                 <TableHead className="w-10"></TableHead>
               </TableRow>
