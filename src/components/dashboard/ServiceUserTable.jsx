@@ -23,6 +23,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { Plus, Search, Filter, AlertTriangle, UserCircle, Target, CheckCircle2, Clock } from "lucide-react";
+import Link from "next/link";
 
 const serviceUsers = [
   { id: 1, name: "James Smith", photo: "JS", property: "12 Oak Lane", room: "Room 1", status: "Active", risk: false, rent: "£600/mo" },
@@ -51,7 +52,10 @@ export default function ServiceUserTable() {
           <h1 className="text-2xl font-bold text-foreground">Service Users</h1>
           <p className="text-sm text-muted-foreground">Manage residents, support plans and outcomes</p>
         </div>
-        <Button><Plus className="mr-2 h-4 w-4" />Add Service User</Button>
+        
+        <Link href="/addServiceUser">
+          <Button><Plus className="mr-2 h-4 w-4" />Add Service User</Button>
+        </Link>
       </motion.div>
 
       <motion.div variants={item} className="flex flex-col gap-3 sm:flex-row">
