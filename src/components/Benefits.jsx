@@ -17,11 +17,17 @@ import { Button } from "./ui/button";
 
 const benefits = [
   "Multi-tenant organisation hierarchy",
-  "Role-based access control",
-  "Real-time dashboard analytics",
-  "Mobile responsive design",
-  "Document management & storage",
-  "Automated approval workflows",
+  "Role-based access control (6 roles)",
+  "CQC & Ofsted framework alignment",
+  "Digital audit pack generation",
+  "5×5 risk matrix with mitigation tracking",
+  "Automated compliance monitoring",
+  "Predictive risk intelligence",
+  "Employee DBS & safeguarding tracking",
+  "Resident self-service portal",
+  "Secure document sharing with expiry",
+  "External auditor access management",
+  "Investor & board dashboards",
 ];
 
 const fadeUp = {

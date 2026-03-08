@@ -1,52 +1,22 @@
 "use client";
 
 import {
-  Building2,
-  Users,
-  Shield,
-  BarChart3,
-  FileText,
-  Bell,
+  Building2, Users, Shield, BarChart3, FileText, Bell, CheckCircle2,
+  ArrowRight, ChevronRight, Brain, Scale, TrendingUp, Lock, UserCog,
+  Eye, Briefcase, Wrench,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
 const features = [
-  {
-    icon: Building2,
-    title: "Property Management",
-    description:
-      "Track properties, rooms, certificates, and maintenance with full approval workflows.",
-  },
-  {
-    icon: Users,
-    title: "Service User Profiles",
-    description:
-      "Comprehensive profiles with medical, financial, residency, and support needs tracking.",
-  },
-  {
-    icon: Shield,
-    title: "Case Management",
-    description:
-      "Handle complaints, safeguarding, and escalations with priority-based workflows.",
-  },
-  {
-    icon: BarChart3,
-    title: "Finance & Rent",
-    description:
-      "Payment tracking, bulk uploads, rent statements, and financial reporting.",
-  },
-  {
-    icon: FileText,
-    title: "Support Logs",
-    description:
-      "Digital session notes with signatures, file attachments, and staff assignment.",
-  },
-  {
-    icon: Bell,
-    title: "Smart Notifications",
-    description:
-      "Automated reminders for expiring certificates, pending approvals, and overdue cases.",
-  },
+  { icon: Building2, title: "Property & Room Management", description: "Full lifecycle property tracking with room allocation, certificates, maintenance, and approval workflows." },
+  { icon: Users, title: "Service User Profiles", description: "Comprehensive resident profiles with medical, financial, residency, and support needs across 8 detailed tabs." },
+  { icon: Shield, title: "Case & Safeguarding", description: "Priority-based case management with automatic escalation, confidential handling, and regulatory compliance." },
+  { icon: BarChart3, title: "Finance & Rent Engine", description: "Payment tracking, bulk uploads, rent statements, arrears monitoring, and full financial reporting." },
+  { icon: UserCog, title: "HR & Workforce", description: "Employee profiles, DBS tracking, right to work, safeguarding training, contract management, and compliance scoring." },
+  { icon: Brain, title: "Predictive Intelligence", description: "AI-powered risk signals, burnout detection, incident clustering, maintenance forecasting, and anomaly alerts." },
+  { icon: Scale, title: "CQC & Ofsted Readiness", description: "Framework-aligned compliance scoring, gap identification, digital audit pack generation, and inspection management." },
+  { icon: Lock, title: "Security & Governance", description: "Full audit trails, GDPR compliance, role-based access, MFA enforcement, and data retention policies." },
+  { icon: TrendingUp, title: "Benchmarking & Analytics", description: "Industry percentile comparisons, trend analytics, and executive dashboards for board-ready reporting." },
 ];
 
 const fadeUp = {
