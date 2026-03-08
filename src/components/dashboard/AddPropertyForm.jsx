@@ -752,8 +752,8 @@ export default function AddPropertyForm() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f0e6] p-4 md:p-8">
-      <Card className="max-w-4xl mx-auto border-[#e1dbd2] bg-[#fbf8f2] shadow-sm">
+    <div className="min-h-screen  p-4 md:p-8">
+      <Card className="max-w-4xl mx-auto border-[#e1dbd2]  shadow-sm">
         <CardHeader className="border-b border-[#e1dbd2] mb-6">
           <CardTitle className="text-[#123d2b] text-xl md:text-2xl font-bold flex items-center gap-2">
             <Home className="w-6 h-6" />
