@@ -741,8 +741,9 @@
 
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/superbase/client"; 
+import { supabase } from "@/lib/superbase/client"; // Check spelling: superbase vs supabase
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -776,11 +777,10 @@ import {
   Wrench,
   Filter,
   Clock,
-  Loader2, // Added for the loading state
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 
-// Animation Config
 const container = {
   hidden: { opacity: 0 },
   show: {
@@ -795,7 +795,9 @@ const item = {
 };
 
 export default function PropertiesTable() {
-  // 1. Hooks (Must be inside the function)
+  // 1. Hooks (Moved INSIDE the component)
+  const router = useRouter();
+  
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -824,7 +826,7 @@ export default function PropertiesTable() {
     }
   }
 
-  // 3. Logic & Helper Functions
+  // 3. Logic
   const totalRooms = properties.reduce((acc, p) => acc + (Number(p.rooms) || 0), 0);
   const totalOccupied = properties.reduce((acc, p) => acc + (Number(p.occupied_count) || 0), 0);
   const occupancyRate = totalRooms > 0 ? Math.round((totalOccupied / totalRooms) * 100) : 0;
@@ -850,15 +852,9 @@ export default function PropertiesTable() {
     }
   };
 
-  // 4. Render
   return (
     <div className="min-h-screen bg-[#f5f0e6] p-4 md:p-8">
-      <motion.div 
-        variants={container} 
-        initial="hidden" 
-        animate="show" 
-        className="space-y-6 max-w-7xl mx-auto"
-      >
+      <motion.div variants={container} initial="hidden" animate="show" className="space-y-6 max-w-7xl mx-auto">
         
         {/* HEADER */}
         <motion.div variants={item} className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -904,7 +900,6 @@ export default function PropertiesTable() {
             </TabsList>
 
             <TabsContent value="properties" className="mt-4 space-y-4">
-              {/* FILTERS */}
               <div className="flex flex-col gap-3 sm:flex-row">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -929,7 +924,6 @@ export default function PropertiesTable() {
                 </Select>
               </div>
 
-              {/* TABLE */}
               <Card className="shadow-sm border-[#e1dbd2] overflow-hidden bg-white">
                 <Table>
                   <TableHeader className="bg-[#fbf8f2]">
@@ -938,27 +932,30 @@ export default function PropertiesTable() {
                       <TableHead className="hidden md:table-cell text-[#123d2b] font-bold">Address</TableHead>
                       <TableHead className="text-[#123d2b] font-bold">Status</TableHead>
                       <TableHead className="hidden sm:table-cell text-[#123d2b] font-bold">Occupancy</TableHead>
-                      {/* <TableHead className="hidden lg:table-cell text-[#123d2b] font-bold">Approval</TableHead> */}
                       <TableHead className="hidden lg:table-cell text-[#123d2b] font-bold">Certs</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {loading ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="h-32 text-center">
+                        <TableCell colSpan={5} className="h-32 text-center">
                           <Loader2 className="h-8 w-8 animate-spin mx-auto text-[#1f6b4a]" />
                           <p className="text-xs text-muted-foreground mt-2">Fetching your properties...</p>
                         </TableCell>
                       </TableRow>
                     ) : filteredProperties.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
+                        <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
                           No properties found.
                         </TableCell>
                       </TableRow>
                     ) : (
                       filteredProperties.map((p) => (
-                        <TableRow key={p.id} className="cursor-pointer hover:bg-[#f7f2e9]/50 transition-colors">
+                        <TableRow 
+                          key={p.id} 
+                          className="cursor-pointer hover:bg-[#f7f2e9]/50 transition-colors"
+                          onClick={() => router.push(`/properties/${p.id}`)}
+                        >
                           <TableCell>
                             <div className="flex items-center gap-3">
                               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#f5f0e6]">
@@ -984,11 +981,6 @@ export default function PropertiesTable() {
                               <span className="text-xs text-muted-foreground">{p.occupied_count || 0}/{p.rooms}</span>
                             </div>
                           </TableCell>
-                          {/* <TableCell className="hidden lg:table-cell">
-                            <Badge variant="outline" className="text-xs border-[#e1dbd2]">
-                              {p.approval_status || "Pending"}
-                            </Badge>
-                          </TableCell> */}
                           <TableCell className="hidden lg:table-cell text-sm">
                             <Badge className="bg-[#e6f2ec] text-[#1f6b4a] hover:bg-[#e6f2ec]">Active</Badge>
                           </TableCell>
