@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/superbase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,21 +16,32 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Upload, Home, ShieldCheck, FileText, Plus, Trash2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+
+  // Helper to sanitize file names (preventing issues with special characters in URLs)
+
+const sanitizeFileName = (file) => {
+  const extension = file.name.split('.').pop();
+  const name = file.name.split('.').shift().replace(/[^a-z0-9]/gi, '_').toLowerCase();
+  return `${Date.now()}_${name}.${extension}`;
+};
 
 /**
  * HELPER: Cleans filenames to prevent 400 errors from Supabase
  * Removes special characters (like apostrophes) and spaces.
  */
-const sanitizeFileName = (file) => {
-  const extension = file.name.split('.').pop();
-  const safeBaseName = file.name
-    .split('.')[0]
-    .replace(/[^a-z0-9]/gi, '_')
-    .toLowerCase();
-  return `${Date.now()}-${safeBaseName}.${extension}`;
-};
+// const sanitizeFileName = (file) => {
+//   const extension = file.name.split('.').pop();
+//   const safeBaseName = file.name
+//     .split('.')[0]
+//     .replace(/[^a-z0-9]/gi, '_')
+//     .toLowerCase();
+//   return `${Date.now()}-${safeBaseName}.${extension}`;
+// };
 
 export default function AddPropertyForm() {
+  const router = useRouter(); // Initialize the router her
+
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     propertyName: "",
@@ -47,16 +59,20 @@ export default function AddPropertyForm() {
     insuranceFile: null,
   });
 
-  const [certificates, setCertificates] = useState([
-    { id: Date.now(), type: "", expiry: "", file: null },
+ const [certificates, setCertificates] = useState([]);
+
+ useEffect(() => {
+  setCertificates([
+    { id: crypto.randomUUID(), type: "", expiry: "", file: null },
   ]);
+}, []);
 
   const addCertificate = () => {
-    setCertificates([
-      ...certificates,
-      { id: Date.now() + Math.random(), type: "", expiry: "", file: null },
-    ]);
-  };
+  setCertificates([
+    ...certificates,
+    { id: crypto.randomUUID(), type: "", expiry: "", file: null },
+  ]);
+};
 
   const removeCertificate = (id) => {
     if (certificates.length > 1) {
@@ -70,19 +86,120 @@ export default function AddPropertyForm() {
     }
   };
 
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setLoading(true);
+
+//     try {
+//       const { data: { user } } = await supabase.auth.getUser();
+//       if (!user) throw new Error("User not logged in");
+
+//       let leaseUrl = null;
+//       let floorUrl = null;
+//       let insuranceUrl = null;
+
+//       // --- 1. Upload Lease ---
+//       if (formData.leaseFile) {
+//         const cleanPath = `lease/${sanitizeFileName(formData.leaseFile)}`;
+//         const { data, error } = await supabase.storage
+//           .from("property-documents")
+//           .upload(cleanPath, formData.leaseFile);
+//         if (error || !data) throw new Error(`Lease upload failed: ${error?.message}`);
+//         leaseUrl = data.path;
+//       }
+
+//       // --- 2. Upload Floor Plan ---
+//       if (formData.floorPlanFile) {
+//         const cleanPath = `floorplans/${sanitizeFileName(formData.floorPlanFile)}`;
+//         const { data, error } = await supabase.storage
+//           .from("property-documents")
+//           .upload(cleanPath, formData.floorPlanFile);
+//         if (error || !data) throw new Error(`Floor plan upload failed: ${error?.message}`);
+//         floorUrl = data.path;
+//       }
+
+//       // --- 3. Upload Insurance ---
+//       if (formData.insuranceFile) {
+//         const cleanPath = `insurance/${sanitizeFileName(formData.insuranceFile)}`;
+//         const { data, error } = await supabase.storage
+//           .from("property-documents")
+//           .upload(cleanPath, formData.insuranceFile);
+//         if (error || !data) throw new Error(`Insurance upload failed: ${error?.message}`);
+//         insuranceUrl = data.path;
+//       }
+
+//       // --- 4. Insert Property ---
+//       const { data: property, error: propertyError } = await supabase
+//         .from("properties")
+//         .insert({
+//           property_name: formData.propertyName,
+//           address: formData.address,
+//           city: formData.city,
+//           postcode: formData.postcode,
+//           organisation: formData.organisation,
+//           manager: user.email,
+//           status: formData.status,
+//           rooms: formData.rooms,
+//           rent: formData.rent,
+//           tenant_name: formData.tenantName,
+//           lease_url: leaseUrl,
+//           floor_plan_url: floorUrl,
+//           insurance_url: insuranceUrl,
+//           created_by: user.id,
+//         })
+//         .select()
+//         .single();
+
+//       if (propertyError) throw propertyError;
+
+//       // --- 5. Upload Certificates ---
+//       for (const cert of certificates) {
+//         if (!cert.file || !cert.type) continue;
+
+//         const cleanPath = `certificates/${sanitizeFileName(cert.file)}`;
+//         const { data, error } = await supabase.storage
+//           .from("property-documents")
+//           .upload(cleanPath, cert.file);
+
+//         if (!error && data) {
+//           await supabase.from("property_certificates").insert({
+//             property_id: property.id,
+//             certificate_type: cert.type,
+//             expiry_date: cert.expiry,
+//             document_url: data.path,
+//           });
+//         }
+//       }
+
+//       alert("Property saved successfully!");
+//     } catch (err) {
+//       console.error(err);
+//       alert(err.message || "An unexpected error occurred");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+
+
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
+    // 1. Start the loading toast
+    const toastId = toast.loading("Uploading documents and saving data...");
+
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("User not logged in");
+      if (!user) throw new Error("User session expired. Please log in.");
 
       let leaseUrl = null;
       let floorUrl = null;
       let insuranceUrl = null;
 
-      // --- 1. Upload Lease ---
+      // --- 2. Upload Lease ---
       if (formData.leaseFile) {
         const cleanPath = `lease/${sanitizeFileName(formData.leaseFile)}`;
         const { data, error } = await supabase.storage
@@ -92,7 +209,7 @@ export default function AddPropertyForm() {
         leaseUrl = data.path;
       }
 
-      // --- 2. Upload Floor Plan ---
+      // --- 3. Upload Floor Plan ---
       if (formData.floorPlanFile) {
         const cleanPath = `floorplans/${sanitizeFileName(formData.floorPlanFile)}`;
         const { data, error } = await supabase.storage
@@ -102,7 +219,7 @@ export default function AddPropertyForm() {
         floorUrl = data.path;
       }
 
-      // --- 3. Upload Insurance ---
+      // --- 4. Upload Insurance ---
       if (formData.insuranceFile) {
         const cleanPath = `insurance/${sanitizeFileName(formData.insuranceFile)}`;
         const { data, error } = await supabase.storage
@@ -112,7 +229,7 @@ export default function AddPropertyForm() {
         insuranceUrl = data.path;
       }
 
-      // --- 4. Insert Property ---
+      // --- 5. Insert Main Property Record ---
       const { data: property, error: propertyError } = await supabase
         .from("properties")
         .insert({
@@ -136,7 +253,7 @@ export default function AddPropertyForm() {
 
       if (propertyError) throw propertyError;
 
-      // --- 5. Upload Certificates ---
+      // --- 6. Upload Dynamic Certificates ---
       for (const cert of certificates) {
         if (!cert.file || !cert.type) continue;
 
@@ -145,7 +262,12 @@ export default function AddPropertyForm() {
           .from("property-documents")
           .upload(cleanPath, cert.file);
 
-        if (!error && data) {
+        if (error) {
+          toast.error(`Warning: Certificate ${cert.type} failed to upload.`);
+          continue; 
+        }
+
+        if (data) {
           await supabase.from("property_certificates").insert({
             property_id: property.id,
             certificate_type: cert.type,
@@ -155,10 +277,20 @@ export default function AddPropertyForm() {
         }
       }
 
-      alert("Property saved successfully!");
+      // 7. Success! Replace the loading toast with success
+      toast.success("Property and documents saved successfully!", {
+        id: toastId,
+      });
+
+      // Optional: Reset form or redirect
+      router.push('/properties');
+
     } catch (err) {
       console.error(err);
-      alert(err.message || "An unexpected error occurred");
+      // 8. Error! Replace the loading toast with the error message
+      toast.error(err.message || "An unexpected error occurred", {
+        id: toastId,
+      });
     } finally {
       setLoading(false);
     }
