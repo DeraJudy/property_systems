@@ -76,65 +76,65 @@ const navSections = [
       { title: "Reports", url: "/reports", icon: BarChart3 },
     ],
   },
-  {
-    label: "Operations",
-    items: [
-      { title: "Landlords", url: "/landlords", icon: Building },
-      { title: "Referrals", url: "/referrals", icon: GitBranch },
-      { title: "Vendors", url: "/vendors", icon: Wrench },
-      { title: "Contracts", url: "/contracts", icon: FileCheck },
-    ],
-  },
-  {
-    label: "Enterprise",
-    items: [
-      { title: "Employees", url: "/employees", icon: UserCog },
-      { title: "Compliance", url: "/compliance", icon: Shield },
-      {
-        title: "Risk Register",
-        url: "/risk-register",
-        icon: AlertOctagon,
-      },
-      { title: "Assets", url: "/assets", icon: Package },
-      { title: "Security", url: "/security", icon: Lock },
-      { title: "Configuration", url: "/configuration", icon: Cog },
-      { title: "Insurance", url: "/insurance", icon: ShieldCheck },
-      {
-        title: "Data Protection",
-        url: "/data-protection",
-        icon: Shield,
-      },
-    ],
-  },
-  {
-    label: "Intelligence",
-    items: [
-      { title: "Insights", url: "/insights", icon: Brain },
-      { title: "Expiry Center", url: "/expiry-center", icon: Clock },
-    ],
-  },
-  {
-    label: "Regulatory",
-    items: [{ title: "Regulatory", url: "/regulatory", icon: Scale }],
-  },
-  {
-    label: "Infrastructure",
-    items: [
-      {
-        title: "Benchmarking",
-        url: "/benchmarking",
-        icon: TrendingUp,
-      },
-      { title: "Auditor Access", url: "/auditor-access", icon: Eye },
-      {
-        title: "Resident Portal",
-        url: "/dashboard/resident-portal",
-        icon: Users2,
-      },
-      { title: "Secure Share", url: "/secure-share", icon: Link2 },
-      { title: "Investor Board", url: "/investor", icon: Briefcase },
-    ],
-  },
+  // {
+  //   label: "Operations",
+  //   items: [
+  //     { title: "Landlords", url: "/landlords", icon: Building },
+  //     { title: "Referrals", url: "/referrals", icon: GitBranch },
+  //     { title: "Vendors", url: "/vendors", icon: Wrench },
+  //     { title: "Contracts", url: "/contracts", icon: FileCheck },
+  //   ],
+  // },
+  // {
+  //   label: "Enterprise",
+  //   items: [
+  //     { title: "Employees", url: "/employees", icon: UserCog },
+  //     { title: "Compliance", url: "/compliance", icon: Shield },
+  //     {
+  //       title: "Risk Register",
+  //       url: "/risk-register",
+  //       icon: AlertOctagon,
+  //     },
+  //     { title: "Assets", url: "/assets", icon: Package },
+  //     { title: "Security", url: "/security", icon: Lock },
+  //     { title: "Configuration", url: "/configuration", icon: Cog },
+  //     { title: "Insurance", url: "/insurance", icon: ShieldCheck },
+  //     {
+  //       title: "Data Protection",
+  //       url: "/data-protection",
+  //       icon: Shield,
+  //     },
+  //   ],
+  // },
+  // {
+  //   label: "Intelligence",
+  //   items: [
+  //     { title: "Insights", url: "/insights", icon: Brain },
+  //     { title: "Expiry Center", url: "/expiry-center", icon: Clock },
+  //   ],
+  // },
+  // {
+  //   label: "Regulatory",
+  //   items: [{ title: "Regulatory", url: "/regulatory", icon: Scale }],
+  // },
+  // {
+  //   label: "Infrastructure",
+  //   items: [
+  //     {
+  //       title: "Benchmarking",
+  //       url: "/benchmarking",
+  //       icon: TrendingUp,
+  //     },
+  //     { title: "Auditor Access", url: "/auditor-access", icon: Eye },
+  //     {
+  //       title: "Resident Portal",
+  //       url: "/dashboard/resident-portal",
+  //       icon: Users2,
+  //     },
+  //     { title: "Secure Share", url: "/secure-share", icon: Link2 },
+  //     { title: "Investor Board", url: "/investor", icon: Briefcase },
+  //   ],
+  // },
 ];
 
 export default function Sidebar() {
