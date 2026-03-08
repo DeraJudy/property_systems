@@ -969,7 +969,7 @@ export default function AddPropertyForm() {
                           <span>{cert.file ? "Change" : "Choose File"}</span>
                         </div>
                         {cert.file && (
-                          <span className="text-[10px] truncate max-w-[150px] opacity-70">
+                          <span className="text-[10px] truncate max-w-37.5 opacity-70">
                             {cert.file.name}
                           </span>
                         )}
@@ -992,6 +992,7 @@ export default function AddPropertyForm() {
                         <Input 
                           type="file" 
                           className="hidden" 
+                          accept=".pdf,.doc,.docx"
                           id={field} 
                           onChange={(e) => handleStaticFile(e, field)} 
                         />
