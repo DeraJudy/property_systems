@@ -938,7 +938,7 @@ export default function PropertiesTable() {
                       <TableHead className="hidden md:table-cell text-[#123d2b] font-bold">Address</TableHead>
                       <TableHead className="text-[#123d2b] font-bold">Status</TableHead>
                       <TableHead className="hidden sm:table-cell text-[#123d2b] font-bold">Occupancy</TableHead>
-                      <TableHead className="hidden lg:table-cell text-[#123d2b] font-bold">Approval</TableHead>
+                      {/* <TableHead className="hidden lg:table-cell text-[#123d2b] font-bold">Approval</TableHead> */}
                       <TableHead className="hidden lg:table-cell text-[#123d2b] font-bold">Certs</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -984,11 +984,11 @@ export default function PropertiesTable() {
                               <span className="text-xs text-muted-foreground">{p.occupied_count || 0}/{p.rooms}</span>
                             </div>
                           </TableCell>
-                          <TableCell className="hidden lg:table-cell">
+                          {/* <TableCell className="hidden lg:table-cell">
                             <Badge variant="outline" className="text-xs border-[#e1dbd2]">
                               {p.approval_status || "Pending"}
                             </Badge>
-                          </TableCell>
+                          </TableCell> */}
                           <TableCell className="hidden lg:table-cell text-sm">
                             <Badge className="bg-[#e6f2ec] text-[#1f6b4a] hover:bg-[#e6f2ec]">Active</Badge>
                           </TableCell>
