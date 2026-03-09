@@ -77,6 +77,7 @@ const navSections = [
       { title: "Approvals", url: "/approvals", icon: CheckSquare },
       { title: "Documents", url: "/documents", icon: FolderOpen },
       { title: "Reports", url: "/reports", icon: BarChart3 },
+      { title: "HR", url: "/hrList", icon: BarChart3 },
     ],
   },
   {
