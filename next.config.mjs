@@ -2,7 +2,10 @@
 const nextConfig = {
   /* config options here */
   images: {
-    domains: ["res.cloudinary.com"],
+   domains: [
+      "lh3.googleusercontent.com",
+      "res.cloudinary.com"
+    ],
   },
   reactCompiler: true,
 };
