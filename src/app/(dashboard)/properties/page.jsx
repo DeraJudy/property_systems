@@ -1,6 +1,7 @@
 "use client";
 
-import PropertiesTable from "@/components/dashboard/PropertiesTable";
+import PropertiesTable from "@/features/dashbord/PropertiesTable";
+
 
 
 
