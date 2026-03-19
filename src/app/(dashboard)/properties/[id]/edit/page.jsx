@@ -1,9 +1,10 @@
+import EditProperties from '@/features/dashbord/EditProperties'
 import React from 'react'
 
 const page = () => {
   return (
     <div>
-        Edit Form
+        <EditProperties />
     </div>
   )
 }

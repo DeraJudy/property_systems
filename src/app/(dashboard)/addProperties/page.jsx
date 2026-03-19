@@ -1,6 +1,7 @@
 "use client";
 
-import AddPropertyForm from "@/components/dashboard/AddPropertyForm";
+import AddPropertyForm from "@/features/dashbord/AddPropertyForm";
+
 
 export default function AddProperties() {
 

@@ -441,7 +441,7 @@ export default function PropertiesTable() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f0e6] p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8">
       <motion.div variants={container} initial="hidden" animate="show" className="space-y-6 max-w-7xl mx-auto">
         
         <motion.div variants={item} className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -513,7 +513,7 @@ export default function PropertiesTable() {
 
               <Card className="shadow-sm border-[#e1dbd2] overflow-hidden bg-white">
                 <Table>
-                  <TableHeader className="bg-[#fbf8f2]">
+                  <TableHeader className="text-lg ">
                     <TableRow>
                       <TableHead className="text-[#123d2b] font-bold">Property</TableHead>
                       <TableHead className="hidden md:table-cell text-[#123d2b] font-bold">Address</TableHead>
@@ -572,7 +572,7 @@ export default function PropertiesTable() {
                                 className="h-8 w-8 text-slate-500 hover:text-[#1f6b4a] hover:bg-[#e6f2ec]"
                                 onClick={(e) => handleEdit(e, p.id)}
                               >
-                                <Pencil className="h-4 w-4" />
+                                <Pencil className="h-4 w-4 " />
                               </Button>
                               <Button
                                 variant="ghost"
@@ -583,7 +583,7 @@ export default function PropertiesTable() {
                                   setPropertyToDelete(p.id);
                                 }}
                               >
-                                <Trash2 className="h-4 w-4" />
+                                <Trash2 className="h-4 w-4 text-red-600" />
                               </Button>
                             </div>
                           </TableCell>

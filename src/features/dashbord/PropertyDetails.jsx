@@ -7,7 +7,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import {
   Loader2,
   Home,
@@ -20,10 +19,15 @@ import {
   User
 } from "lucide-react";
 
+/**
+ * Helper to get public URL with a cache-busting timestamp.
+ * This ensures that if a file is replaced in storage, the browser
+ * fetches the new version instead of showing the cached one.
+ */
 function getFileUrl(path) {
   if (!path) return null;
   const { data } = supabase.storage.from("property-documents").getPublicUrl(path);
-  return data.publicUrl;
+  return `${data.publicUrl}?t=${Date.now()}`;
 }
 
 export default function PropertyDetails() {
@@ -41,8 +45,8 @@ export default function PropertyDetails() {
     try {
       setLoading(true);
       
-      // We alias the relationship to 'manager' for cleaner access
-      const { data: propData, error } = await supabase
+      //Fetch Property and join with profiles for the manager name
+      const { data: propData, error: propError } = await supabase
         .from("properties")
         .select(`
           *,
@@ -51,51 +55,65 @@ export default function PropertyDetails() {
         .eq("id", id)
         .single();
 
-      if (error) throw error;
+      if (propError) throw propError;
 
-      const { data: certs } = await supabase
+      // 2. Fetch all certificates for this property
+      const { data: certs, error: certError } = await supabase
         .from("property_certificates")
         .select("*")
-        .eq("property_id", id);
+        .eq("property_id", id)
+        .order('expiry_date', { ascending: true }); // Show soonest to expire first
 
-      setProperty(propData || {});
+      if (certError) throw certError;
+
+      setProperty(propData);
       setCertificates(certs || []);
     } catch (error) {
-      console.error("Supabase Fetch Error:", error.message);
+      console.error("Error fetching property details:", error.message);
     } finally {
       setLoading(false);
     }
   }
 
-  if (loading) return (
-    <div className="flex h-screen items-center justify-center bg-[#fbf8f2]">
-      <Loader2 className="h-8 w-8 animate-spin text-[#1f6b4a]" />
-    </div>
-  );
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[#fbf8f2]">
+        <Loader2 className="h-8 w-8 animate-spin text-[#1f6b4a]" />
+      </div>
+    );
+  }
 
-  if (!property) return <div className="p-10 text-center">Property not found.</div>;
-
-  const propertyImageUrl = getFileUrl(property.image_url);
+  if (!property) {
+    return (
+      <div className="p-10 text-center">
+        <AlertCircle className="mx-auto h-12 w-12 text-red-400 mb-4" />
+        <h2 className="text-xl font-bold">Property not found</h2>
+        <Button onClick={() => router.push("/properties")} className="mt-4">
+          Return to Dashboard
+        </Button>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-6 bg-[#fbf8f2] min-h-screen">
+    <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-6 min-h-screen ">
       
-      {/* 1. BACK BUTTON */}
+      {/* Navigation */}
       <Button 
         variant="ghost" 
-        onClick={() => router.back()} 
+        onClick={() => router.push("/properties")} 
         className="text-[#123d2b] hover:bg-[#e1dbd2] mb-2"
       >
         <ArrowLeft className="mr-2 h-4 w-4" /> Back to List
       </Button>
 
-      {/* 2. HEADER WITH IMAGE */}
-      <Card className="overflow-hidden border-[#e1dbd2] bg-white shadow-sm flex flex-col md:flex-row">
-        <div className="w-full md:w-80 h-64 md:h-auto bg-[#e8e1d6] relative shrink-0">
-          {propertyImageUrl ? (
+      {/* Header Card */}
+      <Card className="overflow-hidden flex flex-col md:flex-row border-[#e1dbd2] bg-white shadow-sm">
+        <div className="w-full md:w-80 h-64 md:h-auto bg-[#e8e1d6] shrink-0 relative">
+          {property.image_url ? (
             <img 
-              src={propertyImageUrl} 
-              alt="Property" 
+              src={getFileUrl(property.image_url)} 
+              alt={property.property_name} 
               className="w-full h-full object-cover" 
             />
           ) : (
@@ -104,65 +122,97 @@ export default function PropertyDetails() {
             </div>
           )}
         </div>
-
+        
         <div className="p-6 flex-1 flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div>
               <h1 className="text-3xl font-bold text-[#123d2b]">{property.property_name}</h1>
               <p className="text-muted-foreground">{property.address}, {property.postcode}</p>
             </div>
-            <Badge className="bg-[#1f6b4a] text-white capitalize">{property.status}</Badge>
+            <Badge className="bg-[#1f6b4a] text-white capitalize px-3 py-1">
+              {property.status}
+            </Badge>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 pt-4 border-t border-[#f0ede8]">
-            {/* 3. MANAGER NAME DISPLAY */}
-            <StatBox label="Rooms" value={property.rooms} />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8 pt-6 border-t border-[#f0ede8]">
+            <StatBox label="Rooms" value={property.rooms || "0"} />
             <StatBox label="Rent" value={property.rent ? `£${property.rent}` : "—"} />
-            <StatBox label="Org" value={property.organisation} />
+            <StatBox label="Organisation" value={property.organisation || "N/A"} />
+            <StatBox label="Manager" value={property.manager?.full_name || "Unassigned"} />
           </div>
         </div>
       </Card>
 
-      {/* TABS SECTION */}
-      <Tabs defaultValue="overview">
-        <TabsList className="bg-[#e1dbd2]/40">
+      {/* Detailed Content Tabs */}
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="bg-[#e1dbd2]/40 p-1">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="certificates">Certificates</TabsTrigger>
-          <TabsTrigger value="documents">Documents</TabsTrigger>
+          <TabsTrigger value="certificates">Compliance</TabsTrigger>
+          <TabsTrigger value="documents">General Files</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview">
-          <Card className="p-6 border-[#e1dbd2]">
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-                <DetailItem label="Property Manager" value={property.manager?.full_name || "Manger"} />
+        <TabsContent value="overview" className="mt-4">
+          <Card className="p-6 border-[#e1dbd2] bg-white">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <h3 className="font-bold text-[#1f6b4a] uppercase text-xs tracking-wider">Location Details</h3>
                 <DetailItem label="City" value={property.city} />
-                <DetailItem label="Tenant" value={property.tenant_name || "Vacant"} />
-             </div>
+                <DetailItem label="Postcode" value={property.postcode} />
+                <DetailItem label="Full Address" value={property.address} />
+              </div>
+              <div className="space-y-4">
+                <h3 className="font-bold text-[#1f6b4a] uppercase text-xs tracking-wider">Management</h3>
+                <DetailItem label="Property Manager" value={property.manager?.full_name} />
+                <DetailItem label="Organisation" value={property.organisation} />
+                <DetailItem label="Current Status" value={property.status} />
+              </div>
+            </div>
           </Card>
         </TabsContent>
 
-        <TabsContent value="certificates">
-          <Card className="p-6 space-y-4 border-[#e1dbd2]">
+        <TabsContent value="certificates" className="mt-4">
+          <Card className="p-6 space-y-4 border-[#e1dbd2] bg-white">
+            <h3 className="font-bold text-[#1f6b4a] flex items-center gap-2 mb-2">
+              <ShieldCheck className="h-5 w-5" /> Safety & Compliance
+            </h3>
             {certificates.length > 0 ? (
-              certificates.map(cert => (
-                <FileRow 
-                  key={cert.id} 
-                  label={cert.certificate_type} 
-                  subtext={`Expires: ${cert.expiry_date}`}
-                  path={cert.document_url} 
-                  icon={<ShieldCheck className="text-emerald-600" />} 
-                />
-              ))
-            ) : <EmptyState message="No certificates uploaded." />}
+              <div className="grid gap-3">
+                {certificates.map(cert => (
+                  <FileRow 
+                    key={cert.id} 
+                    label={cert.certificate_type} 
+                    subtext={`Expiry: ${cert.expiry_date || 'No date'}`} 
+                    path={cert.document_url} 
+                    icon={<ShieldCheck className="text-emerald-600" />} 
+                  />
+                ))}
+              </div>
+            ) : (
+              <EmptyState message="No compliance certificates have been uploaded yet." />
+            )}
           </Card>
         </TabsContent>
 
-        <TabsContent value="documents">
-          <Card className="p-6 space-y-4 border-[#e1dbd2]">
-            {property.lease_url && <FileRow label="Lease" path={property.lease_url} />}
-            {property.floor_plan_url && <FileRow label="Floor Plan" path={property.floor_plan_url} />}
-            {property.insurance_url && <FileRow label="Insurance" path={property.insurance_url} />}
+        <TabsContent value="documents" className="mt-4">
+          <Card className="p-6 space-y-4 border-[#e1dbd2] bg-white">
+            <h3 className="font-bold text-[#1f6b4a] flex items-center gap-2 mb-2">
+              <FileText className="h-5 w-5" /> Property Documents
+            </h3>
+            <div className="grid gap-3">
+              {property.lease_url ? (
+                <FileRow label="Lease Agreement" path={property.lease_url} />
+              ) : null}
+              {property.floor_plan_url ? (
+                <FileRow label="Floor Plan" path={property.floor_plan_url} />
+              ) : null}
+              {property.insurance_url ? (
+                <FileRow label="Insurance Document" path={property.insurance_url} />
+              ) : null}
+              
+              {!property.lease_url && !property.floor_plan_url && !property.insurance_url && (
+                <EmptyState message="No general documents available for this property." />
+              )}
+            </div>
           </Card>
         </TabsContent>
       </Tabs>
@@ -170,14 +220,12 @@ export default function PropertyDetails() {
   );
 }
 
-/* --- SMALL HELPER COMPONENTS --- */
+/* --- UI COMPONENTS --- */
 
-function StatBox({ label, value, icon }) {
+function StatBox({ label, value }) {
   return (
-    <div>
-      <p className="text-[10px] text-muted-foreground uppercase font-bold flex items-center gap-1">
-        {icon} {label}
-      </p>
+    <div className="space-y-1">
+      <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">{label}</p>
       <p className="text-lg font-bold text-[#123d2b] truncate">{value}</p>
     </div>
   );
@@ -186,26 +234,39 @@ function StatBox({ label, value, icon }) {
 function DetailItem({ label, value }) {
   return (
     <div className="border-b border-[#f0ede8] pb-2">
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="font-medium text-[#123d2b]">{value || "—"}</p>
+      <p className="text-xs text-muted-foreground font-medium">{label}</p>
+      <p className="text-[#123d2b] font-semibold">{value || "—"}</p>
     </div>
   );
 }
 
 function FileRow({ label, subtext, path, icon = <FileText className="text-[#1f6b4a]" /> }) {
   const url = getFileUrl(path);
+
+  if (!path) return null;
+
   return (
-    <div className="flex items-center justify-between p-4 border rounded-lg border-[#e1dbd2] hover:bg-white transition-all">
-      <div className="flex items-center gap-3">
-        {icon}
+    <div className="flex items-center justify-between p-4 border rounded-xl border-[#e1dbd2] bg-white hover:border-[#1f6b4a] hover:shadow-md transition-all group">
+      <div className="flex items-center gap-4">
+        <div className="p-2 bg-[#f4f1ea] rounded-lg group-hover:bg-[#e6f2ec] transition-colors">
+          {icon}
+        </div>
         <div>
-          <p className="font-semibold text-[#123d2b] capitalize">{label}</p>
-          {subtext && <p className="text-xs text-muted-foreground">{subtext}</p>}
+          <p className="font-bold text-[#123d2b] capitalize">{label.replace(/_/g, ' ')}</p>
+          {subtext && <p className="text-xs text-muted-foreground font-medium">{subtext}</p>}
         </div>
       </div>
-      <div className="flex gap-4">
-        <a href={url} target="_blank" className="text-sm font-medium text-[#1f6b4a] flex items-center gap-1"><ExternalLink size={14}/> View</a>
-        <a href={url} download className="text-sm font-medium text-[#1f6b4a] flex items-center gap-1"><Download size={14}/> Get</a>
+      <div className="flex items-center gap-2">
+        <Button variant="ghost" size="sm" asChild className="text-[#1f6b4a] hover:text-[#123d2b] hover:bg-[#e6f2ec]">
+          <a href={url} target="_blank" rel="noreferrer">
+            <ExternalLink size={16} className="mr-2" /> View
+          </a>
+        </Button>
+        <Button variant="ghost" size="sm" asChild className="text-[#1f6b4a] hover:text-[#123d2b] hover:bg-[#e6f2ec]">
+          <a href={url} download>
+            <Download size={16} className="mr-2" /> Get
+          </a>
+        </Button>
       </div>
     </div>
   );
@@ -213,9 +274,9 @@ function FileRow({ label, subtext, path, icon = <FileText className="text-[#1f6b
 
 function EmptyState({ message }) {
   return (
-    <div className="text-center py-10 border-2 border-dashed border-[#e1dbd2] rounded-xl text-muted-foreground">
-      <AlertCircle className="mx-auto mb-2 opacity-20" />
-      <p className="text-sm">{message}</p>
+    <div className="text-center py-12 border-2 border-dashed border-[#e1dbd2] rounded-2xl bg-[#fbf8f2]/50">
+      <AlertCircle className="mx-auto h-10 w-10 text-[#1f6b4a] opacity-20 mb-3" />
+      <p className="text-sm font-medium text-muted-foreground">{message}</p>
     </div>
   );
 }
