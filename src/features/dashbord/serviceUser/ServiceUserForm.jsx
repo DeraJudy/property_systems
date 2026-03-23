@@ -1125,6 +1125,7 @@ export default function ServiceUserTabsForm() {
       setLoading(false);
     }
   };
+  
   const getEthnicOrigins = () => {
     switch (formData.ethnic_group) {
       case "asian": case "asian-british": return ASIAN_COUNTRIES;
