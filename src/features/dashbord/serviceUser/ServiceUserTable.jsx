@@ -222,6 +222,16 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/superbase/clientUtils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -254,6 +264,9 @@ const container = { hidden: {}, show: { transition: { staggerChildren: 0.04 } } 
 const item = { hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transition: { duration: 0.3 } } };
 
 export default function ServiceUsersTable() {
+ const [userToDelete, setUserToDelete] = useState(null); 
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [serviceUsers, setServiceUsers] = useState([]);
   const supabase = createClient();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -280,37 +293,67 @@ export default function ServiceUsersTable() {
     }
   };
 
-  const handleDelete = async (user) => {
-    const confirmDelete = window.confirm(`Are you sure you want to delete ${user.first_name}? This will also remove all their uploaded documents.`);
-    if (!confirmDelete) return;
+  const confirmDelete = async () => {
+  if (!userToDelete) return;
+  
+  setIsDeleting(true);
+  const toastId = toast.loading(`Deleting ${userToDelete.first_name}...`);
 
-    try {
-      // 1. Array of possible file fields to clean up in Storage
-      const fileFields = ['avatar_url', 'id_verification_url', 'tenancy_agreement_url', 'benefit_letter_url', 'risk_assessment_url'];
-      const filesToRemove = fileFields
-        .map(field => user[field])
-        .filter(path => path && typeof path === 'string');
+  try {
+    // 1. EXTRACT FILE NAMES SAFELY
+    // This looks at your URL and grabs just the filename at the end
+    const getFileName = (url) => {
+      if (!url) return null;
+      const parts = url.split('/');
+      return parts[parts.length - 1];
+    };
 
-      if (filesToRemove.length > 0) {
-        // We assume your files are stored in 'service_user_docs' and 'avatars' buckets 
-        // as per your previous upload logic. 
-        // This attempts to remove them from their respective paths.
-        await Promise.all([
-            supabase.storage.from("service_user_docs").remove(filesToRemove),
-            supabase.storage.from("avatars").remove(filesToRemove)
-        ]);
+    const files = [
+      { bucket: "avatars", path: getFileName(userToDelete.avatar_url) },
+      { bucket: "service_user_docs", path: getFileName(userToDelete.id_verification_url) },
+      { bucket: "service_user_docs", path: getFileName(userToDelete.tenancy_agreement_url) },
+      { bucket: "service_user_docs", path: getFileName(userToDelete.benefit_letter_url) },
+      { bucket: "service_user_docs", path: getFileName(userToDelete.risk_assessment_url) },
+    ].filter(f => f.path); // Only attempt if there's a file path
+
+    // 2. DELETE FROM STORAGE (Wrapped in try/catch so it doesn't stop the whole process)
+    if (files.length > 0) {
+      for (const file of files) {
+        console.log(`Attempting to delete ${file.path} from ${file.bucket}`);
+        const { error: storageError } = await supabase.storage
+          .from(file.bucket)
+          .remove([file.path]);
+        
+        if (storageError) {
+          console.warn("Storage deletion warning:", storageError.message);
+          // We continue anyway so the DB record can still be deleted
+        }
       }
-
-      // 2. Delete database record
-      const { error } = await supabase.from("service_users").delete().eq("id", user.id);
-      if (error) throw error;
-
-      setUsers(users.filter((u) => u.id !== user.id));
-      toast.success("User and documents deleted successfully");
-    } catch (error) {
-      toast.error("Error deleting user: " + error.message);
     }
-  };
+
+    // 3. DELETE FROM DATABASE
+    const { error: dbError } = await supabase
+      .from("service_users")
+      .delete()
+      .eq("id", userToDelete.id);
+
+    if (dbError) throw dbError;
+
+    // 4. SUCCESS - UPDATE UI (Changed setServiceUsers to setUsers)
+    // This removes the user from the current 'users' array instantly
+    setUsers(prev => prev.filter(u => u.id !== userToDelete.id));
+    
+    toast.success("User and files deleted successfully", { id: toastId });
+    
+  } catch (err) {
+    console.error("FULL DELETE ERROR:", err);
+    toast.error(`Delete failed: ${err.message}`, { id: toastId });
+  } finally {
+    setIsDeleting(false);
+    setUserToDelete(null);
+  }
+};
+
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -468,14 +511,12 @@ export default function ServiceUsersTable() {
                           </Link>
                         </Button>
                         <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          onClick={() => handleDelete(user)} 
-                          className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50" 
-                          title="Delete User"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+           key={user.id}
+           variant="ghost" 
+           onClick={() => setUserToDelete(user)} // TRIGGERS MODAL
+         >
+           <Trash2 className="w-4 h-4 text-red-500" />
+         </Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -485,6 +526,35 @@ export default function ServiceUsersTable() {
           </Table>
         </CardContent>
       </Card>
+
+      {/* DELETE CONFIRMATION MODAL */}
+      {/* Add this at the bottom of the return statement */}
+<AlertDialog open={!!userToDelete} onOpenChange={() => setUserToDelete(null)}>
+        <AlertDialogContent className="bg-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete the profile for 
+              <span className="font-bold"> {userToDelete?.first_name} {userToDelete?.surname}</span>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={(e) => {
+                e.preventDefault();
+                confirmDelete();
+              }}
+              className="bg-red-600 text-white hover:bg-red-700"
+              disabled={isDeleting}
+            >
+              {isDeleting ? <Loader2 className="animate-spin w-4 h-4 mr-2" /> : null}
+              Confirm Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
     </motion.div>
   );
 }
