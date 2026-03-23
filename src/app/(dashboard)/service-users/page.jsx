@@ -1,10 +1,10 @@
-import ServiceUserTable from "@/components/dashboard/ServiceUserTable";
+import ServiceUsersTable from "@/features/dashbord/serviceUser/ServiceUserTable";
 
 export default function ServicePage() {
   return (
     <div className="space-y-6">
       
-      <ServiceUserTable />
+      <ServiceUsersTable />
 
     </div>
   );
