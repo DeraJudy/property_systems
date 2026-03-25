@@ -23,12 +23,12 @@ const navItems = [
   { title: "Users", url: "/users", icon: Users },
   { title: "Properties", url: "/properties", icon: Home },
   { title: "Service Users", url: "/service-users", icon: UserCircle },
-  { title: "Support Logs", url: "/support-logs", icon: FileText },
-  { title: "Cases", url: "/cases", icon: AlertTriangle },
-  { title: "Finance", url: "/finance", icon: PoundSterling },
-  { title: "Approvals", url: "/approvals", icon: CheckSquare },
-  { title: "Documents", url: "/documents", icon: FolderOpen },
-  { title: "Reports", url: "/reports", icon: BarChart3 },
+  // { title: "Support Logs", url: "/support-logs", icon: FileText },
+  // { title: "Cases", url: "/cases", icon: AlertTriangle },
+  // { title: "Finance", url: "/finance", icon: PoundSterling },
+  // { title: "Approvals", url: "/approvals", icon: CheckSquare },
+  // { title: "Documents", url: "/documents", icon: FolderOpen },
+  // { title: "Reports", url: "/reports", icon: BarChart3 },
 ];
 
 export default function MobileSidebarWrapper({ children }) {

@@ -54,7 +54,7 @@ const navItems = [
   { title: "Properties", url: "/properties", icon: Home },
   { title: "AddProperties", url: "/addProperties", icon: Home },
   { title: "Service Users", url: "/service-users", icon: UserCircle },
-  { title: "Support Logs", url: "/support-logs", icon: FileText },
+  // { title: "Support Logs", url: "/support-logs", icon: FileText },
   { title: "Cases", url: "/cases", icon: AlertTriangle },
   { title: "Finance", url: "/finance", icon: PoundSterling },
   { title: "Approvals", url: "/approvals", icon: CheckSquare },
