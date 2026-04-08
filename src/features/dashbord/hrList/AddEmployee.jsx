@@ -190,6 +190,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus, ArrowLeft, FileText, Camera, CheckCircle2, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase'; // Ensure your supabase client is initialized here
+import { toast } from "sonner";
 
 const AddEmployeeForm = () => {
     const router = useRouter();
@@ -259,7 +260,7 @@ const AddEmployeeForm = () => {
       }));
     } catch (error) {
       console.error('Upload failed:', error);
-      alert('Upload failed. Please check your connection.');
+      toast.error('Upload failed. Please check your connection.');
     } finally {
       setUploadingFields(prev => ({ ...prev, [fieldName]: false }));
     }
@@ -271,7 +272,7 @@ const AddEmployeeForm = () => {
   };
 
   const handleSubmit = async () => {
-    if (!formData.full_name) return alert("Please enter the employee's name.");
+    if (!formData.full_name) return toast.error("Please enter the employee's name.");
     
     setIsSubmitting(true);
     try {
@@ -280,10 +281,10 @@ const AddEmployeeForm = () => {
         .insert([formData]);
 
       if (error) throw error;
-      alert("Employee record saved successfully!");
-      // Optional: Redirect or reset form here
+      toast.success("Employee record saved successfully!");
+      router.push("/hrList");
     } catch (error) {
-      alert(error.message);
+      toast.error(error.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -389,11 +390,19 @@ const AddEmployeeForm = () => {
             <h4 className="font-semibold text-[#123d2b] mb-4">References</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
+                <div className="flex justify-between items-center mb-2">
+                  <Label>Referee 1</Label>
+                  <FileStatus fieldName="ref1_doc_url" isUploaded={!!formData.ref1_doc_url}/>
+                </div>
                 <Input name="ref1_name" placeholder="Referee 1 Name" onChange={handleInputChange} className="bg-white mb-2" />
                 <Input name="ref1_email" placeholder="Referee 1 Email" onChange={handleInputChange} className="bg-white mb-2" />
                 <Input type="file" onChange={(e) => handleFileUpload(e, 'ref1_doc_url')} className="bg-white" />
               </div>
               <div className="space-y-2">
+                <div className="flex justify-between items-center mb-2">
+                  <Label>Referee 2</Label>
+                  <FileStatus fieldName="ref2_doc_url" isUploaded={!!formData.ref2_doc_url}/>
+                </div>
                 <Input name="ref2_name" placeholder="Referee 2 Name" onChange={handleInputChange} className="bg-white mb-2" />
                 <Input name="ref2_email" placeholder="Referee 2 Email" onChange={handleInputChange} className="bg-white mb-2" />
                 <Input type="file" onChange={(e) => handleFileUpload(e, 'ref2_doc_url')} className="bg-white" />
