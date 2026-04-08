@@ -26,14 +26,14 @@ export default function Navbar() {
         {/* Desktop Nav */}
         <div className="hidden items-center gap-8 md:flex">
           <a href="#features" className="text-sm font-medium text-[#6B7D74] hover:text-[#123D2B] transition-colors">
-            Features
+            Our Story
           </a>
-          <a href="#benefits" className="text-sm font-medium text-[#6B7D74] hover:text-[#123D2B] transition-colors">
+          {/* <a href="#benefits" className="text-sm font-medium text-[#6B7D74] hover:text-[#123D2B] transition-colors">
             Benefits
           </a>
           <a href="#pricing" className="text-sm font-medium text-[#6B7D74] hover:text-[#123D2B] transition-colors">
             Pricing
-          </a>
+          </a> */}
         </div>
 
         {/* Desktop Buttons */}
@@ -77,16 +77,16 @@ export default function Navbar() {
             <div className="mx-auto max-w-7xl px-4 py-6 flex flex-col gap-4">
 
               <a href="#features" className="text-sm font-medium text-[#123D2B]">
-                Features
+                Our Story
               </a>
 
-              <a href="#benefits" className="text-sm font-medium text-[#123D2B]">
+              {/* <a href="#benefits" className="text-sm font-medium text-[#123D2B]">
                 Benefits
               </a>
 
               <a href="#pricing" className="text-sm font-medium text-[#123D2B]">
                 Pricing
-              </a>
+              </a> */}
 
               <div className="flex flex-col gap-3 pt-4 border-t border-border/40">
                 <Link href="/login">
