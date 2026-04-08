@@ -526,7 +526,7 @@ const EmployeesPage = () => {
           searchValue={searchQuery}
           onSearchChange={(val) => setSearchQuery(val)}
           addLabel="Add Employee"
-          onAdd={() => router.push("/hrList/new")}
+          onAdd={() => router.push("/hrList/addEmployee")}
         />
       </motion.div>
 

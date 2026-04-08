@@ -31,11 +31,11 @@ const DataTableHeader = ({
             <Download className="mr-2 h-4 w-4" />Export
           </Button>
         )}
-        {/* {onAdd && (
-          <Button onClick={onAdd}>
+        {onAdd && (
+          <Button  onClick={onAdd}>
             <Plus className="mr-2 h-4 w-4" />{addLabel}
           </Button>
-        )} */}
+        )}
       </div>
     </div>
     <div className="flex flex-col gap-3 sm:flex-row">
@@ -45,7 +45,7 @@ const DataTableHeader = ({
       </div>
       {filters.map((f, i) => (
         <Select key={i} defaultValue="all">
-          <SelectTrigger className="w-full sm:w-[160px]">
+          <SelectTrigger className="w-full sm:w-40">
             {i === 0 && <Filter className="mr-2 h-4 w-4" />}
             <SelectValue placeholder={f.label} />
           </SelectTrigger>
