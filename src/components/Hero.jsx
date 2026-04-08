@@ -71,7 +71,7 @@ export default function Hero() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="relative"
           >
-            <div className="relative aspect-16/10 overflow-hidden rounded-2xl border border-border/50 shadow-sm transition-shadow hover:shadow-lg">
+            {/* <div className="relative aspect-16/10 overflow-hidden rounded-2xl border border-border/50 shadow-sm transition-shadow hover:shadow-lg">
               <Image
                 src="https://res.cloudinary.com/dcfl8iot4/image/upload/v1772186399/hero-image_o8f7xg.jpg"
                 alt="Kenley Property Systems Dashboard"
@@ -79,6 +79,19 @@ export default function Hero() {
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover"
               />
+            </div> */}
+            <div className="relative aspect-16/10 overflow-hidden rounded-2xl border border-border/50 shadow-sm transition-shadow hover:shadow-lg">
+              <video
+                src="https://res.cloudinary.com/dcfl8iot4/video/upload/v1775683315/WhatsApp_Video_2026-04-08_at_22.18.14_knciym.mp4"
+                className="absolute inset-0 h-full w-full object-cover"
+                autoPlay
+                loop
+                muted
+                playsInline
+                controls
+              >
+                Your browser does not support the video tag.
+              </video>
             </div>
             <div className="absolute -bottom-4 -left-4 rounded-xl bg-card p-4 shadow-card-hover border border-border/50">
               <div className="flex items-center gap-3">
