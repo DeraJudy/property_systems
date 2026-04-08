@@ -330,7 +330,7 @@ const AllEmployees = () => {
     const dataRows = employeeList.map((e) => [
       e.full_name,
       e.job_role,
-      e.contact_info,
+      e.email_address,
       e.dob,
       e.start_date,
       e.dbs_number || "N/A",
@@ -479,7 +479,7 @@ const AllEmployees = () => {
                 <TableCell>
                   <StatusBadge status={e.induction_completed_date ? "Completed" : "Incomplete"} />
                 </TableCell>
-                <TableCell className="text-[#6b7d74] text-xs">{e.contact_info}</TableCell>
+                <TableCell className="text-[#6b7d74] text-xs">{e.email_address}</TableCell>
                 <TableCell className="text-right" onClick={(ev) => ev.stopPropagation()}>
                   <div className="flex justify-end gap-1">
                     <Button variant="ghost" size="sm" onClick={(ev) => downloadEmployeeData(e, ev)}>
@@ -521,12 +521,8 @@ const AllEmployees = () => {
   if (loading) return <div className="p-10 text-center min-h-screen">Loading...</div>;
 
   return (
-    <motion.div variants={container} initial="hidden" animate="show" className="p-6 bg-[#f5f0e6] min-h-screen space-y-6">
+    <motion.div variants={container} initial="hidden" animate="show" className="p-6 min-h-screen space-y-6">
       <motion.div variants={item} className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        {/* <DataTableHeader 
-          title="Workforce Directory" 
-          description="Manage employee records, compliance, and training."
-        /> */}
 
         <div>
             <h2 className="font-black text-3xl">Employee Directory</h2>

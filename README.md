@@ -48,3 +48,16 @@ npm install @supabase/supabase-js
 
 hello
 
+
+
+Add this to the form: Employment letter, Fully Document Interview, Valid passport/Driving license, certificate of conduct.
+
+Evidence of risk assessment and risk evaluation when a DBS check highlights ‘trace’
+
+ All references are to be verified by a follow-up telephone call, which should be dated and signed by the Appointing Officer
+
+Copies of all relevant qualifications -> make this an array where multiple qualifications can be added
+
+Supervision: make this an array where multiple supervision eg.march, Feb Supervision janaury Supervision, etc + Dates
+
+Add a place where I can add multiple documents and their names
