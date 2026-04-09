@@ -308,13 +308,7 @@ import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Loader2,
-  ArrowLeft,
-  Edit,
-  Mail,
-  Phone,
-  Calendar,
-  MapPin,
+  Loader2, ArrowLeft, Edit, Mail, Phone, Calendar, MapPin,
   HeartPulse,
   Banknote,
   ShieldAlert,
@@ -332,8 +326,7 @@ import {
   Edit3,
   Trash2,
   Download,
-  Video,
-  Image as ImageIcon,
+  Video, Image as ImageIcon, Eye, CheckCircle2, AlertCircle
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -354,7 +347,12 @@ export default function ViewServiceUser() {
   const [loadingLogs, setLoadingLogs] = useState(false);
 
   const [kwsDocs, setKwsDocs] = useState([]);
+
+  // Upload States
   const [uploading, setUploading] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [docTitle, setDocTitle] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const [docToDelete, setDocToDelete] = useState(null);
 const [deleteConfirmText, setDeleteConfirmText] = useState("");
@@ -419,53 +417,115 @@ const [deleteConfirmText, setDeleteConfirmText] = useState("");
     if (!error) setKwsDocs(data);
   };
 
-  const handleFileUpload = async (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length === 0) return;
+  // const handleFileUpload = async (e) => {
+  //   const files = Array.from(e.target.files);
+  //   if (files.length === 0) return;
+
+  //   setUploading(true);
+  //   try {
+  //     for (const file of files) {
+  //       const fileExt = file.name.split(".").pop();
+  //       const fileName = `${Math.random()}.${fileExt}`;
+  //       const filePath = `${id}/${fileName}`;
+
+  //       // 1. Upload to Supabase Storage
+  //       const { error: uploadError } = await supabase.storage
+  //         .from("kws_documents")
+  //         .upload(filePath, file);
+
+  //       if (uploadError) throw uploadError;
+
+  //       // 2. Get Public URL
+  //       const {
+  //         data: { publicUrl },
+  //       } = supabase.storage.from("kws_documents").getPublicUrl(filePath);
+
+  //       // 3. Save reference to Database
+  //       await supabase.from("kws_documents").insert({
+  //         service_user_id: id,
+  //         file_url: publicUrl,
+  //         file_name: file.name,
+  //       });
+  //     }
+  //     toast.success("Documents uploaded successfully");
+  //     fetchKWSDocuments();
+  //   } catch (error) {
+  //     toast.error("Error uploading files");
+  //     console.error(error);
+  //   } finally {
+  //     setUploading(false);
+  //   }
+  // };
+
+  const handleFileUpload = async () => {
+    if (!selectedFile || !docTitle.trim()) {
+      toast.error("Please provide both a title and a file");
+      return;
+    }
 
     setUploading(true);
     try {
-      for (const file of files) {
-        const fileExt = file.name.split(".").pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `${id}/${fileName}`;
+      const fileExt = selectedFile.name.split(".").pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${id}/${fileName}`;
 
-        // 1. Upload to Supabase Storage
-        const { error: uploadError } = await supabase.storage
-          .from("kws_documents")
-          .upload(filePath, file);
+      const { error: uploadError } = await supabase.storage.from("kws_documents").upload(filePath, selectedFile);
+      if (uploadError) throw uploadError;
 
-        if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage.from("kws_documents").getPublicUrl(filePath);
 
-        // 2. Get Public URL
-        const {
-          data: { publicUrl },
-        } = supabase.storage.from("kws_documents").getPublicUrl(filePath);
+      const { error: dbError } = await supabase.from("kws_documents").insert({
+        service_user_id: id,
+        file_url: publicUrl,
+        file_name: docTitle.trim(), // We use the custom title here
+        original_name: selectedFile.name,
+      });
 
-        // 3. Save reference to Database
-        await supabase.from("kws_documents").insert({
-          service_user_id: id,
-          file_url: publicUrl,
-          file_name: file.name,
-        });
-      }
-      toast.success("Documents uploaded successfully");
+      if (dbError) throw dbError;
+
+      toast.success("Document added to audit trail");
+      setDocTitle("");
+      setSelectedFile(null);
+      setIsUploadModalOpen(false);
       fetchKWSDocuments();
     } catch (error) {
-      toast.error("Error uploading files");
-      console.error(error);
+      toast.error("Upload failed");
     } finally {
       setUploading(false);
     }
   };
 
   // 2. Add this helper function to handle icons
-const getFileIcon = (fileName) => {
-  const ext = fileName.toLowerCase().split('.').pop();
-  if (['mp4', 'webm', 'ogg', 'mov'].includes(ext)) return <Video className="w-4 h-4" />;
-  if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) return <ImageIcon className="w-4 h-4" />; // Import Image as ImageIcon
-  return <FileText className="w-4 h-4" />;
-};
+// const getFileIcon = (fileName) => {
+//   const ext = fileName.toLowerCase().split('.').pop();
+//   if (['mp4', 'webm', 'ogg', 'mov'].includes(ext)) return <Video className="w-4 h-4" />;
+//   if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) return <ImageIcon className="w-4 h-4" />; // Import Image as ImageIcon
+//   return <FileText className="w-4 h-4" />;
+// };
+
+  const renderThumbnail = (doc) => {
+    const ext = doc.original_name?.toLowerCase().split('.').pop() || doc.file_url.split('.').pop();
+    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
+    const isVideo = ['mp4', 'webm', 'mov'].includes(ext);
+
+    if (isImage) {
+      return (
+        <div className="relative h-24 w-full bg-slate-100 rounded-t-lg overflow-hidden border-b">
+          <img src={doc.file_url} alt={doc.file_name} className="object-cover w-full h-full" />
+        </div>
+      );
+    }
+
+    return (
+      <div className="h-24 w-full bg-[#f1ede4] flex items-center justify-center rounded-t-lg border-b">
+        {isVideo ? (
+          <Video className="w-8 h-8 text-[#1f6b4a]" />
+        ) : (
+          <FileText className="w-8 h-8 text-[#1f6b4a]" />
+        )}
+      </div>
+    );
+  };
 
   // 3. Update the Delete Logic to be triggered from the modal
 const confirmDelete = async () => {
@@ -1069,107 +1129,101 @@ const confirmDelete = async () => {
 
             <TabsContent value="kws" className="space-y-6">
               <Card className="border-[#e1dbd2]">
-                <CardHeader className="flex flex-row items-center justify-between bg-[#f1ede4]/30 border-b border-[#e1dbd2]/50">
-                  <CardTitle className="text-sm font-black flex items-center gap-2 text-[#123d2b] uppercase tracking-widest">
-                    <Edit3 className="w-4 h-4" /> Key Working Session Documents
-                  </CardTitle>
+                <CardHeader className="flex flex-row items-center justify-between bg-white border-b p-6">
+                  <div>
+                    <CardTitle className="text-lg font-bold text-[#123d2b]">Key Working Sessions</CardTitle>
+                    <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-500" /> Evidence-based audit log
+                    </p>
+                  </div>
 
-                  {/* UPLOAD MODAL */}
-                  <Dialog>
+                  <Dialog open={isUploadModalOpen} onOpenChange={setIsUploadModalOpen}>
                     <DialogTrigger asChild>
-                      <Button className="bg-[#1f6b4a] hover:bg-[#123d2b]">
-                        <Plus className="mr-2 h-4 w-4" /> Upload Documents
+                      <Button className="bg-[#123d2b] hover:bg-black transition-all">
+                        <Plus className="mr-2 h-4 w-4" /> New Session Upload
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="bg-[#fbf8f2] border-[#e1dbd2]">
+                    <DialogContent className="bg-white max-w-md">
                       <DialogHeader>
-                        <DialogTitle className="text-[#123d2b]">
-                          Upload KWS Files
-                        </DialogTitle>
+                        <DialogTitle>Upload KWS Evidence</DialogTitle>
                       </DialogHeader>
-                      <div className="space-y-4 py-4">
-                        <div className="border-2 border-dashed border-[#e1dbd2] rounded-lg p-8 text-center hover:border-[#1f6b4a] transition-colors">
-                          <Input
-                            type="file"
-                            multiple
-                            className="hidden"
-                            id="kws-upload"
-                            // This allows all images, videos, and standard document types
-                            accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
-                            onChange={handleFileUpload}
-                            disabled={uploading}
+                      <div className="space-y-4 pt-4">
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black uppercase text-muted-foreground">Document Title</label>
+                          <Input 
+                            placeholder="e.g., Financial Stability Workshop" 
+                            value={docTitle}
+                            onChange={(e) => setDocTitle(e.target.value)}
                           />
-                          <label
-                            htmlFor="kws-upload"
-                            className="cursor-pointer flex flex-col items-center gap-2"
-                          >
-                            <FileText className="w-8 h-8 text-[#1f6b4a]" />
-                            <span className="text-sm font-medium text-[#123d2b]">
-                              {uploading
-                                ? "Uploading..."
-                                : "Click to select multiple files"}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              PDF, Videos, Images, or Word Docs
-                            </span>
+                        </div>
+                        
+                        <div className="border-2 border-dashed rounded-lg p-6 text-center bg-slate-50 hover:bg-slate-100 transition-colors">
+                          <Input 
+                            type="file" 
+                            id="kws-file" 
+                            className="hidden" 
+                            onChange={(e) => setSelectedFile(e.target.files[0])}
+                          />
+                          <label htmlFor="kws-file" className="cursor-pointer space-y-2 block">
+                            <FileText className="w-8 h-8 mx-auto text-slate-400" />
+                            <p className="text-xs font-medium">
+                              {selectedFile ? selectedFile.name : "Select audit file (Image, Video, or PDF)"}
+                            </p>
                           </label>
                         </div>
+
+                        <Button 
+                          className="w-full bg-[#1f6b4a]" 
+                          disabled={uploading || !selectedFile || !docTitle}
+                          onClick={handleFileUpload}
+                        >
+                          {uploading ? <Loader2 className="animate-spin h-4 w-4" /> : "Finalize Upload"}
+                        </Button>
                       </div>
                     </DialogContent>
                   </Dialog>
                 </CardHeader>
 
-                <CardContent className="pt-6">
+                <CardContent className="p-6">
                   {kwsDocs.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                       {kwsDocs.map((doc) => (
-                        <div key={doc.id} className="flex items-center justify-between p-3 border border-[#e1dbd2] rounded-lg bg-white hover:shadow-md transition-all group">
-                          <div className="flex items-center gap-3 overflow-hidden">
-                            <div className="bg-[#f1ede4] p-2 rounded text-[#1f6b4a]">
-                              {getFileIcon(doc.file_name)}
+                        <div key={doc.id} className="group border rounded-xl bg-white shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col">
+                          {renderThumbnail(doc)}
+                          
+                          <div className="p-4 flex-1 flex flex-col gap-3">
+                            <div>
+                              <h4 className="text-sm font-bold text-[#123d2b] line-clamp-1" title={doc.file_name}>
+                                {doc.file_name}
+                              </h4>
+                              <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
+                                <Clock className="w-3 h-3" /> {new Date(doc.created_at).toLocaleDateString()}
+                              </p>
                             </div>
-                            <span className="text-xs font-bold text-[#123d2b] truncate pr-2" title={doc.file_name}>
-                              {doc.file_name}
-                            </span>
-                          </div>
 
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="ghost" size="sm"
-                              className="h-8 w-8 p-0 text-blue-600 bg-blue-50 border border-blue-100 hover:bg-blue-100"
-                              onClick={() => {
-                                const isDoc = doc.file_name.toLowerCase().match(/\.(doc|docx)$/);
-                                if (isDoc) {
-                                  window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(doc.file_url)}&embedded=true`, '_blank');
-                                } else {
-                                  window.open(doc.file_url, '_blank');
-                                }
-                              }}
-                            >
-                              <ExternalLink className="w-3.5 h-3.5" />
-                            </Button>
-                            
-                            <Button
-                              variant="ghost" size="sm"
-                              className="h-8 w-8 p-0 text-[#1f6b4a] bg-[#f1ede4] border border-[#e1dbd2] hover:bg-[#e1dbd2]"
-                              onClick={() => handleDownload(doc.file_url, doc.file_name)}
-                            >
-                              <Download className="w-3.5 h-3.5" />
-                            </Button>
-
-                            <Button
-                              variant="ghost" size="sm"
-                              className="h-8 w-8 p-0 text-red-600 bg-red-50 border border-red-100 hover:bg-red-100"
-                              onClick={() => setDocToDelete(doc)}
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </Button>
+                            <div className="flex gap-2 mt-auto pt-2 border-t border-slate-50">
+                              <Button 
+                                variant="outline" size="sm" className="flex-1 h-8 text-[10px] font-bold"
+                                onClick={() => window.open(doc.file_url, '_blank')}
+                              >
+                                <Eye className="w-3 h-3 mr-1" /> VIEW
+                              </Button>
+                              <Button 
+                                variant="ghost" size="sm" className="h-8 w-8 text-red-500 hover:bg-red-50"
+                                onClick={() => setDocToDelete(doc)}
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-12 text-muted-foreground italic text-sm">No KWS documents uploaded yet.</div>
+                    <div className="text-center py-20 flex flex-col items-center opacity-40">
+                      <FileText className="w-12 h-12 mb-4" />
+                      <p className="text-sm font-serif">No session records found.</p>
+                    </div>
                   )}
                 </CardContent>
               </Card>
