@@ -112,12 +112,12 @@ export default function Header({ setSidebarOpen }) {
       <DropdownMenuLabel className="text-[#123d2b] font-bold">My Account</DropdownMenuLabel>
       <DropdownMenuSeparator className="bg-[#e1dbd2]" />
       
-      <DropdownMenuItem className="cursor-pointer text-[#123d2b] hover:bg-[#f1ede4]">
+      {/* <DropdownMenuItem className="cursor-pointer text-[#123d2b] hover:bg-[#f1ede4]">
         <User className="mr-2 h-4 w-4" />
         <span>Profile</span>
-      </DropdownMenuItem>
+      </DropdownMenuItem> */}
       
-      <DropdownMenuSeparator className="bg-[#e1dbd2]" />
+      {/* <DropdownMenuSeparator className="bg-[#e1dbd2]" /> */}
       
       {/* Logout Link */}
       <Link href="/logout">
