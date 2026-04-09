@@ -122,7 +122,9 @@ import React, { useEffect, useState } from "react";
 export default function Hero() {
 
   return (
-    <div className="flex items-center justify-center background p-8 [perspective:1000px]">
+    <div className="flex items-center justify-center min-h-screen background p-4 sm:p-8 lg:p-12 perspective-[1000px] overflow-hidden">
+
+      {/* THE 3D FRAME */}
 
       {/* THE 3D FRAME - Flattened class strings to prevent hydration mismatch */}
 
