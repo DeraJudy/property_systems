@@ -26,7 +26,9 @@ export default function MobileSidebar({ open, setOpen, navItems, navSections, se
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#206c3c]">
               <Building2 className="h-4 w-4 text-white" />
             </div>
-            <span className="font-semibold text-sm">Kenley Property</span>
+            <Link href="/" className="text-sm font-bold text-white">
+              <span className="text-sm font-bold text-white">Kenley Property</span>
+            </Link>
           </div>
 
           <button onClick={() => setOpen(false)}>

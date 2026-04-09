@@ -300,11 +300,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { 
   Loader2, ArrowLeft, Edit, Mail, Phone, Calendar, 
   MapPin, HeartPulse, Banknote, ShieldAlert, FileText, 
   UserCircle, Briefcase, ExternalLink, Hash, Fingerprint,
-  ClipboardList, Home, Plus, Clock, Copy, Edit3
+  ClipboardList, Home, Plus, Clock, Copy, Edit3, Upload, 
+  FileIcon, X
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -323,6 +332,64 @@ export default function ViewServiceUser() {
   const [loading, setLoading] = useState(true);
   const [logs, setLogs] = useState([]);
   const [loadingLogs, setLoadingLogs] = useState(false);
+
+  const [uploading, setUploading] = useState(false);
+  const [file, setFile] = useState(null);
+
+
+  const handleFileChange = (e) => {
+    if (e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) return;
+
+    try {
+      setUploading(true);
+
+      // Create a unique file path: service_user_id/timestamp_filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${id}/${Date.now()}_${fileName}`;
+
+      // A. Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('working-sessions')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // B. Get the Public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('working-sessions')
+        .getPublicUrl(filePath);
+
+      // C. Insert into Database
+      const { error: dbError } = await supabase
+        .from('key_working_sessions')
+        .insert([
+          { 
+            service_user_id: id,
+            file_name: file.name, 
+            file_url: publicUrl 
+          }
+        ]);
+
+      if (dbError) throw dbError;
+
+      toast.success("Document uploaded successfully");
+      setFile(null);
+      // Optional: Trigger a refresh of your KWS list here if you have one
+      
+    } catch (error) {
+      console.error('Upload Error:', error.message);
+      toast.error("Failed to upload document");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   useEffect(() => {
     fetchUserDetails();
@@ -474,6 +541,7 @@ export default function ViewServiceUser() {
               <TabsTrigger value="medical" className="data-[state=active]:bg-[#123d2b] data-[state=active]:text-white">Health & Risk</TabsTrigger>
               <TabsTrigger value="logs" className="data-[state=active]:bg-[#123d2b] data-[state=active]:text-white">Support Logs</TabsTrigger>
               <TabsTrigger value="documents" className="data-[state=active]:bg-[#123d2b] data-[state=active]:text-white">Documents</TabsTrigger>
+              <TabsTrigger value="kws" className="data-[state=active]:bg-[#123d2b] data-[state=active]:text-white">Key Working Session</TabsTrigger>
             </TabsList>
 
             {/* TAB: OVERVIEW */}
@@ -708,6 +776,76 @@ export default function ViewServiceUser() {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            <TabsContent value="kws">
+  <Card className="border-[#e1dbd2]">
+    <CardHeader className="bg-[#f1ede4]/30 border-b border-[#e1dbd2]/50 flex flex-row items-center justify-between py-3">
+      <CardTitle className="text-sm font-black flex items-center gap-2 text-[#123d2b] uppercase tracking-widest">
+        <UserCircle className="w-4 h-4" /> Key Working Sessions
+      </CardTitle>
+
+      <Dialog onOpenChange={(open) => !open && setFile(null)}>
+        <DialogTrigger asChild>
+          <Button size="sm" className="bg-[#123d2b] hover:bg-[#1a533b] text-white gap-2">
+            <Plus className="w-4 h-4" /> Add Session
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Upload Session Document</DialogTitle>
+            <DialogDescription>
+              Upload the briefing or notes for this working session.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="flex flex-col items-center justify-center border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 hover:bg-muted/50 transition-colors relative">
+              <input
+                type="file"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                onChange={handleFileChange}
+                disabled={uploading}
+              />
+              <Upload className="w-8 h-8 text-muted-foreground mb-2" />
+              <p className="text-sm font-medium">
+                {file ? file.name : "Click or drag to upload"}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setFile(null)} disabled={uploading}>
+              Cancel
+            </Button>
+            <Button 
+              className="bg-[#123d2b]" 
+              disabled={!file || uploading} 
+              onClick={handleUpload}
+            >
+              {uploading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                "Submit"
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </CardHeader>
+
+    <CardContent className="pt-6">
+      {/* You can now map through a 'kwsLogs' state here to show uploaded files */}
+      <div className="text-center text-muted-foreground italic">
+        Key working session details will be displayed here.
+      </div>
+    </CardContent>
+  </Card>
+</TabsContent>
+
+
           </Tabs>
         </div>
       </div>

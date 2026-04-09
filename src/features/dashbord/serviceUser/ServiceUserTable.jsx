@@ -435,7 +435,7 @@ export default function ServiceUsersTable() {
               <TableRow>
                 <TableHead className="text-[#123d2b] font-bold py-4">Service User</TableHead>
                 <TableHead className="text-[#123d2b] font-bold">Contact Details</TableHead>
-                <TableHead className="text-[#123d2b] font-bold">Status</TableHead>
+                <TableHead className="text-[#123d2b] font-bold">Status</TableHead>/
                 <TableHead className="text-[#123d2b] font-bold">Assigned To</TableHead>
                 <TableHead className="text-right text-[#123d2b] font-bold pr-6">Actions</TableHead>
               </TableRow>
@@ -488,9 +488,6 @@ export default function ServiceUsersTable() {
                         <Badge className={`text-[9px] font-bold uppercase ${user.is_employed ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-600'}`}>
                           {user.is_employed ? "Employed" : "Unemployed"}
                         </Badge>
-                        {user.is_smoker === "yes" && (
-                          <Badge className="text-[9px] font-bold uppercase bg-orange-100 text-orange-700">Smoker</Badge>
-                        )}
                       </div>
                     </TableCell>
                     
