@@ -296,6 +296,10 @@ import { createClient } from "@/lib/superbase/clientUtils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { 
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger 
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
@@ -324,9 +328,13 @@ export default function ViewServiceUser() {
   const [logs, setLogs] = useState([]);
   const [loadingLogs, setLoadingLogs] = useState(false);
 
+  const [kwsDocs, setKwsDocs] = useState([]);
+  const [uploading, setUploading] = useState(false);
+
   useEffect(() => {
     fetchUserDetails();
     fetchSupportLogs();
+    fetchKWSDocuments();
   }, [id]);
 
   const fetchUserDetails = async () => {
@@ -367,6 +375,55 @@ export default function ViewServiceUser() {
       setLoadingLogs(false);
     }
   };
+
+  const fetchKWSDocuments = async () => {
+  const { data, error } = await supabase
+    .from("kws_documents") // Assuming this table exists
+    .select("*")
+    .eq("service_user_id", id)
+    .order("created_at", { ascending: false });
+  if (!error) setKwsDocs(data);
+};
+
+const handleFileUpload = async (e) => {
+  const files = Array.from(e.target.files);
+  if (files.length === 0) return;
+
+  setUploading(true);
+  try {
+    for (const file of files) {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${id}/${fileName}`;
+
+      // 1. Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from("kws_documents")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // 2. Get Public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from("kws_documents")
+        .getPublicUrl(filePath);
+
+      // 3. Save reference to Database
+      await supabase.from("kws_documents").insert({
+        service_user_id: id,
+        file_url: publicUrl,
+        file_name: file.name
+      });
+    }
+    toast.success("Documents uploaded successfully");
+    fetchKWSDocuments();
+  } catch (error) {
+    toast.error("Error uploading files");
+    console.error(error);
+  } finally {
+    setUploading(false);
+  }
+};
 
   const formatTitle = (title) => {
     if (!title) return "";
@@ -733,6 +790,86 @@ export default function ViewServiceUser() {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            <TabsContent value="kws" className="space-y-6">
+  <Card className="border-[#e1dbd2]">
+    <CardHeader className="flex flex-row items-center justify-between bg-[#f1ede4]/30 border-b border-[#e1dbd2]/50">
+      <CardTitle className="text-sm font-black flex items-center gap-2 text-[#123d2b] uppercase tracking-widest">
+        <Edit3 className="w-4 h-4" /> Key Working Session Documents
+      </CardTitle>
+      
+      {/* UPLOAD MODAL */}
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button className="bg-[#1f6b4a] hover:bg-[#123d2b]">
+            <Plus className="mr-2 h-4 w-4" /> Upload Documents
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="bg-[#fbf8f2] border-[#e1dbd2]">
+          <DialogHeader>
+            <DialogTitle className="text-[#123d2b]">Upload KWS Files</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="border-2 border-dashed border-[#e1dbd2] rounded-lg p-8 text-center hover:border-[#1f6b4a] transition-colors">
+              <Input 
+                type="file" 
+                multiple 
+                className="hidden" 
+                id="kws-upload" 
+                onChange={handleFileUpload}
+                disabled={uploading}
+              />
+              <label htmlFor="kws-upload" className="cursor-pointer flex flex-col items-center gap-2">
+                <FileText className="w-8 h-8 text-[#1f6b4a]" />
+                <span className="text-sm font-medium text-[#123d2b]">
+                  {uploading ? "Uploading..." : "Click to select multiple files"}
+                </span>
+                <span className="text-xs text-muted-foreground">PDF, Images, or Word Docs</span>
+              </label>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </CardHeader>
+
+    <CardContent className="pt-6">
+      {kwsDocs.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {kwsDocs.map((doc) => (
+            <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg bg-white hover:shadow-sm transition-shadow">
+              <div className="flex items-center gap-3 overflow-hidden">
+                <div className="bg-[#f1ede4] p-2 rounded">
+                  <FileText className="w-4 h-4 text-[#1f6b4a]" />
+                </div>
+                <div className="flex flex-col overflow-hidden">
+                  <span className="text-xs font-bold text-[#123d2b] truncate" title={doc.file_name}>
+                    {doc.file_name}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">
+                    {new Date(doc.created_at).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+              <a 
+                href={doc.file_url} 
+                target="_blank" 
+                rel="noreferrer" 
+                className="p-2 hover:bg-[#f1ede4] rounded-full text-[#1f6b4a]"
+              >
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12 text-muted-foreground italic text-sm">
+          No KWS documents uploaded yet.
+        </div>
+      )}
+    </CardContent>
+  </Card>
+</TabsContent>
+            
           </Tabs>
         </div>
       </div>
