@@ -1138,61 +1138,6 @@ const AllEmployees = () => {
     setLoading(false);
   };
 
-//   const handleDeleteEmployee = async () => {
-//     if (deleteConfirmation !== "DELETE" || !employeeToDelete) return;
-
-//     setIsDeleting(true);
-//     try {
-//       // 1. Define all columns that hold document URLs
-//       const storageFields = [
-//         "evidence_address_url", "photo_id_url", "signed_app_url", 
-//         "rtw_check_url", "insurance_url", "dbs_doc_url", 
-//         "ref1_doc_url", "ref2_doc_url", "induction_checklist_url", 
-//         "training_record_url", "appraisal_doc_url"
-//       ];
-
-//       // 2. Extract relative paths from URLs
-//       // Logic: Splits by bucket name and takes everything after it.
-//       const filesToDelete = storageFields
-//         .map(field => employeeToDelete[field])
-//         .filter(url => url && typeof url === 'string' && url.includes("employee-docs/"))
-//         .map(url => {
-//           const pathParts = url.split("employee-docs/");
-//           return pathParts[1]; // Returns "folder/filename.ext"
-//         });
-
-//       // 3. Delete files from the bucket 'employee-docs'
-//       if (filesToDelete.length > 0) {
-//         const { error: storageError } = await supabase.storage
-//           .from("employee-docs")
-//           .remove(filesToDelete);
-        
-//         if (storageError) {
-//           console.warn("Could not delete some files from storage:", storageError.message);
-//         }
-//       }
-
-//       // 4. Delete the database record
-//       const { error: dbError } = await supabase
-//         .from("employees")
-//         .delete()
-//         .eq("id", employeeToDelete.id);
-
-//       if (dbError) throw dbError;
-
-//       toast.success("Employee and all files deleted successfully");
-//       setIsDeleteDialogOpen(false);
-//       setDeleteConfirmation("");
-//       setEmployeeToDelete(null);
-//       fetchEmployees();
-//     } catch (error) {
-//       console.error("Delete error:", error);
-//       toast.error("Failed to delete record from database");
-//     } finally {
-//       setIsDeleting(false);
-//     }
-//   };
-
 const handleDeleteEmployee = async () => {
   if (deleteConfirmation !== "DELETE" || !employeeToDelete) return;
 
@@ -1334,7 +1279,7 @@ const handleDeleteEmployee = async () => {
   if (loading) return <div className="p-10 text-center">Loading Workforce...</div>;
 
   return (
-    <motion.div variants={container} initial="hidden" animate="show" className="p-6 min-h-screen space-y-6 bg-[#f5f0e6]">
+    <motion.div variants={container} initial="hidden" animate="show" className="p-6 min-h-screen space-y-6 ">
       <div className="flex justify-between items-center">
         <div>
           <h2 className="font-black text-3xl text-[#123d2b]">Workforce Directory</h2>
@@ -1343,24 +1288,24 @@ const handleDeleteEmployee = async () => {
         <div className="flex gap-2">
           <Button variant="outline" onClick={fetchEmployees}><RefreshCw className="mr-2 h-4 w-4" /> Refresh</Button>
           <Button variant="outline" onClick={exportAllEmployees}><FileSpreadsheet className="mr-2 h-4 w-4" /> Export</Button>
-          <Button className="bg-[#1f6b4a]" onClick={() => router.push("/hrList/addEmployee")}><Plus className="mr-2 h-4 w-4" /> Add</Button>
+          <Button className="bg-[#1f6b4a]" onClick={() => router.push("/hrList/addEmployee")}><Plus className="mr-2 h-4 w-4" /> Add New Employee</Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <StatCard icon={<ShieldCheck />} value={`${dbsPercent}%`} label="DBS Compliant" />
         <StatCard icon={<AlertCircle />} value={complianceIssuesList.length} label="Compliance Issues" isWarning />
         <StatCard icon={<CalendarClock />} value={expiringContractsList.length} label="Expiring Docs" />
         <StatCard icon={<Users />} value={totalEmployees} label="Total Staff" isPrimary />
-      </div>
+      </div> */}
 
       <Tabs defaultValue="all">
         <TabsList className="bg-[#ece7df]">
           <TabsTrigger value="all">All Staff</TabsTrigger>
-          <TabsTrigger value="compliance">Compliance</TabsTrigger>
+          {/* <TabsTrigger value="compliance">Compliance</TabsTrigger> */}
         </TabsList>
         <TabsContent value="all"><EmployeeTable data={employeeList} /></TabsContent>
-        <TabsContent value="compliance"><EmployeeTable data={complianceIssuesList} /></TabsContent>
+        {/* <TabsContent value="compliance"><EmployeeTable data={complianceIssuesList} /></TabsContent> */}
       </Tabs>
 
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
