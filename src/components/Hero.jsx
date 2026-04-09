@@ -130,7 +130,8 @@ export default function Hero() {
 
       <div
 
-        className="group relative p-8 card border-[16px] border-[#123d2b] rounded-[3rem] shadow-[20px_20px_60px_rgba(18,61,43,0.3),-10px_-10px_30px_rgba(255,255,255,0.5),inset_5px_5px_10px_rgba(0,0,0,0.2)] max-w-4xl w-full transition-all duration-500 ease-out hover:[transform:rotateX(2deg)_rotateY(-2deg)] hover:shadow-[30px_30px_70px_rgba(18,61,43,0.4)]"
+        className="group relative p-8 card border-16 border-[#123d2b] rounded-[3rem] shadow-[20px_20px_60px_rgba(18,61,43,0.3),-10px_-10px_30px_rgba(255,255,255,0.5),inset_5px_5px_10px_rgba(0,0,0,0.2)] max-w-4xl w-full transition-all duration-500 ease-out 
+        hover:transform-[rotateX(2deg)_rotateY(-2deg)] hover:shadow-[30px_30px_70px_rgba(18,61,43,0.4)]"
 
       >
 
@@ -139,63 +140,41 @@ export default function Hero() {
         <div className="absolute inset-0 rounded-[2.2rem] border-2 border-[#1f6b4a]/40 m-1 pointer-events-none" />
 
 
-
         {/* Elegant 'Mat' / Inner Border */}
 
-        <div className="relative aspect-16/10 overflow-hidden rounded-2xl border border-border/50 shadow-[inset_0_10px_20px_rgba(0,0,0,0.3)] bg-white">
-
+        <div className="relative aspect-16/10 overflow-hidden rounded-2xl border border-border/50 
+        shadow-[inset_0_10px_20px_rgba(0,0,0,0.3)] bg-white">
           <video
-
             src="https://res.cloudinary.com/dcfl8iot4/video/upload/v1775683315/WhatsApp_Video_2026-04-08_at_22.18.14_knciym.mp4"
-
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
-
             autoPlay
-
             loop
-
             muted
-
             playsInline
-
           >
-
             Your browser does not support the video tag.
-
           </video>
 
 
 
           {/* 3D Glass Reflection Overlay */}
-
-          <div className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-white/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 -translate-x-10 group-hover:translate-x-10 transition-transform" />
-
+          <div className="absolute inset-0 pointer-events-none bg-linear-to-tr from-white/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 duration-700 
+          -translate-x-10 group-hover:translate-x-10 transition-transform" />
         </div>
-
 
 
         {/* Reactive 3D 'Light' Corner Accents */}
-
-        <div className="absolute top-4 left-4 w-3 h-3 rounded-full bg-gradient-to-br from-[#1f6b4a] to-[#123d2b] shadow-md border border-white/20" />
-
-        <div className="absolute top-4 right-4 w-3 h-3 rounded-full bg-gradient-to-br from-[#1f6b4a] to-[#123d2b] shadow-md border border-white/20" />
-
-        <div className="absolute bottom-4 left-4 w-3 h-3 rounded-full bg-gradient-to-br from-[#1f6b4a] to-[#123d2b] shadow-md border border-white/20" />
-
-        <div className="absolute bottom-4 right-4 w-3 h-3 rounded-full bg-gradient-to-br from-[#1f6b4a] to-[#123d2b] shadow-md border border-white/20" />
-
-
+        <div className="absolute top-4 left-4 w-3 h-3 rounded-full bg-linear-to-br from-[#1f6b4a] to-[#123d2b] shadow-md border border-white/20" />
+        <div className="absolute top-4 right-4 w-3 h-3 rounded-full bg-linear-to-br from-[#1f6b4a] to-[#123d2b] shadow-md border border-white/20" />
+        <div className="absolute bottom-4 left-4 w-3 h-3 rounded-full bg-linear-to-br from-[#1f6b4a] to-[#123d2b] shadow-md border border-white/20" />
+        <div className="absolute bottom-4 right-4 w-3 h-3 rounded-full bg-linear-to-br from-[#1f6b4a] to-[#123d2b] shadow-md border border-white/20" />
 
         {/* Floating Tag */}
-
-        <div className="absolute -bottom-6 right-12 bg-[#123d2b] text-[#f7f2e9] px-4 py-1 rounded-md text-xs font-medium shadow-lg opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all">
-
+        <div className="absolute -bottom-6 right-12 bg-[#123d2b] text-[#f7f2e9] px-4 py-1 rounded-md 
+        text-xs font-medium shadow-lg opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all">
           Welcome to Kenley Poperty Systems
-
         </div>
-
       </div>
-
     </div>
   );
 }
