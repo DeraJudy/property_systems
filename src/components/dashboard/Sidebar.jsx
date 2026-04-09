@@ -64,7 +64,7 @@ const navSections = [
     label: "Core",
     items: [
       { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-      { title: "Organisations", url: "/organisations", icon: Building2 },
+      // { title: "Organisations", url: "/organisations", icon: Building2 },
       { title: "Users", url: "/users", icon: Users },
       { title: "Properties", url: "/properties", icon: Home },
       { title: "Service Users", url: "/service-users", icon: UserCircle },
@@ -74,7 +74,7 @@ const navSections = [
       // { title: "Approvals", url: "/approvals", icon: CheckSquare },
       // { title: "Documents", url: "/documents", icon: FolderOpen },
       // { title: "Reports", url: "/reports", icon: BarChart3 },
-      { title: "HR", url: "/hrList", icon: UserCog },
+      { title: "Safer Recruitment", url: "/hrList", icon: UserCog },
     ],
   },
   // {
@@ -143,6 +143,17 @@ export default function Sidebar() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // If not mounted, return a skeleton or null to keep server/client consistent
+  if (!isMounted) {
+    return <div className="w-64 bg-gray-100 animate-pulse" />; // Or just return null
+  }
+
   return (
     <aside className="hidden lg:flex w-64 flex-col bg-[#1E5A43] border-r border-[#184F38]">
       {/* Logo */}
@@ -153,7 +164,6 @@ export default function Sidebar() {
         <Link href="/" className="text-sm font-bold text-white">
           <span className="text-sm font-bold text-white">Kenley Property</span>
         </Link>
-        
       </div>
 
       {/* Navigation */}

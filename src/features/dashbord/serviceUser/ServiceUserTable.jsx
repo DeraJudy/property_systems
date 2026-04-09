@@ -432,14 +432,14 @@ export default function ServiceUsersTable() {
         <CardContent className="p-0">
           <Table>
             <TableHeader className="bg-[#f1ede4]/80">
-  <TableRow>
-    <TableHead className="text-[#123d2b] font-bold py-4">Service User</TableHead>
-    <TableHead className="text-[#123d2b] font-bold">Contact Details</TableHead>
-    <TableHead className="text-[#123d2b] font-bold">Status</TableHead>
-    <TableHead className="text-[#123d2b] font-bold">Assigned To</TableHead>
-    <TableHead className="text-right text-[#123d2b] font-bold pr-6">Actions</TableHead>
-  </TableRow>
-</TableHeader>
+              <TableRow>
+                <TableHead className="text-[#123d2b] font-bold py-4">Service User</TableHead>
+                <TableHead className="text-[#123d2b] font-bold">Contact Details</TableHead>
+                <TableHead className="text-[#123d2b] font-bold">Status</TableHead>
+                <TableHead className="text-[#123d2b] font-bold">Assigned To</TableHead>
+                <TableHead className="text-right text-[#123d2b] font-bold pr-6">Actions</TableHead>
+              </TableRow>
+          </TableHeader>
             <TableBody>
               {filteredUsers.length === 0 ? (
                 <TableRow>
