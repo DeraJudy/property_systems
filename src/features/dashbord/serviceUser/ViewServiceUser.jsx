@@ -300,20 +300,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { 
   Loader2, ArrowLeft, Edit, Mail, Phone, Calendar, 
   MapPin, HeartPulse, Banknote, ShieldAlert, FileText, 
   UserCircle, Briefcase, ExternalLink, Hash, Fingerprint,
-  ClipboardList, Home, Plus, Clock, Copy, Edit3, Upload, 
-  FileIcon, X
+  ClipboardList, Home, Plus, Clock, Copy, Edit3
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -332,64 +323,6 @@ export default function ViewServiceUser() {
   const [loading, setLoading] = useState(true);
   const [logs, setLogs] = useState([]);
   const [loadingLogs, setLoadingLogs] = useState(false);
-
-  const [uploading, setUploading] = useState(false);
-  const [file, setFile] = useState(null);
-
-
-  const handleFileChange = (e) => {
-    if (e.target.files[0]) {
-      setFile(e.target.files[0]);
-    }
-  };
-
-  const handleUpload = async () => {
-    if (!file) return;
-
-    try {
-      setUploading(true);
-
-      // Create a unique file path: service_user_id/timestamp_filename
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${id}/${Date.now()}_${fileName}`;
-
-      // A. Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from('working-sessions')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      // B. Get the Public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('working-sessions')
-        .getPublicUrl(filePath);
-
-      // C. Insert into Database
-      const { error: dbError } = await supabase
-        .from('key_working_sessions')
-        .insert([
-          { 
-            service_user_id: id,
-            file_name: file.name, 
-            file_url: publicUrl 
-          }
-        ]);
-
-      if (dbError) throw dbError;
-
-      toast.success("Document uploaded successfully");
-      setFile(null);
-      // Optional: Trigger a refresh of your KWS list here if you have one
-      
-    } catch (error) {
-      console.error('Upload Error:', error.message);
-      toast.error("Failed to upload document");
-    } finally {
-      setUploading(false);
-    }
-  };
 
   useEffect(() => {
     fetchUserDetails();
@@ -510,9 +443,6 @@ export default function ViewServiceUser() {
                 <Badge className={user.is_employed ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100" : "bg-slate-100 text-slate-600 hover:bg-slate-100"}>
                   {user.is_employed ? "Currently Employed" : "Unemployed"}
                 </Badge>
-                {user.is_smoker === "yes" && (
-                  <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-100 border border-orange-200">Smoker</Badge>
-                )}
               </div>
 
               <div className="w-full mt-8 space-y-4 pt-6 border-t border-[#e1dbd2]/50">
@@ -656,6 +586,15 @@ export default function ViewServiceUser() {
     <CardHeader className="border-b border-[#e1dbd2]/50 flex flex-row items-center justify-between">
       <CardTitle className="text-sm font-black flex items-center gap-2 text-[#123d2b] uppercase tracking-widest">
         <ClipboardList className="w-4 h-4" /> Session History
+
+        <div className="flex gap-3">
+          <Link href={`/service-users/${id}/add`}>
+                <Button variant="outline" className="border-[#1f6b4a] text-[#1f6b4a] hover:bg-[#1f6b4a] hover:text-white">
+                    <Plus className="mr-2 h-4 w-4" /> Add Support Log
+                </Button>
+            </Link>
+        </div>
+
       </CardTitle>
     </CardHeader>
     <CardContent className="pt-6">
@@ -667,63 +606,81 @@ export default function ViewServiceUser() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm border-collapse">
             <thead>
-              <tr className="border-b border-[#e1dbd2] text-[#123d2b]/60 uppercase text-[10px] font-black tracking-widest">
-                <th className="pb-3 px-2">Date & Time</th>
-                <th className="pb-3 px-2">Staff</th>
-                <th className="pb-3 px-2">Type</th>
-                <th className="pb-3 px-2">Duration</th>
-                <th className="pb-3 px-2">Notes</th>
-                <th className="pb-3 px-2 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#e1dbd2]/30">
-              {logs.map((log) => (
-                <tr key={log.id} className="hover:bg-[#f1ede4]/20 transition-colors group">
-                  <td className="py-4 px-2 whitespace-nowrap">
-                    <div className="font-bold text-[#123d2b]">{log.session_date}</div>
-                    <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                      <Clock className="w-3 h-3" /> {log.session_time || "--:--"}
-                    </div>
-                  </td>
-                  <td className="py-4 px-2 text-[#123d2b] font-medium">{log.staff_name}</td>
-                  <td className="py-4 px-2">
-                    <Badge variant="outline" className="text-[10px] uppercase border-[#123d2b]/20 text-[#123d2b]">
-                      {log.session_type}
-                    </Badge>
-                  </td>
-                  <td className="py-4 px-2 font-mono text-xs text-[#123d2b]">{log.duration}</td>
-                  <td className="py-4 px-2 text-xs text-muted-foreground max-w-50 truncate" title={log.notes}>
-                    {log.notes}
-                  </td>
-                  <td className="py-4 px-2 text-right">
-                    {/* Removed opacity-0 to ensure they show up; add 'md:opacity-0 group-hover:opacity-100' back later if desired */}
-                    <div className="flex justify-end gap-2 transition-opacity">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-muted-foreground hover:text-[#123d2b] hover:bg-[#123d2b]/10"
-                        onClick={() => {
-                          navigator.clipboard.writeText(log.notes);
-                          toast.success("Notes copied");
-                        }}
-                      >
-                        <Copy className="h-4 w-4" />
-                        <span className="sr-only">Copy</span>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-muted-foreground hover:text-[#1f6b4a] hover:bg-[#1f6b4a]/10"
-                        onClick={() => router.push(`/support-logs/edit/${log.id}`)}
-                      >
-                        <Edit3 className="h-4 w-4" />
-                        <span className="sr-only">Edit</span>
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+  <tr className="border-b border-[#e1dbd2] text-[#123d2b]/60 uppercase text-[10px] font-black tracking-widest">
+    <th className="pb-3 px-2">Date & Time</th>
+    <th className="pb-3 px-2">Staff</th>
+    <th className="pb-3 px-2">Type</th>
+    <th className="pb-3 px-2">Duration</th>
+    <th className="pb-3 px-2">Notes</th>
+    <th className="pb-3 px-2">Attachment</th>
+    <th className="pb-3 px-2 text-right">Actions</th>
+  </tr>
+</thead>
+<tbody className="divide-y divide-[#e1dbd2]/30">
+  {logs.map((log) => (
+    <tr key={log.id} className="hover:bg-[#f1ede4]/20 transition-colors group">
+      {/* ... previous tds (Date, Staff, Type, Duration, Notes) ... */}
+      <td className="py-4 px-2 whitespace-nowrap">
+        <div className="font-bold text-[#123d2b]">{log.session_date}</div>
+        <div className="text-[10px] text-muted-foreground flex items-center gap-1">
+          <Clock className="w-3 h-3" /> {log.session_time || "--:--"}
+        </div>
+      </td>
+      <td className="py-4 px-2 text-[#123d2b] font-medium">{log.staff_name}</td>
+      <td className="py-4 px-2">
+        <Badge variant="outline" className="text-[10px] uppercase border-[#123d2b]/20 text-[#123d2b]">
+          {log.session_type}
+        </Badge>
+      </td>
+      <td className="py-4 px-2 font-mono text-xs text-[#123d2b]">{log.duration}</td>
+      <td className="py-4 px-2 text-xs text-muted-foreground max-w-40 truncate" title={log.notes}>
+        {log.notes}
+      </td>
+
+      {/* NEW ATTACHMENT COLUMN */}
+      <td className="py-4 px-2">
+        {log.attachment_url ? (
+          <a 
+            href={log.attachment_url} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            download
+            className="flex items-center gap-1 text-[10px] font-bold text-[#1f6b4a] hover:underline"
+          >
+            <FileText className="w-3 h-3" />
+            VIEW
+          </a>
+        ) : (
+          <span className="text-[10px] text-muted-foreground italic">None</span>
+        )}
+      </td>
+
+      <td className="py-4 px-2 text-right">
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0 text-muted-foreground hover:text-[#123d2b] hover:bg-[#123d2b]/10"
+            onClick={() => {
+              navigator.clipboard.writeText(log.notes);
+              toast.success("Notes copied");
+            }}
+          >
+            <Copy className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0 text-muted-foreground hover:text-[#1f6b4a] hover:bg-[#1f6b4a]/10"
+            onClick={() => router.push(`/support-logs/edit/${log.id}`)}
+          >
+            <Edit3 className="h-4 w-4" />
+          </Button>
+        </div>
+      </td>
+    </tr>
+  ))}
+</tbody>
           </table>
         </div>
       ) : (
@@ -776,76 +733,6 @@ export default function ViewServiceUser() {
                 </CardContent>
               </Card>
             </TabsContent>
-
-            <TabsContent value="kws">
-  <Card className="border-[#e1dbd2]">
-    <CardHeader className="bg-[#f1ede4]/30 border-b border-[#e1dbd2]/50 flex flex-row items-center justify-between py-3">
-      <CardTitle className="text-sm font-black flex items-center gap-2 text-[#123d2b] uppercase tracking-widest">
-        <UserCircle className="w-4 h-4" /> Key Working Sessions
-      </CardTitle>
-
-      <Dialog onOpenChange={(open) => !open && setFile(null)}>
-        <DialogTrigger asChild>
-          <Button size="sm" className="bg-[#123d2b] hover:bg-[#1a533b] text-white gap-2">
-            <Plus className="w-4 h-4" /> Add Session
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Upload Session Document</DialogTitle>
-            <DialogDescription>
-              Upload the briefing or notes for this working session.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="grid gap-4 py-4">
-            <div className="flex flex-col items-center justify-center border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 hover:bg-muted/50 transition-colors relative">
-              <input
-                type="file"
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
-                onChange={handleFileChange}
-                disabled={uploading}
-              />
-              <Upload className="w-8 h-8 text-muted-foreground mb-2" />
-              <p className="text-sm font-medium">
-                {file ? file.name : "Click or drag to upload"}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" onClick={() => setFile(null)} disabled={uploading}>
-              Cancel
-            </Button>
-            <Button 
-              className="bg-[#123d2b]" 
-              disabled={!file || uploading} 
-              onClick={handleUpload}
-            >
-              {uploading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Uploading...
-                </>
-              ) : (
-                "Submit"
-              )}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </CardHeader>
-
-    <CardContent className="pt-6">
-      {/* You can now map through a 'kwsLogs' state here to show uploaded files */}
-      <div className="text-center text-muted-foreground italic">
-        Key working session details will be displayed here.
-      </div>
-    </CardContent>
-  </Card>
-</TabsContent>
-
-
           </Tabs>
         </div>
       </div>
