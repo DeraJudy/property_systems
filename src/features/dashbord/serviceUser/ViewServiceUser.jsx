@@ -503,29 +503,98 @@ const [deleteConfirmText, setDeleteConfirmText] = useState("");
 //   return <FileText className="w-4 h-4" />;
 // };
 
-  const renderThumbnail = (doc) => {
-    const ext = doc.original_name?.toLowerCase().split('.').pop() || doc.file_url.split('.').pop();
-    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
-    const isVideo = ['mp4', 'webm', 'mov'].includes(ext);
+  const LiveThumbnail = ({ doc }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-    if (isImage) {
-      return (
-        <div className="relative h-24 w-full bg-slate-100 rounded-t-lg overflow-hidden border-b">
-          <img src={doc.file_url} alt={doc.file_name} className="object-cover w-full h-full" />
+  // Fix for hydration: only start "live" features once mounted
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const ext = doc.original_name?.toLowerCase().split('.').pop() || doc.file_url.split('.').pop();
+  const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext);
+  const isVideo = ['mp4', 'webm', 'mov', 'ogg'].includes(ext);
+  const isDoc = ['pdf', 'doc', 'docx'].includes(ext);
+
+  return (
+    <div 
+      className="relative aspect-video w-full bg-slate-900 overflow-hidden rounded-xl shadow-sm transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 group/thumb"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* VIDEO PREVIEW */}
+      {isVideo && mounted && (
+        <div className="w-full h-full">
+          <video
+            src={doc.file_url}
+            muted
+            playsInline
+            loop
+            autoPlay={isHovered}
+            className={`object-cover w-full h-full transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-60'}`}
+          />
+          {!isHovered && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="bg-white/10 backdrop-blur-md p-3 rounded-full border border-white/20">
+                <Video className="w-6 h-6 text-white" />
+              </div>
+            </div>
+          )}
         </div>
-      );
-    }
+      )}
 
-    return (
-      <div className="h-24 w-full bg-[#f1ede4] flex items-center justify-center rounded-t-lg border-b">
-        {isVideo ? (
-          <Video className="w-8 h-8 text-[#1f6b4a]" />
-        ) : (
-          <FileText className="w-8 h-8 text-[#1f6b4a]" />
-        )}
+      {/* IMAGE PREVIEW - Focused/Shorter View */}
+      {isImage && (
+        <div className="w-full h-full overflow-hidden">
+           <img 
+            src={doc.file_url} 
+            alt={doc.file_name} 
+            // object-cover handles the "shorter" view by cropping to the aspect-video container
+            className={`object-cover w-full h-full transition-transform duration-[3000ms] ease-out ${isHovered ? 'scale-110' : 'scale-100'}`} 
+          />
+        </div>
+      )}
+
+      {/* DOCUMENT PREVIEW - Auto Scroll */}
+      {isDoc && (
+        <div className="w-full h-full bg-[#f8f5f0] relative flex justify-center pt-4 overflow-hidden">
+          <div 
+            className={`w-[75%] h-[200%] bg-white shadow-2xl border border-slate-200 p-4 transition-transform duration-[2500ms] ease-in-out ${isHovered ? '-translate-y-1/2' : 'translate-y-0'}`}
+          >
+            <div className="space-y-3">
+              <div className="h-2 w-full bg-slate-100 rounded" />
+              <div className="h-2 w-[90%] bg-slate-100 rounded" />
+              <div className="h-2 w-[40%] bg-slate-100 rounded" />
+              <div className="h-32 w-full bg-slate-50 rounded-lg flex items-center justify-center border border-dashed border-slate-200">
+                 <FileText className="w-8 h-8 text-[#1f6b4a]/20" />
+              </div>
+              <div className="h-2 w-full bg-slate-100 rounded" />
+              <div className="h-2 w-[70%] bg-slate-100 rounded" />
+            </div>
+          </div>
+          {!isHovered && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/5 backdrop-blur-[1px]">
+              <div className="bg-white p-3 rounded-full shadow-xl">
+                 <FileText className="w-6 h-6 text-[#1f6b4a]" />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* OVERLAY */}
+      <div className={`absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+        <div className="absolute bottom-3 left-3 flex items-center gap-2">
+           <div className="h-5 w-5 rounded-full bg-red-600 flex items-center justify-center animate-pulse">
+              <div className="h-2 w-2 rounded-full bg-white" />
+           </div>
+           <span className="text-[10px] font-bold text-white uppercase tracking-widest">Live Preview</span>
+        </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
   // 3. Update the Delete Logic to be triggered from the modal
 const confirmDelete = async () => {
@@ -1186,39 +1255,50 @@ const confirmDelete = async () => {
 
                 <CardContent className="p-6">
                   {kwsDocs.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                      {kwsDocs.map((doc) => (
-                        <div key={doc.id} className="group border rounded-xl bg-white shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col">
-                          {renderThumbnail(doc)}
-                          
-                          <div className="p-4 flex-1 flex flex-col gap-3">
-                            <div>
-                              <h4 className="text-sm font-bold text-[#123d2b] line-clamp-1" title={doc.file_name}>
-                                {doc.file_name}
-                              </h4>
-                              <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
-                                <Clock className="w-3 h-3" /> {new Date(doc.created_at).toLocaleDateString()}
-                              </p>
-                            </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 pb-10 mt-6">
+  {kwsDocs.map((doc) => (
+    <div key={doc.id} className="group relative flex flex-col gap-4">
+      {/* Spacing is handled by the 'gap-10' in the parent grid */}
+      <div 
+        className="cursor-pointer"
+        onClick={() => window.open(doc.file_url, '_blank')}
+      >
+        <LiveThumbnail doc={doc} />
+      </div>
 
-                            <div className="flex gap-2 mt-auto pt-2 border-t border-slate-50">
-                              <Button 
-                                variant="outline" size="sm" className="flex-1 h-8 text-[10px] font-bold"
-                                onClick={() => window.open(doc.file_url, '_blank')}
-                              >
-                                <Eye className="w-3 h-3 mr-1" /> VIEW
-                              </Button>
-                              <Button 
-                                variant="ghost" size="sm" className="h-8 w-8 text-red-500 hover:bg-red-50"
-                                onClick={() => setDocToDelete(doc)}
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+      <div className="flex gap-3 px-1">
+        <div className="flex-shrink-0">
+          <div className="h-9 w-9 rounded-lg bg-[#123d2b] flex items-center justify-center text-white text-[10px] font-black shadow-inner">
+            {doc.file_name.substring(0, 2).toUpperCase()}
+          </div>
+        </div>
+
+        <div className="flex-1 min-w-0 pr-6">
+          <h4 className="text-sm font-bold text-[#123d2b] line-clamp-2 leading-tight tracking-tight group-hover:text-[#1f6b4a] transition-colors">
+            {doc.file_name}
+          </h4>
+          <p className="text-[10px] font-bold text-[#1f6b4a] mt-1 flex items-center gap-1 uppercase tracking-tighter opacity-70">
+            <ShieldAlert className="w-3 h-3" /> Audit Verified
+          </p>
+        </div>
+
+        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all transform translate-y-1 group-hover:translate-y-0">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-8 w-8 bg-white/90 backdrop-blur hover:bg-red-600 hover:text-white text-red-600 rounded-full shadow-xl border border-red-100 transition-all"
+            onClick={(e) => {
+              e.stopPropagation();
+              setDocToDelete(doc);
+            }}
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
                   ) : (
                     <div className="text-center py-20 flex flex-col items-center opacity-40">
                       <FileText className="w-12 h-12 mb-4" />
