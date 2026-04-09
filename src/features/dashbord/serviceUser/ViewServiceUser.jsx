@@ -332,6 +332,8 @@ import {
   Edit3,
   Trash2,
   Download,
+  Video,
+  Image as ImageIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -353,6 +355,10 @@ export default function ViewServiceUser() {
 
   const [kwsDocs, setKwsDocs] = useState([]);
   const [uploading, setUploading] = useState(false);
+
+  const [docToDelete, setDocToDelete] = useState(null);
+const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  
 
   useEffect(() => {
     fetchUserDetails();
@@ -453,37 +459,68 @@ export default function ViewServiceUser() {
     }
   };
 
-  const handleDeleteDocument = async (doc) => {
-    if (!window.confirm(`Are you sure you want to delete "${doc.file_name}"?`))
-      return;
+  // 2. Add this helper function to handle icons
+const getFileIcon = (fileName) => {
+  const ext = fileName.toLowerCase().split('.').pop();
+  if (['mp4', 'webm', 'ogg', 'mov'].includes(ext)) return <Video className="w-4 h-4" />;
+  if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) return <ImageIcon className="w-4 h-4" />; // Import Image as ImageIcon
+  return <FileText className="w-4 h-4" />;
+};
 
-    try {
-      // 1. Extract the file path from the URL to delete from storage
-      // This assumes the path structure is: bucket/folder/filename
-      const urlParts = doc.file_url.split("/");
-      const filePath = `${id}/${urlParts[urlParts.length - 1]}`;
+  // 3. Update the Delete Logic to be triggered from the modal
+const confirmDelete = async () => {
+  if (deleteConfirmText !== "DELETE") {
+    toast.error("Please type DELETE to confirm");
+    return;
+  }
 
-      const { error: storageError } = await supabase.storage
-        .from("kws_documents")
-        .remove([filePath]);
+  try {
+    const urlParts = docToDelete.file_url.split("/");
+    const filePath = `${id}/${urlParts[urlParts.length - 1]}`;
 
-      if (storageError) throw storageError;
+    await supabase.storage.from("kws_documents").remove([filePath]);
+    await supabase.from("kws_documents").delete().eq("id", docToDelete.id);
 
-      // 2. Delete the record from the database
-      const { error: dbError } = await supabase
-        .from("kws_documents")
-        .delete()
-        .eq("id", doc.id);
+    toast.success("Document permanently deleted");
+    setDocToDelete(null);
+    setDeleteConfirmText("");
+    fetchKWSDocuments();
+  } catch (error) {
+    toast.error("Deletion failed");
+  }
+};
 
-      if (dbError) throw dbError;
+  // const handleDeleteDocument = async (doc) => {
+  //   if (!window.confirm(`Are you sure you want to delete "${doc.file_name}"?`))
+  //     return;
 
-      toast.success("Document deleted successfully");
-      fetchKWSDocuments(); // Refresh the list
-    } catch (error) {
-      toast.error("Error deleting document");
-      console.error(error);
-    }
-  };
+  //   try {
+  //     // 1. Extract the file path from the URL to delete from storage
+  //     // This assumes the path structure is: bucket/folder/filename
+  //     const urlParts = doc.file_url.split("/");
+  //     const filePath = `${id}/${urlParts[urlParts.length - 1]}`;
+
+  //     const { error: storageError } = await supabase.storage
+  //       .from("kws_documents")
+  //       .remove([filePath]);
+
+  //     if (storageError) throw storageError;
+
+  //     // 2. Delete the record from the database
+  //     const { error: dbError } = await supabase
+  //       .from("kws_documents")
+  //       .delete()
+  //       .eq("id", doc.id);
+
+  //     if (dbError) throw dbError;
+
+  //     toast.success("Document deleted successfully");
+  //     fetchKWSDocuments(); // Refresh the list
+  //   } catch (error) {
+  //     toast.error("Error deleting document");
+  //     console.error(error);
+  //   }
+  // };
 
   const handleDownload = async (url, fileName) => {
     try {
@@ -1057,6 +1094,8 @@ export default function ViewServiceUser() {
                             multiple
                             className="hidden"
                             id="kws-upload"
+                            // This allows all images, videos, and standard document types
+                            accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
                             onChange={handleFileUpload}
                             disabled={uploading}
                           />
@@ -1071,7 +1110,7 @@ export default function ViewServiceUser() {
                                 : "Click to select multiple files"}
                             </span>
                             <span className="text-xs text-muted-foreground">
-                              PDF, Images, or Word Docs
+                              PDF, Videos, Images, or Word Docs
                             </span>
                           </label>
                         </div>
@@ -1084,73 +1123,44 @@ export default function ViewServiceUser() {
                   {kwsDocs.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                       {kwsDocs.map((doc) => (
-                        <div
-                          key={doc.id}
-                          className="flex items-center justify-between p-3 border border-[#e1dbd2] rounded-lg bg-white hover:shadow-md transition-all group"
-                        >
+                        <div key={doc.id} className="flex items-center justify-between p-3 border border-[#e1dbd2] rounded-lg bg-white hover:shadow-md transition-all group">
                           <div className="flex items-center gap-3 overflow-hidden">
                             <div className="bg-[#f1ede4] p-2 rounded text-[#1f6b4a]">
-                              <FileText className="w-4 h-4" />
+                              {getFileIcon(doc.file_name)}
                             </div>
-                            <div className="flex flex-col overflow-hidden">
-                              <span
-                                className="text-xs font-bold text-[#123d2b] truncate pr-2"
-                                title={doc.file_name}
-                              >
-                                {doc.file_name}
-                              </span>
-                              {/* Date removed as requested */}
-                            </div>
+                            <span className="text-xs font-bold text-[#123d2b] truncate pr-2" title={doc.file_name}>
+                              {doc.file_name}
+                            </span>
                           </div>
 
                           <div className="flex items-center gap-2">
-                            {/* VIEW BUTTON - Always opens the unique file_url for this specific document */}
                             <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-100"
+                              variant="ghost" size="sm"
+                              className="h-8 w-8 p-0 text-blue-600 bg-blue-50 border border-blue-100 hover:bg-blue-100"
                               onClick={() => {
-                                // Check if the file is a Word document
-                                const isDoc =
-                                  doc.file_name
-                                    .toLowerCase()
-                                    .endsWith(".doc") ||
-                                  doc.file_name.toLowerCase().endsWith(".docx");
-
+                                const isDoc = doc.file_name.toLowerCase().match(/\.(doc|docx)$/);
                                 if (isDoc) {
-                                  // Use Google Docs Viewer for Office files
-                                  const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(doc.file_url)}&embedded=true`;
-                                  window.open(googleViewerUrl, "_blank");
+                                  window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(doc.file_url)}&embedded=true`, '_blank');
                                 } else {
-                                  // Open PDFs and Images normally
-                                  window.open(doc.file_url, "_blank");
+                                  window.open(doc.file_url, '_blank');
                                 }
                               }}
-                              title="View Document"
                             >
                               <ExternalLink className="w-3.5 h-3.5" />
                             </Button>
-
-                            {/* DOWNLOAD BUTTON - GREEN SHADE */}
+                            
                             <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-[#1f6b4a] bg-[#f1ede4] hover:bg-[#e1dbd2] border border-[#e1dbd2]"
-                              onClick={() =>
-                                handleDownload(doc.file_url, doc.file_name)
-                              }
-                              title="Download"
+                              variant="ghost" size="sm"
+                              className="h-8 w-8 p-0 text-[#1f6b4a] bg-[#f1ede4] border border-[#e1dbd2] hover:bg-[#e1dbd2]"
+                              onClick={() => handleDownload(doc.file_url, doc.file_name)}
                             >
-                              <Download className="w-3.5 h-3.5 rotate-45" />
+                              <Download className="w-3.5 h-3.5" />
                             </Button>
 
-                            {/* DELETE BUTTON - RED SHADE */}
                             <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-red-600 bg-red-50 hover:bg-red-100 border border-red-100"
-                              onClick={() => handleDeleteDocument(doc)}
-                              title="Delete"
+                              variant="ghost" size="sm"
+                              className="h-8 w-8 p-0 text-red-600 bg-red-50 border border-red-100 hover:bg-red-100"
+                              onClick={() => setDocToDelete(doc)}
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </Button>
@@ -1159,9 +1169,7 @@ export default function ViewServiceUser() {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-12 text-muted-foreground italic text-sm">
-                      No KWS documents uploaded yet.
-                    </div>
+                    <div className="text-center py-12 text-muted-foreground italic text-sm">No KWS documents uploaded yet.</div>
                   )}
                 </CardContent>
               </Card>
@@ -1169,6 +1177,43 @@ export default function ViewServiceUser() {
           </Tabs>
         </div>
       </div>
+
+      {/* SECURE DELETE CONFIRMATION DIALOG */}
+      <Dialog open={!!docToDelete} onOpenChange={(open) => !open && setDocToDelete(null)}>
+        <DialogContent className="bg-white border-[#e1dbd2]">
+          <DialogHeader>
+            <DialogTitle className="text-red-600 flex items-center gap-2">
+              <ShieldAlert className="w-5 h-5" /> Confirm Deletion
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <p className="text-sm text-[#123d2b]">
+              You are about to delete <span className="font-bold">"{docToDelete?.file_name}"</span>. This cannot be undone.
+            </p>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase text-muted-foreground">
+                Type <span className="text-red-600">DELETE</span> to confirm
+              </label>
+              <Input 
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder="DELETE"
+                className="border-red-200 focus:ring-red-500"
+              />
+            </div>
+            <div className="flex gap-3 mt-4">
+              <Button variant="outline" className="flex-1" onClick={() => setDocToDelete(null)}>Cancel</Button>
+              <Button 
+                variant="destructive" className="flex-1 bg-red-600"
+                onClick={confirmDelete}
+                disabled={deleteConfirmText !== "DELETE"}
+              >
+                Delete Permanently
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
