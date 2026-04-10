@@ -1138,54 +1138,125 @@ const AllEmployees = () => {
     setLoading(false);
   };
 
-const handleDeleteEmployee = async () => {
+// const handleDeleteEmployee = async () => {
+//   if (deleteConfirmation !== "DELETE" || !employeeToDelete) return;
+
+//   setIsDeleting(true);
+//   try {
+//     // 1. Define all columns that hold document URLs
+//     const storageFields = [
+//       "evidence_address_url", "photo_id_url", "signed_app_url", 
+//       "rtw_check_url", "insurance_url", "dbs_doc_url", 
+//       "ref1_doc_url", "ref2_doc_url", "induction_checklist_url", 
+//       "training_record_url", "appraisal_doc_url"
+//     ];
+
+//     // 2. Extract relative paths from URLs (FIXED VERSION)
+//     const filesToDelete = storageFields
+//       .map(field => employeeToDelete[field])
+//       .filter(url => url && typeof url === "string")
+//       .map(url => {
+//         try {
+//           const urlObj = new URL(url);
+//           const path = urlObj.pathname;
+
+//           // extract everything after /employee-docs/
+//           const index = path.indexOf("/employee-docs/");
+//           return index !== -1
+//             ? path.substring(index + "/employee-docs/".length)
+//             : null;
+//         } catch (err) {
+//           console.warn("Invalid URL:", url);
+//           return null;
+//         }
+//       })
+//       .filter(Boolean);
+
+//     console.log("FILES TO DELETE:", filesToDelete);
+
+//     // 3. Delete files from the bucket 'employee-docs'
+//     if (filesToDelete.length > 0) {
+//       const { error: storageError } = await supabase.storage
+//         .from("employee-docs")
+//         .remove(filesToDelete);
+      
+//       if (storageError) {
+//         console.warn("Could not delete some files from storage:", storageError.message);
+//       }
+//     }
+
+//     // 4. Delete the database record
+//     const { error: dbError } = await supabase
+//       .from("employees")
+//       .delete()
+//       .eq("id", employeeToDelete.id);
+
+//     if (dbError) throw dbError;
+
+//     toast.success("Employee and all files deleted successfully");
+//     setIsDeleteDialogOpen(false);
+//     setDeleteConfirmation("");
+//     setEmployeeToDelete(null);
+//     fetchEmployees();
+//   } catch (error) {
+//     console.error("Delete error:", error);
+//     toast.error("Failed to delete record from database");
+//   } finally {
+//     setIsDeleting(false);
+//   }
+// };
+
+  
+  const getAllFiles = async (path) => {
+  const { data, error } = await supabase.storage
+    .from("employee-docs")
+    .list(path);
+
+  if (error) throw error;
+
+  let files = [];
+
+  for (const item of data) {
+    const fullPath = `${path}/${item.name}`;
+
+    if (item.metadata) {
+      // ✅ This is a FILE
+      files.push(fullPath);
+    } else {
+      // ✅ This is a FOLDER → go deeper
+      const nestedFiles = await getAllFiles(fullPath);
+      files = files.concat(nestedFiles);
+    }
+  }
+
+  return files;
+};
+
+  const handleDeleteEmployee = async () => {
   if (deleteConfirmation !== "DELETE" || !employeeToDelete) return;
 
   setIsDeleting(true);
+
   try {
-    // 1. Define all columns that hold document URLs
-    const storageFields = [
-      "evidence_address_url", "photo_id_url", "signed_app_url", 
-      "rtw_check_url", "insurance_url", "dbs_doc_url", 
-      "ref1_doc_url", "ref2_doc_url", "induction_checklist_url", 
-      "training_record_url", "appraisal_doc_url"
-    ];
+    const folderPath = employeeToDelete.full_name;
 
-    // 2. Extract relative paths from URLs (FIXED VERSION)
-    const filesToDelete = storageFields
-      .map(field => employeeToDelete[field])
-      .filter(url => url && typeof url === "string")
-      .map(url => {
-        try {
-          const urlObj = new URL(url);
-          const path = urlObj.pathname;
+    // ✅ Get ALL files inside ALL subfolders
+    const filesToDelete = await getAllFiles(folderPath);
 
-          // extract everything after /employee-docs/
-          const index = path.indexOf("/employee-docs/");
-          return index !== -1
-            ? path.substring(index + "/employee-docs/".length)
-            : null;
-        } catch (err) {
-          console.warn("Invalid URL:", url);
-          return null;
-        }
-      })
-      .filter(Boolean);
+    console.log("Files to delete:", filesToDelete);
 
-    console.log("FILES TO DELETE:", filesToDelete);
-
-    // 3. Delete files from the bucket 'employee-docs'
+    // ✅ Delete all files
     if (filesToDelete.length > 0) {
       const { error: storageError } = await supabase.storage
         .from("employee-docs")
         .remove(filesToDelete);
-      
+
       if (storageError) {
-        console.warn("Could not delete some files from storage:", storageError.message);
+        console.warn("Storage deletion issue:", storageError.message);
       }
     }
 
-    // 4. Delete the database record
+    // ✅ Delete DB record
     const { error: dbError } = await supabase
       .from("employees")
       .delete()
@@ -1193,14 +1264,16 @@ const handleDeleteEmployee = async () => {
 
     if (dbError) throw dbError;
 
+    // ✅ UI reset
     toast.success("Employee and all files deleted successfully");
     setIsDeleteDialogOpen(false);
     setDeleteConfirmation("");
     setEmployeeToDelete(null);
     fetchEmployees();
+
   } catch (error) {
     console.error("Delete error:", error);
-    toast.error("Failed to delete record from database");
+    toast.error("Failed to delete employee");
   } finally {
     setIsDeleting(false);
   }
