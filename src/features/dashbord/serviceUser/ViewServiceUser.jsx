@@ -803,12 +803,12 @@ const handleEditClick = (doc) => {
               >
                 Overview
               </TabsTrigger>
-              <TabsTrigger
+              {/* <TabsTrigger
                 value="medical"
                 className="data-[state=active]:bg-[#123d2b] data-[state=active]:text-white"
               >
                 Health & Risk
-              </TabsTrigger>
+              </TabsTrigger> */}
               <TabsTrigger
                 value="logs"
                 className="data-[state=active]:bg-[#123d2b] data-[state=active]:text-white"
@@ -918,7 +918,7 @@ const handleEditClick = (doc) => {
             </TabsContent>
 
             {/* TAB: MEDICAL & RISK */}
-            <TabsContent value="medical" className="space-y-6">
+            {/* <TabsContent value="medical" className="space-y-6">
               <motion.div {...fadeInUp}>
                 <Card className="border-[#e1dbd2]">
                   <CardHeader className="bg-[#f1ede4]/30 border-b border-[#e1dbd2]/50">
@@ -994,7 +994,7 @@ const handleEditClick = (doc) => {
                   </CardContent>
                 </Card>
               </motion.div>
-            </TabsContent>
+            </TabsContent> */}
 
             {/* TAB: SUPPORT LOGS (The table from the second code context) */}
             <TabsContent value="logs">
@@ -1197,10 +1197,6 @@ const handleEditClick = (doc) => {
                     <CardTitle className="text-lg font-bold text-[#123d2b]">
                       Key Working Sessions
                     </CardTitle>
-                    <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3 text-emerald-500" />{" "}
-                      Evidence-based audit log
-                    </p>
                   </div>
 
                   {/* TRIGGER BUTTON */}
@@ -1307,9 +1303,9 @@ const handleEditClick = (doc) => {
                     </DialogContent>
                   </Dialog>
                 </CardHeader>
-              </Card>
 
-              <div className="border rounded-xl bg-white overflow-hidden shadow-sm mt-6">
+                <section>
+                  <div className="border rounded-xl bg-white overflow-hidden shadow-sm mt-6">
                 <table className="w-full text-left">
                   <thead className="bg-slate-50 border-b">
                     <tr>
@@ -1405,6 +1401,10 @@ const handleEditClick = (doc) => {
                   </tbody>
                 </table>
               </div>
+                </section>
+              </Card>
+
+              
             </TabsContent>
           </Tabs>
         </div>

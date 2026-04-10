@@ -6,7 +6,7 @@
 // import { toast } from "sonner";
 // import { Loader2 } from "lucide-react";
 // // Import your original form component, but we will pass "initialData" to it.
-// import ServiceUserTabsForm from "@/features/dashbord/serviceUser/ServiceUserForm"; 
+// import ServiceUserTabsForm from "@/features/dashbord/serviceUser/ServiceUserForm";
 
 // export default function EditServiceUserForm() {
 //   const { id } = useParams();
@@ -53,7 +53,7 @@
 // import { toast } from "sonner";
 // import { Loader2, ArrowLeft } from "lucide-react";
 // import { Button } from "@/components/ui/button";
-// import ServiceUserForm from "@/features/dashbord/serviceUser/ServiceUserForm"; 
+// import ServiceUserForm from "@/features/dashbord/serviceUser/ServiceUserForm";
 
 // export default function EditServiceUserPage() {
 //   const { id } = useParams();
@@ -100,13 +100,12 @@
 //           <ArrowLeft className="mr-2 h-4 w-4" /> Cancel Editing
 //         </Button>
 //       </div>
-      
+
 //       {/* We pass the fetched data into your existing form component */}
 //       <ServiceUserForm initialData={userData} isEdit={true} />
 //     </div>
 //   );
 // }
-
 
 "use client";
 
@@ -144,7 +143,7 @@ import {
   ClipboardCheck,
   Briefcase,
   ShieldCheck,
-  ArrowLeft
+  ArrowLeft,
 } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/superbase/clientUtils";
@@ -258,9 +257,9 @@ export default function EditServiceUserForm() {
         fetchOrganisations(),
         fetchProperties(),
         fetchStaff(),
-        getActiveUser()
+        getActiveUser(),
       ]);
-      
+
       // Then fetch the actual User Record
       if (id) {
         await fetchUserRecord();
@@ -284,19 +283,19 @@ export default function EditServiceUserForm() {
       if (data) {
         // Map nulls back to empty strings for controlled inputs
         const sanitizedData = { ...data };
-        Object.keys(sanitizedData).forEach(key => {
+        Object.keys(sanitizedData).forEach((key) => {
           if (sanitizedData[key] === null) sanitizedData[key] = "";
         });
 
         setFormData(sanitizedData);
-        
+
         // Save existing document URLs for reference
         setExistingUrls({
           avatar: data.avatar_url,
           id_verification: data.id_verification_url,
           tenancy: data.tenancy_agreement_url,
           benefit: data.benefit_letter_url,
-          risk: data.risk_assessment_url
+          risk: data.risk_assessment_url,
         });
       }
     } catch (error) {
@@ -369,18 +368,21 @@ export default function EditServiceUserForm() {
     if (formData.dob) {
       const birthDate = new Date(formData.dob);
       const today = new Date();
-      
+
       let calculatedAge = today.getFullYear() - birthDate.getFullYear();
       const monthDiff = today.getMonth() - birthDate.getMonth();
-      
+
       // Adjust if birthday hasn't happened yet this year
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birthDate.getDate())
+      ) {
         calculatedAge--;
       }
 
       // Only update if the age is a valid positive number
       if (calculatedAge >= 0) {
-        setFormData(prev => ({ ...prev, age: calculatedAge.toString() }));
+        setFormData((prev) => ({ ...prev, age: calculatedAge.toString() }));
       }
     }
   }, [formData.dob]);
@@ -486,13 +488,24 @@ export default function EditServiceUserForm() {
 
     try {
       // 1. Only upload NEW files if they were selected
-      const [avatarUrl, idUrl, tenancyUrl, benefitUrl, riskUrl] = await Promise.all([
-        files.avatarImage ? uploadFile(files.avatarImage, "avatars") : Promise.resolve(existingUrls.avatar),
-        files.idVerification ? uploadFile(files.idVerification, "service_user_docs") : Promise.resolve(existingUrls.id_verification),
-        files.tenancyAgreement ? uploadFile(files.tenancyAgreement, "service_user_docs") : Promise.resolve(existingUrls.tenancy),
-        files.benefitLetter ? uploadFile(files.benefitLetter, "service_user_docs") : Promise.resolve(existingUrls.benefit),
-        files.riskAssessment ? uploadFile(files.riskAssessment, "service_user_docs") : Promise.resolve(existingUrls.risk),
-      ]);
+      const [avatarUrl, idUrl, tenancyUrl, benefitUrl, riskUrl] =
+        await Promise.all([
+          files.avatarImage
+            ? uploadFile(files.avatarImage, "avatars")
+            : Promise.resolve(existingUrls.avatar),
+          files.idVerification
+            ? uploadFile(files.idVerification, "service_user_docs")
+            : Promise.resolve(existingUrls.id_verification),
+          files.tenancyAgreement
+            ? uploadFile(files.tenancyAgreement, "service_user_docs")
+            : Promise.resolve(existingUrls.tenancy),
+          files.benefitLetter
+            ? uploadFile(files.benefitLetter, "service_user_docs")
+            : Promise.resolve(existingUrls.benefit),
+          files.riskAssessment
+            ? uploadFile(files.riskAssessment, "service_user_docs")
+            : Promise.resolve(existingUrls.risk),
+        ]);
 
       const payload = {
         ...formData,
@@ -525,27 +538,30 @@ export default function EditServiceUserForm() {
     }
   };
 
-  if (loading) return (
-    <div className="flex flex-col items-center justify-center h-screen bg-[#f5f0e6]">
+  if (loading)
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-[#f5f0e6]">
         <Loader2 className="animate-spin h-12 w-12 text-[#1f6b4a] mb-4" />
-        <p className="text-[#123d2b] font-medium">Retrieving database records...</p>
-    </div>
-  );
-
-
-  
+        <p className="text-[#123d2b] font-medium">
+          Retrieving database records...
+        </p>
+      </div>
+    );
 
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-[#f5f0e6] p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8">
       {/* Back Button */}
       <div className="max-w-6xl mx-auto mb-4">
-        <Button variant="ghost" onClick={() => router.back()} className="text-[#123d2b]">
+        <Button
+          variant="ghost"
+          onClick={() => router.back()}
+          className="text-[#123d2b]"
+        >
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to List
         </Button>
       </div>
-
 
       <Card className="max-w-6xl mx-auto border-[#e1dbd2] bg-[#fbf8f2] shadow-lg overflow-hidden">
         <CardHeader className="bg-[#123d2b] text-[#f7f2e9] p-6">
@@ -578,15 +594,15 @@ export default function EditServiceUserForm() {
               <TabsList className="w-full justify-start rounded-none bg-[#f1ede4] border-b border-[#e1dbd2] h-auto p-0 flex-wrap mb-6">
                 {[
                   { id: "key-info", label: "Key Information", icon: User },
-                  {
-                    id: "medical",
-                    label: "Medical & Health",
-                    icon: HeartPulse,
-                  },
-                  { id: "financial", label: "Financials", icon: Banknote },
-                  { id: "employment", label: "Employment", icon: Briefcase },
-                  { id: "risk", label: "Risk & Forensic", icon: ShieldAlert },
-                  { id: "address", label: "Address History", icon: MapPin },
+                  // {
+                  //   id: "medical",
+                  //   label: "Medical & Health",
+                  //   icon: HeartPulse,
+                  // },
+                  // { id: "financial", label: "Financials", icon: Banknote },
+                  // { id: "employment", label: "Employment", icon: Briefcase },
+                  // { id: "risk", label: "Risk & Forensic", icon: ShieldAlert },
+                  // { id: "address", label: "Address History", icon: MapPin },
                   { id: "documents", label: "Documents", icon: ClipboardCheck },
                 ].map((tab) => (
                   <TabsTrigger
@@ -601,24 +617,38 @@ export default function EditServiceUserForm() {
 
               <div className="p-6 md:p-10">
                 {/* --- TAB 1: KEY INFO --- */}
-                
+
                 <TabsContent value="key-info" className="space-y-8 mt-0">
                   <div className="flex flex-col md:flex-row gap-8">
                     <div className="flex flex-col items-center gap-4">
-                  <div className="w-32 h-32 rounded-full bg-[#e1dbd2] flex items-center justify-center border-2 border-[#1f6b4a]/30 overflow-hidden relative">
-                    {files.avatarImage ? (
-                      <img src={URL.createObjectURL(files.avatarImage)} className="w-full h-full object-cover" />
-                    ) : existingUrls.avatar ? (
-                      <img src={existingUrls.avatar} className="w-full h-full object-cover" />
-                    ) : (
-                      <User className="w-12 h-12 text-[#123d2b]/20" />
-                    )}
-                  </div>
-                  <Label htmlFor="avatarImage" className="cursor-pointer text-[10px] font-bold uppercase bg-[#1f6b4a] text-white px-3 py-1 rounded">
-                    {existingUrls.avatar ? "Change Photo" : "Upload Photo"}
-                  </Label>
-                  <Input type="file" id="avatarImage" className="hidden" onChange={(e) => handleFileChange(e, "avatarImage")} />
-                </div>
+                      <div className="w-32 h-32 rounded-full bg-[#e1dbd2] flex items-center justify-center border-2 border-[#1f6b4a]/30 overflow-hidden relative">
+                        {files.avatarImage ? (
+                          <img
+                            src={URL.createObjectURL(files.avatarImage)}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : existingUrls.avatar ? (
+                          <img
+                            src={existingUrls.avatar}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <User className="w-12 h-12 text-[#123d2b]/20" />
+                        )}
+                      </div>
+                      <Label
+                        htmlFor="avatarImage"
+                        className="cursor-pointer text-[10px] font-bold uppercase bg-[#1f6b4a] text-white px-3 py-1 rounded"
+                      >
+                        {existingUrls.avatar ? "Change Photo" : "Upload Photo"}
+                      </Label>
+                      <Input
+                        type="file"
+                        id="avatarImage"
+                        className="hidden"
+                        onChange={(e) => handleFileChange(e, "avatarImage")}
+                      />
+                    </div>
 
                     <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="space-y-2">
@@ -671,16 +701,16 @@ export default function EditServiceUserForm() {
                         />
                       </div>
                       <div className="space-y-2">
-                    <Label>Age (Auto-calculated)</Label>
-                    <Input
-                      name="age"
-                      type="number"
-                      value={formData.age}
-                      readOnly // Make it read-only since it's automatic
-                      placeholder="0"
-                      className="bg-[#d1ccc4] border-none cursor-not-allowed" 
-                    />
-                  </div>
+                        <Label>Age (Auto-calculated)</Label>
+                        <Input
+                          name="age"
+                          type="number"
+                          value={formData.age}
+                          readOnly // Make it read-only since it's automatic
+                          placeholder="0"
+                          className="bg-[#d1ccc4] border-none cursor-not-allowed"
+                        />
+                      </div>
                       <div className="space-y-2">
                         <Label>Gender</Label>
                         <Select
@@ -814,6 +844,96 @@ export default function EditServiceUserForm() {
                     </div>
                   </div>
 
+                  {/* Address */}
+                  <section className=" p-6 rounded-lg border border-[#e1dbd2]" >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label>Property Name</Label>
+                        <Select
+                          value={formData.property_id} // Added value prop to show stored data
+                          onValueChange={(val) => {
+                            handleSelectChange("property_id", val);
+                            setSelectedProperty(
+                              properties.find((p) => p.id === val),
+                            );
+                          }}
+                        >
+                          <SelectTrigger className="bg-[#e1dbd2] border-none">
+                            <SelectValue placeholder="Select Property" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {properties.map((p) => (
+                              <SelectItem key={p.id} value={p.id}>
+                                {p.property_name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Street Address</Label>
+                        <Input
+                          className="bg-[#f1ede4] border-none font-semibold text-[#123d2b]"
+                          value={selectedProperty?.address || ""}
+                          readOnly
+                          placeholder="Auto-populated"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Assigned Room</Label>
+                        <Select
+                          disabled={!selectedProperty}
+                          value={formData.assigned_room}
+                          onValueChange={(val) =>
+                            handleSelectChange("assigned_room", val)
+                          }
+                        >
+                          <SelectTrigger className="bg-[#e1dbd2] border-none">
+                            <SelectValue
+                              placeholder={
+                                selectedProperty
+                                  ? "Select a Room"
+                                  : "Select property first"
+                              }
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {selectedProperty?.rooms > 0 ? (
+                              Array.from(
+                                { length: selectedProperty.rooms },
+                                (_, i) => (
+                                  <SelectItem
+                                    key={i + 1}
+                                    value={`room-${i + 1}`}
+                                  >
+                                    Room {i + 1}
+                                  </SelectItem>
+                                ),
+                              )
+                            ) : (
+                              <SelectItem value="none" disabled>
+                                No rooms available
+                              </SelectItem>
+                            )}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>Previous Residency Address</Label>
+                        <Textarea
+                          name="previous_address"
+                          value={formData.previous_address}
+                          onChange={handleInputChange}
+                          placeholder="Full details of last known address..."
+                          className="bg-[#e1dbd2] border-none"
+                        />
+                      </div>
+                    </div>
+                  </section>
+
                   <div className="bg-[#f1ede4] p-6 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-6 border border-[#e1dbd2]">
                     <div className="space-y-4">
                       <div className="flex flex-col">
@@ -877,7 +997,7 @@ export default function EditServiceUserForm() {
                 </TabsContent>
 
                 {/* --- TAB 2: MEDICAL --- */}
-                <TabsContent value="medical" className="space-y-6 mt-0">
+                {/* <TabsContent value="medical" className="space-y-6 mt-0">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-2">
                   <Label>NHS Number</Label>
@@ -985,10 +1105,10 @@ export default function EditServiceUserForm() {
                       </Select>
                     </div>
                   </Field>
-                </TabsContent>
+                </TabsContent> */}
 
                 {/* --- TAB 3: FINANCIALS --- */}
-                <TabsContent value="financial" className="space-y-6 mt-0">
+                {/* <TabsContent value="financial" className="space-y-6 mt-0">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-2">
                       <Label>Benefit Type</Label>
@@ -1052,21 +1172,10 @@ export default function EditServiceUserForm() {
                       />
                     </div>
                   </div>
-                </TabsContent>
+                </TabsContent> */}
 
                 {/* --- TAB 4: EMPLOYMENT --- */}
-                <TabsContent value="employment" className="space-y-6 mt-0">
-                  {/* <div className="flex items-center space-x-2 mb-6">
-                    <Switch
-                      checked={formData.is_employed}
-                      onCheckedChange={(val) =>
-                        handleSwitchChange("is_employed", val)
-                      }
-                    />
-                    <Label className="text-lg font-semibold">
-                      Currently Employed?
-                    </Label>
-                  </div> */}
+                {/* <TabsContent value="employment" className="space-y-6 mt-0">
                   <div className="space-y-2 max-w-xs">
                 <Label className="text-lg font-semibold">Currently Employed?</Label>
                 <Select 
@@ -1121,10 +1230,10 @@ export default function EditServiceUserForm() {
                       />
                     </div>
                   </div>
-                </TabsContent>
+                </TabsContent> */}
 
                 {/* --- TAB 5: RISK --- */}
-                <TabsContent value="risk" className="space-y-6 mt-0">
+                {/* <TabsContent value="risk" className="space-y-6 mt-0">
                   <div className="bg-[#fff1f1] border border-red-100 p-6 rounded-lg">
                     <h4 className="text-red-800 font-bold mb-4 flex items-center gap-2">
                       <ShieldAlert className="w-5 h-5" /> Safety & Background
@@ -1176,10 +1285,10 @@ export default function EditServiceUserForm() {
                       </div>
                     </div>
                   </div>
-                </TabsContent>
+                </TabsContent> */}
 
                 {/* --- TAB 6: ADDRESS --- */}
-                <TabsContent value="address" className="space-y-6 mt-0">
+                {/* <TabsContent value="address" className="space-y-6 mt-0">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                   <Label>Property Name</Label>
@@ -1259,7 +1368,7 @@ export default function EditServiceUserForm() {
                       />
                     </div>
                   </div>
-                </TabsContent>
+                </TabsContent> */}
 
                 {/* --- TAB 7: DOCUMENTS --- */}
                 {/* <TabsContent value="documents" className="space-y-6 mt-0">
@@ -1303,38 +1412,75 @@ export default function EditServiceUserForm() {
                 </TabsContent> */}
 
                 {/* --- TAB 7: DOCUMENTS (FIX 3: SHOW EXISTING) --- */}
-            <TabsContent value="documents" className="space-y-6 mt-0">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {[
-                  { label: "ID Verification", field: "idVerification", dbKey: "id_verification" },
-                  { label: "Tenancy Agreement", field: "tenancyAgreement", dbKey: "tenancy" },
-                  { label: "Benefit Letter", field: "benefitLetter", dbKey: "benefit" },
-                  { label: "Risk Assessment", field: "riskAssessment", dbKey: "risk" },
-                ].map((doc) => (
-                  <div key={doc.field} className="p-4 border border-[#e1dbd2] bg-white rounded-lg flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Upload className="w-4 h-4 text-[#123d2b]" />
-                      <div>
-                        <p className="text-sm font-bold">{doc.label}</p>
-                        <p className="text-[10px]">
-                          {files[doc.field] ? (
-                            <span className="text-green-600 font-bold">NEW: {files[doc.field].name}</span>
-                          ) : existingUrls[doc.dbKey] ? (
-                            <a href={existingUrls[doc.dbKey]} target="_blank" className="text-blue-500 underline">View Existing File</a>
-                          ) : (
-                            <span className="text-red-400">NO FILE STORED</span>
-                          )}
-                        </p>
+                <TabsContent value="documents" className="space-y-6 mt-0">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {[
+                      {
+                        label: "ID Verification",
+                        field: "idVerification",
+                        dbKey: "id_verification",
+                      },
+                      {
+                        label: "Tenancy Agreement",
+                        field: "tenancyAgreement",
+                        dbKey: "tenancy",
+                      },
+                      {
+                        label: "Benefit Letter",
+                        field: "benefitLetter",
+                        dbKey: "benefit",
+                      },
+                      {
+                        label: "Risk Assessment",
+                        field: "riskAssessment",
+                        dbKey: "risk",
+                      },
+                    ].map((doc) => (
+                      <div
+                        key={doc.field}
+                        className="p-4 border border-[#e1dbd2] bg-white rounded-lg flex items-center justify-between"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Upload className="w-4 h-4 text-[#123d2b]" />
+                          <div>
+                            <p className="text-sm font-bold">{doc.label}</p>
+                            <p className="text-[10px]">
+                              {files[doc.field] ? (
+                                <span className="text-green-600 font-bold">
+                                  NEW: {files[doc.field].name}
+                                </span>
+                              ) : existingUrls[doc.dbKey] ? (
+                                <a
+                                  href={existingUrls[doc.dbKey]}
+                                  target="_blank"
+                                  className="text-blue-500 underline"
+                                >
+                                  View Existing File
+                                </a>
+                              ) : (
+                                <span className="text-red-400">
+                                  NO FILE STORED
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                        <Label
+                          htmlFor={doc.field}
+                          className="cursor-pointer bg-[#123d2b] text-white px-3 py-1.5 rounded text-[11px]"
+                        >
+                          {existingUrls[doc.dbKey] ? "Replace" : "Upload"}
+                        </Label>
+                        <Input
+                          type="file"
+                          className="hidden"
+                          id={doc.field}
+                          onChange={(e) => handleFileChange(e, doc.field)}
+                        />
                       </div>
-                    </div>
-                    <Label htmlFor={doc.field} className="cursor-pointer bg-[#123d2b] text-white px-3 py-1.5 rounded text-[11px]">
-                      {existingUrls[doc.dbKey] ? "Replace" : "Upload"}
-                    </Label>
-                    <Input type="file" className="hidden" id={doc.field} onChange={(e) => handleFileChange(e, doc.field)} />
+                    ))}
                   </div>
-                ))}
-              </div>
-            </TabsContent>
+                </TabsContent>
               </div>
 
               {/* --- SUBMIT FOOTER --- */}
@@ -1346,12 +1492,16 @@ export default function EditServiceUserForm() {
                 </div>
                 <div className="flex gap-3">
                   <Button
-                type="submit"
-                disabled={submitting}
-                className="bg-[#1f6b4a] hover:bg-[#123d2b] text-white px-10"
-              >
-                {submitting ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : "Update Profile"}
-            </Button>
+                    type="submit"
+                    disabled={submitting}
+                    className="bg-[#1f6b4a] hover:bg-[#123d2b] text-white px-10"
+                  >
+                    {submitting ? (
+                      <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                    ) : (
+                      "Update Profile"
+                    )}
+                  </Button>
                 </div>
               </div>
             </Tabs>
