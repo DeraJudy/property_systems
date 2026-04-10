@@ -361,13 +361,13 @@ export default function ViewServiceUser() {
     }
   };
 
-  const handleEdit = (doc) => {
-  setEditingId(doc.id); // Set the ID so finalizeAuditEntry knows to UPDATE
-  setKwsName(doc.kws_name || "");
-  setDocUrl(doc.doc_url || null);
-  setMediaUrl(doc.media_url || null);
-  setIsUploadModalOpen(true);
-};
+//   const handleEdit = (doc) => {
+//   setEditingId(doc.id); // Set the ID so finalizeAuditEntry knows to UPDATE
+//   setKwsName(doc.kws_name || "");
+//   setDocUrl(doc.doc_url || null);
+//   setMediaUrl(doc.media_url || null);
+//   setIsUploadModalOpen(true);
+// };
 
 const handleEditClick = (doc) => {
   setEditingId(doc.id);
@@ -500,27 +500,75 @@ const handleEditClick = (doc) => {
   };
 
   // 3. Update the Delete Logic to be triggered from the modal
+  // const confirmDelete = async () => {
+  //   if (deleteConfirmText !== "DELETE") {
+  //     toast.error("Please type DELETE to confirm");
+  //     return;
+  //   }
+
+  //   try {
+  //     const urlParts = docToDelete.file_url.split("/");
+  //     const filePath = `${id}/${urlParts[urlParts.length - 1]}`;
+
+  //     await supabase.storage.from("kws_documents").remove([filePath]);
+  //     await supabase.from("kws_documents").delete().eq("id", docToDelete.id);
+
+  //     toast.success("Document permanently deleted");
+  //     setDocToDelete(null);
+  //     setDeleteConfirmText("");
+  //     fetchKWSDocuments();
+  //   } catch (error) {
+  //     toast.error("Deletion failed");
+  //   }
+  // };
+
   const confirmDelete = async () => {
-    if (deleteConfirmText !== "DELETE") {
-      toast.error("Please type DELETE to confirm");
-      return;
+  if (deleteConfirmText !== "DELETE") {
+    toast.error("Please type DELETE to confirm");
+    return;
+  }
+
+  try {
+    const filesToDelete = [];
+
+    // 1. Extract path for the Document
+    if (docToDelete.doc_url) {
+      const docParts = docToDelete.doc_url.split("/");
+      filesToDelete.push(`${id}/${docParts[docParts.length - 1]}`);
     }
 
-    try {
-      const urlParts = docToDelete.file_url.split("/");
-      const filePath = `${id}/${urlParts[urlParts.length - 1]}`;
-
-      await supabase.storage.from("kws_documents").remove([filePath]);
-      await supabase.from("kws_documents").delete().eq("id", docToDelete.id);
-
-      toast.success("Document permanently deleted");
-      setDocToDelete(null);
-      setDeleteConfirmText("");
-      fetchKWSDocuments();
-    } catch (error) {
-      toast.error("Deletion failed");
+    // 2. Extract path for the Media/Evidence
+    if (docToDelete.media_url) {
+      const mediaParts = docToDelete.media_url.split("/");
+      filesToDelete.push(`${id}/${mediaParts[mediaParts.length - 1]}`);
     }
-  };
+
+    // 3. Delete all files from Storage in one go
+    if (filesToDelete.length > 0) {
+      const { error: storageError } = await supabase.storage
+        .from("kws_documents")
+        .remove(filesToDelete);
+      
+      if (storageError) throw storageError;
+    }
+
+    // 4. Delete the Database record
+    const { error: dbError } = await supabase
+      .from("kws_documents")
+      .delete()
+      .eq("id", docToDelete.id);
+
+    if (dbError) throw dbError;
+
+    toast.success("Record and all associated files deleted");
+    setDocToDelete(null);
+    setDeleteConfirmText("");
+    fetchKWSDocuments();
+  } catch (error) {
+    console.error("Delete error:", error);
+    toast.error("Deletion failed");
+  }
+};
 
   // const handleDeleteDocument = async (doc) => {
   //   if (!window.confirm(`Are you sure you want to delete "${doc.file_name}"?`))
@@ -1352,7 +1400,7 @@ const handleEditClick = (doc) => {
         </DialogContent>
       </Dialog>
 
-      
+
       {/* MEDIA VIEWER MODAL */}
       <Dialog open={!!viewingMedia} onOpenChange={() => setViewingMedia(null)}>
         <DialogContent className="max-w-4xl">
