@@ -444,15 +444,15 @@ export default function ServiceUserTabsForm() {
               <TabsList className="w-full justify-start rounded-none bg-[#f1ede4] border-b border-[#e1dbd2] h-auto p-0 flex-wrap mb-6">
                 {[
                   { id: "key-info", label: "Key Information", icon: User },
-                  {
-                    id: "medical",
-                    label: "Medical & Health",
-                    icon: HeartPulse,
-                  },
-                  { id: "financial", label: "Financials", icon: Banknote },
-                  { id: "employment", label: "Employment", icon: Briefcase },
-                  { id: "risk", label: "Risk & Forensic", icon: ShieldAlert },
-                  { id: "address", label: "Address History", icon: MapPin },
+                  // {
+                  //   id: "medical",
+                  //   label: "Medical & Health",
+                  //   icon: HeartPulse,
+                  // },
+                  // { id: "financial", label: "Financials", icon: Banknote },
+                  // { id: "employment", label: "Employment", icon: Briefcase },
+                  // { id: "risk", label: "Risk & Forensic", icon: ShieldAlert },
+                  // { id: "address", label: "Address History", icon: MapPin },
                   { id: "contact", label: "Contact Information", icon: Phone },
                   { id: "documents", label: "Documents", icon: ClipboardCheck },
                 ].map((tab) => (
@@ -690,6 +690,91 @@ export default function ServiceUserTabsForm() {
                     </div>
                   </div>
 
+                  <section className="bg-[#f1ede4]/50 p-6 rounded-lg border border-[#e1dbd2]">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label>Property Name</Label>
+                      <Select
+                        onValueChange={(val) => {
+                          handleSelectChange("property_id", val);
+                          setSelectedProperty(
+                            properties.find((p) => p.id === val),
+                          );
+                        }}
+                      >
+                        <SelectTrigger className="bg-[#e1dbd2] border-none">
+                          <SelectValue placeholder="Select Property" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {properties.map((p) => (
+                            <SelectItem key={p.id} value={p.id}>
+                              {p.property_name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Street Address</Label>
+                      <Input
+                        className="bg-[#f1ede4] border-none font-semibold text-[#123d2b]"
+                        value={selectedProperty?.address || ""}
+                        readOnly
+                        placeholder="Auto-populated"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Assigned Room</Label>
+                      <Select
+                        disabled={!selectedProperty}
+                        value={formData.assigned_room}
+                        onValueChange={(val) =>
+                          handleSelectChange("assigned_room", val)
+                        }
+                      >
+                        <SelectTrigger className="bg-[#e1dbd2] border-none">
+                          <SelectValue
+                            placeholder={
+                              selectedProperty
+                                ? "Select a Room"
+                                : "Select property first"
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {selectedProperty?.rooms > 0 ? (
+                            Array.from(
+                              { length: selectedProperty.rooms },
+                              (_, i) => (
+                                <SelectItem key={i + 1} value={`room-${i + 1}`}>
+                                  Room {i + 1}
+                                </SelectItem>
+                              ),
+                            )
+                          ) : (
+                            <SelectItem value="none" disabled>
+                              No rooms available
+                            </SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Previous Residency Address</Label>
+                      <Textarea
+                        name="previous_address"
+                        value={formData.previous_address}
+                        onChange={handleInputChange}
+                        placeholder="Full details of last known address..."
+                        className="bg-[#e1dbd2] border-none"
+                      />
+                    </div>
+                  </div>
+                  </section>
+
                   <div className="bg-[#f1ede4] p-6 rounded-lg grid grid-cols-1 md:grid-cols-2 gap-6 border border-[#e1dbd2]">
                     <div className="space-y-4">
                       <div className="flex flex-col">
@@ -753,7 +838,7 @@ export default function ServiceUserTabsForm() {
                 </TabsContent>
 
                 {/* --- TAB 2: MEDICAL --- */}
-                <TabsContent value="medical" className="space-y-6 mt-0">
+                {/* <TabsContent value="medical" className="space-y-6 mt-0">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-2">
                       <Label>NHS Number</Label>
@@ -860,10 +945,10 @@ export default function ServiceUserTabsForm() {
                       </Select>
                     </div>
                   </Field>
-                </TabsContent>
+                </TabsContent> */}
 
                 {/* --- TAB 3: FINANCIALS --- */}
-                <TabsContent value="financial" className="space-y-6 mt-0">
+                {/* <TabsContent value="financial" className="space-y-6 mt-0">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="space-y-2">
                       <Label>Benefit Type</Label>
@@ -927,10 +1012,10 @@ export default function ServiceUserTabsForm() {
                       />
                     </div>
                   </div>
-                </TabsContent>
+                </TabsContent> */}
 
                 {/* --- TAB 4: EMPLOYMENT --- */}
-                <TabsContent value="employment" className="space-y-6 mt-0">
+                {/* <TabsContent value="employment" className="space-y-6 mt-0">
                   <div className="flex items-center space-x-2 mb-6">
                     <Switch
                       checked={formData.is_employed}
@@ -981,10 +1066,10 @@ export default function ServiceUserTabsForm() {
                       />
                     </div>
                   </div>
-                </TabsContent>
+                </TabsContent> */}
 
                 {/* --- TAB 5: RISK --- */}
-                <TabsContent value="risk" className="space-y-6 mt-0">
+                {/* <TabsContent value="risk" className="space-y-6 mt-0">
                   <div className="bg-[#fff1f1] border border-red-100 p-6 rounded-lg">
                     <h4 className="text-red-800 font-bold mb-4 flex items-center gap-2">
                       <ShieldAlert className="w-5 h-5" /> Safety & Background
@@ -1036,10 +1121,10 @@ export default function ServiceUserTabsForm() {
                       </div>
                     </div>
                   </div>
-                </TabsContent>
+                </TabsContent> */}
 
                 {/* --- TAB 6: ADDRESS --- */}
-                <TabsContent value="address" className="space-y-6 mt-0">
+                {/* <TabsContent value="address" className="space-y-6 mt-0">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label>Property Name</Label>
@@ -1122,7 +1207,7 @@ export default function ServiceUserTabsForm() {
                       />
                     </div>
                   </div>
-                </TabsContent>
+                </TabsContent> */}
 
                 <TabsContent value="contact" className="space-y-6 mt-0">
                   <div className="bg-[#f1ede4]/50 p-6 rounded-lg border border-[#e1dbd2]">
@@ -1233,7 +1318,7 @@ export default function ServiceUserTabsForm() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <h3 className="text-[#1f6b4a] font-semibold flex items-center gap-2">
-                        <ShieldCheck className="w-4 h-4" /> Support Documents
+                        <ShieldCheck className="w-4 h-4" /> Additional Documents
                       </h3>
                       <Button
                         type="button"

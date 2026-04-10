@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "@/components/dashboard/Sidebar";
 import MobileSidebar from "@/components/dashboard/MobileSidebar";
 import Header from "@/components/dashboard/Header";
@@ -142,6 +142,16 @@ const navSections = [
 
 export default function DashboardShell({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div className="h-16 border-b" />;
+  }
 
   return (
     <div className="flex min-h-screen bg-[#faf6e7]">

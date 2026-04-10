@@ -861,7 +861,7 @@ const handleEditClick = (doc) => {
                   </Card>
                 </motion.div>
 
-                <motion.div {...fadeInUp} transition={{ delay: 0.1 }}>
+                {/* <motion.div {...fadeInUp} transition={{ delay: 0.1 }}>
                   <Card className="h-full border-[#e1dbd2]">
                     <CardHeader className="bg-[#f1ede4]/30 border-b border-[#e1dbd2]/50">
                       <CardTitle className="text-sm font-black flex items-center gap-2 text-[#123d2b] uppercase tracking-widest">
@@ -894,7 +894,7 @@ const handleEditClick = (doc) => {
                       </div>
                     </CardContent>
                   </Card>
-                </motion.div>
+                </motion.div> */}
               </div>
 
               <Card className="border-[#e1dbd2]">

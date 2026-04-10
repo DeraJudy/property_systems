@@ -143,7 +143,7 @@ import {
   ClipboardCheck,
   Briefcase,
   ShieldCheck,
-  ArrowLeft,
+  ArrowLeft, Phone, Plus, Trash2
 } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/superbase/clientUtils";
@@ -363,6 +363,32 @@ export default function EditServiceUserForm() {
       );
     }
   };
+
+  // Document Helpers
+  const addDocument = () => {
+    setCustomDocuments([
+      ...customDocuments,
+      { id: Date.now(), name: "", file: null },
+    ]);
+  };
+
+   // Dynamic Documents State
+    const [customDocuments, setCustomDocuments] = useState([
+      { id: Date.now(), name: "", file: null },
+    ]);
+
+    const removeDocument = (id) => {
+    if (customDocuments.length > 1) {
+      setCustomDocuments(customDocuments.filter((doc) => doc.id !== id));
+    }
+  };
+
+  const updateDocument = (index, field, value) => {
+    const newDocs = [...customDocuments];
+    newDocs[index][field] = value;
+    setCustomDocuments(newDocs);
+  };
+  
 
   useEffect(() => {
     if (formData.dob) {
@@ -603,6 +629,7 @@ export default function EditServiceUserForm() {
                   // { id: "employment", label: "Employment", icon: Briefcase },
                   // { id: "risk", label: "Risk & Forensic", icon: ShieldAlert },
                   // { id: "address", label: "Address History", icon: MapPin },
+                  { id: "contact", label: "Contact Information", icon: Phone },
                   { id: "documents", label: "Documents", icon: ClipboardCheck },
                 ].map((tab) => (
                   <TabsTrigger
@@ -845,7 +872,7 @@ export default function EditServiceUserForm() {
                   </div>
 
                   {/* Address */}
-                  <section className=" p-6 rounded-lg border border-[#e1dbd2]" >
+                  <section className=" p-6 rounded-lg border border-[#e1dbd2]">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label>Property Name</Label>
@@ -1411,6 +1438,72 @@ export default function EditServiceUserForm() {
                   </div>
                 </TabsContent> */}
 
+                <TabsContent value="contact" className="space-y-6 mt-0">
+                  <div className="bg-[#f1ede4]/50 p-6 rounded-lg border border-[#e1dbd2]">
+                    <h3 className="text-[#123d2b] font-bold mb-4 flex items-center gap-2">
+                      <User className="w-5 h-5" /> Next of Kin Details
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label>Full Name</Label>
+                        <Input
+                          name="nok_name"
+                          value={formData.nok_name}
+                          onChange={handleInputChange}
+                          className="bg-[#e1dbd2] border-none"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Relationship</Label>
+                        <Select
+                          value={formData.nok_relationship}
+                          onValueChange={(val) =>
+                            handleSelectChange("nok_relationship", val)
+                          }
+                        >
+                          <SelectTrigger className="bg-[#e1dbd2] border-none">
+                            <SelectValue placeholder="Select Relationship" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="parent">Parent</SelectItem>
+                            <SelectItem value="sibling">Sibling</SelectItem>
+                            <SelectItem value="partner">Partner</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Phone Number</Label>
+                        <Input
+                          name="nok_phone"
+                          value={formData.nok_phone}
+                          onChange={handleInputChange}
+                          className="bg-[#e1dbd2] border-none"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Email Address</Label>
+                        <Input
+                          name="nok_email"
+                          type="email"
+                          value={formData.nok_email}
+                          onChange={handleInputChange}
+                          className="bg-[#e1dbd2] border-none"
+                        />
+                      </div>
+                      <div className="md:col-span-2 space-y-2">
+                        <Label>Postal Address</Label>
+                        <Textarea
+                          name="nok_address"
+                          value={formData.nok_address}
+                          onChange={handleInputChange}
+                          className="bg-[#e1dbd2] border-none h-20"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </TabsContent>
+
                 {/* --- TAB 7: DOCUMENTS (FIX 3: SHOW EXISTING) --- */}
                 <TabsContent value="documents" className="space-y-6 mt-0">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1480,6 +1573,71 @@ export default function EditServiceUserForm() {
                       </div>
                     ))}
                   </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-[#1f6b4a] font-semibold flex items-center gap-2">
+                        <ShieldCheck className="w-4 h-4" /> Additional Documents
+                      </h3>
+                      <Button
+                        type="button"
+                        onClick={addDocument}
+                        className="bg-[#1f6b4a] h-8 w-8 p-0 rounded-full"
+                      >
+                        <Plus className="w-5 h-5" />
+                      </Button>
+                    </div>
+
+                    {customDocuments.map((doc, index) => (
+                      <div
+                        key={doc.id}
+                        className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-lg border border-[#e1dbd2] bg-[#f7f2e9]/50 relative"
+                      >
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() => removeDocument(doc.id)}
+                          className="absolute -top-2 -right-2 h-6 w-6 p-0 rounded-full bg-red-100 text-red-600 border border-red-200 hover:bg-red-200"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+
+                        <div className="space-y-2">
+                          <Label>Document Name</Label>
+                          <Input
+                            placeholder="e.g. Identity Proof"
+                            className="bg-[#e1dbd2] border-none"
+                            value={doc.name}
+                            onChange={(e) =>
+                              updateDocument(index, "name", e.target.value)
+                            }
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>File</Label>
+                          <Input
+                            type="file"
+                            className="hidden"
+                            id={`f-${doc.id}`}
+                            onChange={(e) =>
+                              updateDocument(index, "file", e.target.files[0])
+                            }
+                          />
+                          <Label
+                            htmlFor={`f-${doc.id}`}
+                            className="flex items-center gap-2 bg-[#e8e1d6] px-4 py-2 rounded-md cursor-pointer text-xs h-10 truncate"
+                          >
+                            <Upload className="w-4 h-4 shrink-0" />
+                            <span className="truncate">
+                              {doc.file ? doc.file.name : "Choose File"}
+                            </span>
+                          </Label>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
                 </TabsContent>
               </div>
 
