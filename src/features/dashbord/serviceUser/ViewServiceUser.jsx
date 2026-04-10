@@ -95,12 +95,15 @@ export default function ViewServiceUser() {
   const [editingId, setEditingId] = useState(null); // null = Create, ID = Edit
 
   const [isUploading, setIsUploading] = useState(false);
+  const [sessionDate, setSessionDate] = useState("");
 
   useEffect(() => {
+    setMounted(true);
+    setSessionDate(new Date().toISOString().slice(0, 16));
     fetchUserDetails();
     fetchSupportLogs();
     fetchKWSDocuments();
-    setMounted(true);
+
   }, [id]);
 
   const fetchUserDetails = async () => {
@@ -231,6 +234,44 @@ export default function ViewServiceUser() {
     }
   };
 
+  const closeModal = async () => {
+  // 1. CLEANUP BUCKET: Delete files if they were uploaded but not "Finalized"
+  // We only do this if editingId is null (new entry) 
+  // or if the URLs in state are different from the original ones.
+  try {
+    const filesToRemove = [];
+    
+    if (docUrl) {
+      const docPath = docUrl.split('/').pop();
+      filesToRemove.push(`${id}/${docPath}`);
+    }
+
+    setSessionDate(new Date().toISOString().slice(0, 16));
+    
+    if (mediaUrl) {
+      const mediaPath = mediaUrl.split('/').pop();
+      filesToRemove.push(`${id}/${mediaPath}`);
+    }
+
+    if (filesToRemove.length > 0 && !editingId) {
+      await supabase.storage
+        .from("kws_documents")
+        .remove(filesToRemove);
+    }
+  } catch (error) {
+    console.error("Cleanup error:", error);
+  }
+
+  // 2. RESET STATES
+  setIsUploadModalOpen(false);
+  setEditingId(null);
+  setKwsName("");
+  setDocUrl(null);
+  setMediaUrl(null);
+  setIsUploadingDoc(false);
+  setIsUploadingMedia(false);
+};
+
   // --- FINAL FIXED VERSION ---
   // const finalizeAuditEntry = async () => {
   //   // 1. Validate
@@ -303,6 +344,7 @@ export default function ViewServiceUser() {
     const payload = {
       service_user_id: id,
       kws_name: kwsName,
+      session_date: sessionDate,
       file_url: fileUrl, // ✅ Required column
       doc_url: docUrl,
       media_url: mediaUrl,
@@ -374,6 +416,7 @@ const handleEditClick = (doc) => {
   setKwsName(doc.kws_name);
   setDocUrl(doc.doc_url);
   setMediaUrl(doc.media_url);
+  setSessionDate(doc.session_date ? new Date(doc.session_date).toISOString().slice(0, 16) : new Date().toISOString().slice(0, 16));
   setIsUploadModalOpen(true);
 };
 
@@ -1270,6 +1313,7 @@ const handleEditClick = (doc) => {
                 <table className="w-full text-left">
                   <thead className="bg-slate-50 border-b">
                     <tr>
+                      <th className="p-4 text-[10px] uppercase font-black text-slate-400">Date & Time</th>
                       <th className="p-4 text-[10px] font-black uppercase text-slate-500">
                         Title
                       </th>
@@ -1289,6 +1333,11 @@ const handleEditClick = (doc) => {
                         key={doc.id}
                         className="hover:bg-slate-50/30 transition-colors"
                       >
+                        <td className="p-4 font-bold text-slate-600">
+                  {new Date(doc.session_date).toLocaleDateString('en-GB', {
+                    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                  })}
+                </td>
                         <td className="p-4 font-bold text-sm text-[#123d2b]">
                           {doc.kws_name}
                         </td>
@@ -1366,35 +1415,45 @@ const handleEditClick = (doc) => {
         <DialogContent className="sm:max-w-[450px]">
           <DialogHeader>
             <DialogTitle className="text-[#123d2b] font-black">
-              {editingId ? "EDIT SESSION RECORD" : "ADD SESSION RECORD"}
+              {editingId ? "EDIT SESSION" : "NEW SESSION RECORD"}
             </DialogTitle>
           </DialogHeader>
+          
           <div className="space-y-4 pt-4">
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase text-slate-400">Session Name</label>
-              <Input value={kwsName} onChange={(e) => setKwsName(e.target.value)} placeholder="e.g., Financial Stability Workshop" />
+              <Input value={kwsName} onChange={(e) => setKwsName(e.target.value)} placeholder="e.g. Financial Stability" />
             </div>
 
-            <div className={`p-4 rounded-xl border-2 border-dashed transition-colors ${docUrl ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50 border-slate-200'}`}>
-              <p className="text-[10px] font-black text-slate-500 mb-2">1. SESSION DOCUMENT (PDF/WORD)</p>
-              <div className="flex items-center gap-3">
-                <input type="file" className="text-xs" onChange={(e) => handleImmediateUpload(e.target.files[0], 'doc')} />
-                {isUploadingDoc && <Loader2 className="w-4 h-4 animate-spin" />}
-                {docUrl && <CheckCircle2 className="w-4 h-4 text-emerald-600" />}
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase text-slate-400">Manual Date & Time Selection</label>
+              <Input 
+                type="datetime-local" 
+                value={sessionDate} 
+                onChange={(e) => setSessionDate(e.target.value)}
+                className="cursor-pointer border-emerald-100 focus:ring-emerald-500"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="border-2 border-dashed p-4 rounded-xl text-center bg-slate-50">
+                <p className="text-[10px] font-black mb-2 uppercase">Document</p>
+                <input type="file" className="hidden" id="doc-up" onChange={(e) => handleImmediateUpload(e.target.files[0], 'doc')} />
+                <label htmlFor="doc-up" className="cursor-pointer text-xs font-bold text-blue-600 underline">Upload File</label>
+                {isUploadingDoc && <Loader2 className="animate-spin h-4 w-4 mx-auto mt-2" />}
+                {docUrl && <CheckCircle2 className="text-emerald-500 mx-auto mt-2 h-4 w-4" />}
+              </div>
+              <div className="border-2 border-dashed p-4 rounded-xl text-center bg-slate-50">
+                <p className="text-[10px] font-black mb-2 uppercase">Media/Evidence</p>
+                <input type="file" className="hidden" id="med-up" onChange={(e) => handleImmediateUpload(e.target.files[0], 'media')} />
+                <label htmlFor="med-up" className="cursor-pointer text-xs font-bold text-blue-600 underline">Upload Media</label>
+                {isUploadingMedia && <Loader2 className="animate-spin h-4 w-4 mx-auto mt-2" />}
+                {mediaUrl && <CheckCircle2 className="text-emerald-500 mx-auto mt-2 h-4 w-4" />}
               </div>
             </div>
 
-            <div className={`p-4 rounded-xl border-2 border-dashed transition-colors ${mediaUrl ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50 border-slate-200'}`}>
-              <p className="text-[10px] font-black text-slate-500 mb-2">2. MEDIA EVIDENCE (VIDEO/IMAGE)</p>
-              <div className="flex items-center gap-3">
-                <input type="file" className="text-xs" onChange={(e) => handleImmediateUpload(e.target.files[0], 'media')} />
-                {isUploadingMedia && <Loader2 className="w-4 h-4 animate-spin" />}
-                {mediaUrl && <CheckCircle2 className="w-4 h-4 text-emerald-600" />}
-              </div>
-            </div>
-
-            <Button onClick={finalizeAuditEntry} className="w-full bg-[#123d2b] h-12 text-sm font-bold shadow-lg" disabled={isUploadingDoc || isUploadingMedia}>
-              {editingId ? "Update Session Record" : "Finalize Audit Entry"}
+            <Button onClick={finalizeAuditEntry} className="w-full bg-[#123d2b] h-12 text-sm font-bold">
+              {editingId ? "Update Session Info" : "Save Session Record"}
             </Button>
           </div>
         </DialogContent>
