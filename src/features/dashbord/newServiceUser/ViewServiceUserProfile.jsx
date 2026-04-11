@@ -238,6 +238,7 @@ import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 
 const supabase = createClient();
 
@@ -355,7 +356,9 @@ export default function ViewServiceUserProfile() {
               <p className="text-emerald-100/70">NI: {userData.ni_number || "N/A"}</p>
             </div>
           </div>
-          <button onClick={() => router.push(`/dashboard/service-users/edit/${id}`)} className="bg-white/10 hover:bg-white/20 border border-white/20 px-6 py-2 rounded-xl transition-all">Edit Profile</button>
+            <Link href={`/service-users/${id}/edit`} className="bg-white/10 hover:bg-white/20 border border-white/20 px-6 py-2 rounded-xl transition-all">
+              Edit Profile
+            </Link>
         </div>
 
         <Tabs defaultValue="overview" className="space-y-6">
