@@ -376,7 +376,7 @@ const EmployeeDetailView = () => {
                 <CardContent className="pt-4 space-y-4 text-sm">
                   <div className="flex items-center justify-between p-2 rounded bg-[#f1f8f5]">
                     <span className="font-medium text-[#123d2b]">Phone Verification</span>
-                    <Badge className={employee.refs_verified_by_phone ? "bg-green-600 text-white" : "bg-gray-200 text-gray-600"}>
+                    <Badge className={employee.refs_verified_by_phone ? "bg-green-600 text-black" : "bg-gray-200 text-black"}>
                       {employee.refs_verified_by_phone ? "Verified" : "Nothing found"}
                     </Badge>
                   </div>
