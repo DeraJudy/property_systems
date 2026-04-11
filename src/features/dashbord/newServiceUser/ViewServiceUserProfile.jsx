@@ -283,6 +283,11 @@ export default function ViewServiceUserProfile() {
   const [isUploadingDoc, setIsUploadingDoc] = useState(false);
   const [isUploadingMedia, setIsUploadingMedia] = useState(false);
 
+  const [editingId, setEditingId] = useState(null); // Track if we are editing
+const [viewingMedia, setViewingMedia] = useState(null); // For the video player
+const [docToDelete, setDocToDelete] = useState(null); // For secure deletion
+const [deleteConfirmText, setDeleteConfirmText] = useState("");
+
   useEffect(() => {
     fetchData();
   }, [id]);
@@ -338,6 +343,59 @@ export default function ViewServiceUserProfile() {
       fetchData();
     } catch (err) { toast.error("Failed to save record"); }
   };
+
+  const finalizeAuditEntry = async () => {
+  // Validation
+  if (!kwsName.trim() || (!docUrl && !mediaUrl)) {
+    return toast.error("Please provide a session name and at least one file.");
+  }
+
+  const payload = {
+    service_user_id: id,
+    kws_name: kwsName,
+    session_date: sessionDate,
+    doc_url: docUrl,
+    media_url: mediaUrl,
+    file_url: docUrl || mediaUrl, // Maintain backward compatibility
+    file_name: kwsName
+  };
+
+  try {
+    if (editingId) {
+      // Update existing record
+      const { error } = await supabase
+        .from('kws_documents')
+        .update(payload)
+        .eq('id', editingId);
+      if (error) throw error;
+      toast.success("Session record updated successfully");
+    } else {
+      // Insert new record
+      const { error } = await supabase
+        .from('kws_documents')
+        .insert([payload]);
+      if (error) throw error;
+      toast.success("New session record saved");
+    }
+
+    // Refresh data and close modal
+    closeModal();
+    fetchData(); // This refreshes the kwsDocs list
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to save session record");
+  }
+};
+
+// Helper to reset modal state correctly
+const closeModal = () => {
+  setIsUploadModalOpen(false);
+  setEditingId(null);
+  setKwsName("");
+  setDocUrl(null);
+  setMediaUrl(null);
+  setSessionDate(new Date().toISOString().slice(0, 16));
+};
 
   if (loading) return <div className="h-screen flex items-center justify-center bg-[#f5f0e6]"><Loader2 className="animate-spin text-[#1f6b4a]" size={40}/></div>;
 
@@ -425,33 +483,77 @@ export default function ViewServiceUserProfile() {
              </div>
           </TabsContent>
 
-          {/* KWS TAB */}
           <TabsContent value="kws">
-            <div className="bg-[#fbf8f2] p-8 rounded-2xl border border-[#e1dbd2]">
-              <div className="flex justify-between items-center mb-8">
-                <div>
-                  <h2 className="text-2xl font-bold text-[#123d2b]">Key Working Sessions</h2>
-                  <p className="text-sm text-gray-500">Audit trail of session evidence and documents</p>
+  <div className="bg-[#fbf8f2] p-8 rounded-2xl border border-[#e1dbd2]">
+    <div className="flex justify-between items-center mb-8">
+      <div>
+        <h2 className="text-2xl font-bold text-[#123d2b]">Key Working Sessions</h2>
+        <p className="text-sm text-gray-500">Audit trail of session evidence and documents</p>
+      </div>
+      <button 
+        onClick={() => setIsUploadModalOpen(true)} 
+        className="bg-[#1f6b4a] text-white px-6 py-3 rounded-xl font-bold flex gap-2 items-center"
+      >
+        <Plus size={20}/> New Session Record
+      </button>
+    </div>
+
+    <div className="border rounded-xl bg-white overflow-hidden shadow-sm">
+      <table className="w-full text-left">
+        <thead className="bg-slate-50 border-b">
+          <tr>
+            <th className="p-4 text-[10px] uppercase font-black text-slate-400">Date & Time</th>
+            <th className="p-4 text-[10px] font-black uppercase text-slate-500">Title</th>
+            <th className="p-4 text-[10px] font-black uppercase text-slate-500">Attachment</th>
+            <th className="p-4 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-slate-100">
+          {kwsDocs.map((doc) => (
+            <tr key={doc.id} className="hover:bg-slate-50/30 transition-colors">
+              <td className="p-4 text-sm font-bold text-slate-600">
+                {new Date(doc.session_date).toLocaleDateString('en-GB', {
+                  day: '2-digit', month: 'short', year: 'numeric'
+                })}
+              </td>
+              <td className="p-4 text-sm font-bold text-[#123d2b]">{doc.kws_name}</td>
+              <td className="p-4">
+                <div className="flex gap-2">
+                  {doc.doc_url && (
+                    <button onClick={() => window.open(doc.doc_url)} className="text-blue-600 underline text-xs">View Doc</button>
+                  )}
+                  {doc.media_url && (
+                    <button onClick={() => setViewingMedia(doc.media_url)} className="text-emerald-600 underline text-xs">View Media</button>
+                  )}
                 </div>
-                <button onClick={() => setIsUploadModalOpen(true)} className="bg-[#1f6b4a] text-white px-6 py-3 rounded-xl font-bold flex gap-2 items-center"><Plus size={20}/> New Session Record</button>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {kwsDocs.map(doc => (
-                  <div key={doc.id} className="bg-white p-4 rounded-2xl border border-[#e1dbd2] shadow-sm group">
-                    <div className="aspect-video bg-gray-100 rounded-xl mb-4 flex items-center justify-center overflow-hidden relative">
-                       {doc.media_url ? <Video className="text-[#1f6b4a] opacity-40" size={40}/> : <FileText className="text-[#1f6b4a] opacity-40" size={40}/>}
-                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                          <button onClick={() => window.open(doc.file_url)} className="p-2 bg-white rounded-full text-[#1f6b4a]"><ExternalLink size={20}/></button>
-                       </div>
-                    </div>
-                    <h3 className="font-bold text-[#123d2b] truncate">{doc.kws_name}</h3>
-                    <p className="text-xs text-gray-500 flex items-center gap-1 mt-1"><Clock size={12}/> {new Date(doc.session_date).toLocaleDateString()}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </TabsContent>
+              </td>
+              <td className="p-4 text-right flex justify-end gap-2">
+                <button 
+                  onClick={() => {
+                    setEditingId(doc.id);
+                    setKwsName(doc.kws_name);
+                    setDocUrl(doc.doc_url);
+                    setMediaUrl(doc.media_url);
+                    setIsUploadModalOpen(true);
+                  }}
+                  className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg"
+                >
+                  <Edit3 size={16} />
+                </button>
+                <button 
+                  onClick={() => setDocToDelete(doc)}
+                  className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</TabsContent>
         </Tabs>
 
         {/* KWS UPLOAD MODAL */}

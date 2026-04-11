@@ -667,7 +667,7 @@ export default function ServiceUserIntakeForm() {
 
       if (error) throw error;
       toast.success("Registration Successful!");
-      router.push("/dashboard");
+      router.push("/service-users");
     } catch (err) {
       toast.error(`Error saving data: ${err.message}`);
     } finally {

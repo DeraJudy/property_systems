@@ -75,22 +75,71 @@ export default function ServiceUserList() {
 
   // --- Delete Logic ---
   const handleDelete = async (id, name) => {
-    if (!window.confirm(`Are you sure you want to delete ${name}?`)) return;
+  if (!window.confirm(`Delete ${name}?`)) return;
 
-    try {
+  try {
+    setLoading(true);
+
+    const user = users.find(u => u.id === id);
+    if (!user) throw new Error("User not found");
+
+    const bucket = "service-user-docs";
+
+    const extractPath = (url) => {
+      if (!url) return null;
+
+      try {
+        const u = new URL(url);
+        const parts = u.pathname.split("/object/public/");
+        if (parts.length < 2) return null;
+
+        const pathParts = parts[1].split("/");
+        pathParts.shift(); // remove bucket
+
+        return pathParts.join("/");
+      } catch {
+        return null;
+      }
+    };
+
+    const filesToDelete = [
+      extractPath(user.profile_image),
+      extractPath(user.medical_doc_url),
+      extractPath(user.verification_doc_url),
+      extractPath(user.document_url)
+    ].filter(Boolean);
+
+    console.log("FINAL PATHS:", filesToDelete);
+
+    if (filesToDelete.length === 0) {
+      console.warn("No valid files found to delete");
+    } else {
       const { error } = await supabase
-        .from("service_users_table")
-        .delete()
-        .eq("id", id);
+        .storage
+        .from(bucket)
+        .remove(filesToDelete);
 
       if (error) throw error;
-      
-      toast.success("User deleted successfully");
-      setUsers(users.filter((user) => user.id !== id));
-    } catch (err) {
-      toast.error("Delete failed: " + err.message);
     }
-  };
+
+    const { error: dbError } = await supabase
+      .from("service_users_table")
+      .delete()
+      .eq("id", id);
+
+    if (dbError) throw dbError;
+
+    setUsers(prev => prev.filter(u => u.id !== id));
+
+    toast.success("Deleted successfully");
+
+  } catch (err) {
+    console.error(err);
+    toast.error(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   // --- Filter Logic ---
   const filteredUsers = users.filter((u) =>
@@ -136,7 +185,7 @@ export default function ServiceUserList() {
         </Select>
       </motion.div>
 
-
+        
 
         {/* Table Section */}
         <div className="bg-white rounded-2xl border border-[#e1dbd2] shadow-sm overflow-hidden">
