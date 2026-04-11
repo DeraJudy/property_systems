@@ -231,13 +231,21 @@ import {
   ArrowLeft, User, Home, Users, FileText, Activity, 
   ExternalLink, Loader2, Calendar, Mail, Phone, 
   Plus, Trash2, Video, CheckCircle, Download, Clock,
-  Fingerprint, MapPin, UserCircle, Hash
+  Fingerprint, MapPin, UserCircle, Hash , Copy,
+    Edit, ClipboardList,
+    Image as ImageIcon,
 } from "lucide-react";
 import { createClient } from "@/lib/superbase/clientUtils";
 import { toast } from "sonner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { motion } from "framer-motion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 
 const supabase = createClient();
@@ -269,9 +277,15 @@ export default function ViewServiceUserProfile() {
   const { id } = useParams();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+
+
+    const supabase = createClient();
+    const [user, setUser] = useState(null);
+
   
   // Tab Content States
-  const [logs, setLogs] = useState([]);
+    const [logs, setLogs] = useState([]);
+    const [loadingLogs, setLoadingLogs] = useState(false);
   const [kwsDocs, setKwsDocs] = useState([]);
   
   // Upload States (KWS)
@@ -401,6 +415,11 @@ const closeModal = () => {
 
   return (
     <div className="min-h-screen bg-[#f5f0e6] py-12 px-4">
+
+        <Button variant="ghost" onClick={() => router.back()} className="text-[#123d2b] hover:bg-[#e1dbd2]">
+             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Dashboard
+           </Button>
+
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* Header Section */}
@@ -445,11 +464,24 @@ const closeModal = () => {
           </TabsContent>
 
           {/* SUPPORT LOGS TAB */}
-          <TabsContent value="logs">
+          {/* <TabsContent value="logs">
             <div className="bg-[#fbf8f2] p-8 rounded-2xl border border-[#e1dbd2]">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-[#123d2b]">Support History</h2>
-                <button className="flex items-center gap-2 bg-[#1f6b4a] text-white px-4 py-2 rounded-lg text-sm font-bold"><Plus size={16}/> Add New Log</button>
+                <div className="flex gap-3">
+          <Link href={`/service-users/${id}/add`}>
+            <Button
+              variant="outline"
+              className="border-[#1f6b4a] text-[#1f6b4a] hover:bg-[#1f6b4a] hover:text-white"
+            >
+              <Plus className="mr-2 h-4 w-4" /> Add Support Log
+            </Button>
+          </Link>
+
+         
+          
+          
+        </div>
               </div>
               {logs.length === 0 ? <p className="text-center py-10 text-gray-500 italic">No support logs recorded yet.</p> : (
                 <div className="space-y-4">
@@ -465,7 +497,142 @@ const closeModal = () => {
                 </div>
               )}
             </div>
-          </TabsContent>
+          </TabsContent> */}
+
+          {/* TAB: SUPPORT LOGS (The table from the second code context) */}
+                      <TabsContent value="logs">
+                        <Card className="border-[#e1dbd2]">
+                          <CardHeader className="border-b border-[#e1dbd2]/50 flex flex-row items-center justify-between">
+                            <CardTitle className="text-sm font-black flex items-center gap-2 text-[#123d2b] uppercase tracking-widest">
+                              <ClipboardList className="w-4 h-4" /> Session History
+                              <div className="flex gap-3">
+                                <Link href={`/service-users/${id}/add`}>
+                                  <Button
+                                    variant="outline"
+                                    className="border-[#1f6b4a] text-[#1f6b4a] hover:bg-[#1f6b4a] hover:text-white"
+                                  >
+                                    <Plus className="mr-2 h-4 w-4" /> Add Support Log
+                                  </Button>
+                                </Link>
+                              </div>
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="pt-6">
+                            {loadingLogs ? (
+                              <div className="flex justify-center p-8">
+                                <Loader2 className="animate-spin text-[#1f6b4a]" />
+                              </div>
+                            ) : logs.length > 0 ? (
+                              <div className="overflow-x-auto">
+                                <table className="w-full text-left text-sm border-collapse">
+                                  <thead>
+                                    <tr className="border-b border-[#e1dbd2] text-[#123d2b]/60 uppercase text-[10px] font-black tracking-widest">
+                                      <th className="pb-3 px-2">Date & Time</th>
+                                      <th className="pb-3 px-2">Staff</th>
+                                      <th className="pb-3 px-2">Type</th>
+                                      <th className="pb-3 px-2">Duration</th>
+                                      <th className="pb-3 px-2">Notes</th>
+                                      <th className="pb-3 px-2">Attachment</th>
+                                      <th className="pb-3 px-2 text-right">Actions</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody className="divide-y divide-[#e1dbd2]/30">
+                                    {logs.map((log) => (
+                                      <tr
+                                        key={log.id}
+                                        className="hover:bg-[#f1ede4]/20 transition-colors group"
+                                      >
+                                        {/* ... previous tds (Date, Staff, Type, Duration, Notes) ... */}
+                                        <td className="py-4 px-2 whitespace-nowrap">
+                                          <div className="font-bold text-[#123d2b]">
+                                            {log.session_date}
+                                          </div>
+                                          <div className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                            <Clock className="w-3 h-3" />{" "}
+                                            {log.session_time || "--:--"}
+                                          </div>
+                                        </td>
+                                        <td className="py-4 px-2 text-[#123d2b] font-medium">
+                                          {log.staff_name}
+                                        </td>
+                                        <td className="py-4 px-2">
+                                          <Badge
+                                            variant="outline"
+                                            className="text-[10px] uppercase border-[#123d2b]/20 text-[#123d2b]"
+                                          >
+                                            {log.session_type}
+                                          </Badge>
+                                        </td>
+                                        <td className="py-4 px-2 font-mono text-xs text-[#123d2b]">
+                                          {log.duration}
+                                        </td>
+                                        <td
+                                          className="py-4 px-2 text-xs text-muted-foreground max-w-40 truncate"
+                                          title={log.notes}
+                                        >
+                                          {log.notes}
+                                        </td>
+          
+                                        {/* NEW ATTACHMENT COLUMN */}
+                                        <td className="py-4 px-2">
+                                          {log.attachment_url ? (
+                                            <a
+                                              href={log.attachment_url}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              download
+                                              className="flex items-center gap-1 text-[10px] font-bold text-[#1f6b4a] hover:underline"
+                                            >
+                                              <FileText className="w-3 h-3" />
+                                              VIEW
+                                            </a>
+                                          ) : (
+                                            <span className="text-[10px] text-muted-foreground italic">
+                                              None
+                                            </span>
+                                          )}
+                                        </td>
+          
+                                        <td className="py-4 px-2 text-right">
+                                          <div className="flex justify-end gap-2">
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              className="h-8 w-8 p-0 text-muted-foreground hover:text-[#123d2b] hover:bg-[#123d2b]/10"
+                                              onClick={() => {
+                                                navigator.clipboard.writeText(log.notes);
+                                                toast.success("Notes copied");
+                                              }}
+                                            >
+                                              <Copy className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              className="h-8 w-8 p-0 text-muted-foreground hover:text-[#1f6b4a] hover:bg-[#1f6b4a]/10"
+                                              onClick={() =>
+                                                router.push(
+                                                  `/support-logs/edit/${log.id}`,
+                                                )
+                                              }
+                                            >
+                                              <Edit3 className="h-4 w-4" />
+                                            </Button>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            ) : (
+                              <div className="text-center py-12 text-muted-foreground italic text-sm">
+                                No support logs found for this resident.
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
 
           {/* DOCUMENTS TAB */}
           <TabsContent value="documents">

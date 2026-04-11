@@ -1096,7 +1096,7 @@ const item = {
 };
 
 const SupportLogNewPage = () => {
-  const { id } = useParams(); 
+  // const { id } = useParams(); 
   const router = useRouter();
   const supabase = createClient();
 
@@ -1105,6 +1105,9 @@ const SupportLogNewPage = () => {
   const [showFollowUpDate, setShowFollowUpDate] = useState(false);
   const [serviceUserName, setServiceUserName] = useState(""); 
   const [selectedFile, setSelectedFile] = useState(null);
+
+  const params = useParams();
+const id = params?.id;
   
   const [formData, setFormData] = useState({
     session_type: "",
@@ -1128,6 +1131,8 @@ const SupportLogNewPage = () => {
   };
 
   useEffect(() => {
+    if (!id) return;
+
     const getInitialData = async () => {
       try {
         const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -1141,7 +1146,7 @@ const SupportLogNewPage = () => {
         const formattedName = formatName(rawName);
 
         const { data: serviceUser } = await supabase
-          .from("service_users")
+          .from("service_users_table")
           .select("first_name, surname")
           .eq("id", id)
           .single();

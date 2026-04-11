@@ -74,72 +74,90 @@ export default function ServiceUserList() {
   }, []);
 
   // --- Delete Logic ---
-  const handleDelete = async (id, name) => {
-  if (!window.confirm(`Delete ${name}?`)) return;
+  const handleDelete = async (id) => {
+    // Optional: Add a confirmation dialog before proceeding
+    if (!window.confirm("Are you sure you want to delete this user and all associated files?")) return;
 
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const user = users.find(u => u.id === id);
-    if (!user) throw new Error("User not found");
+      const user = users.find(u => u.id === id);
+      if (!user) throw new Error("User not found");
 
-    const bucket = "service-user-docs";
+      const bucket = "service-user-docs";
 
-    const extractPath = (url) => {
-      if (!url) return null;
+      /**
+       * extractPath
+       * Supabase .remove() requires the path WITHOUT the bucket name.
+       * Example: "medical/file.pdf" NOT "service-user-docs/medical/file.pdf"
+       */
+      const extractPath = (url) => {
+        if (!url || typeof url !== "string") return null;
 
-      try {
-        const u = new URL(url);
-        const parts = u.pathname.split("/object/public/");
-        if (parts.length < 2) return null;
+        try {
+          // If it's a full Supabase Public URL
+          if (url.includes(`/storage/v1/object/public/${bucket}/`)) {
+            return url.split(`/storage/v1/object/public/${bucket}/`)[1];
+          }
+          
+          // If it's just the path stored in the DB (e.g., "medical/doc.pdf")
+          return url;
+        } catch (e) {
+          console.error("Error parsing path:", e);
+          return null;
+        }
+      };
 
-        const pathParts = parts[1].split("/");
-        pathParts.shift(); // remove bucket
+      // Collect all possible file fields from your database schema
+      const possibleFiles = [
+        user.profile_image,
+        user.medical_doc_url,
+        user.verification_doc_url,
+        user.document_url,
+        user.additional_doc_url,
+        user.extra_doc_url // Added to match your request
+      ];
 
-        return pathParts.join("/");
-      } catch {
-        return null;
+      // Clean the paths and filter out nulls/empty strings
+      const filesToDelete = possibleFiles
+        .map(extractPath)
+        .filter(path => path && path.length > 0);
+
+      console.log("Attempting to delete files:", filesToDelete);
+
+      // 1. Delete files from Storage first
+      if (filesToDelete.length > 0) {
+        const { data: storageData, error: storageError } = await supabase
+          .storage
+          .from(bucket)
+          .remove(filesToDelete);
+
+        if (storageError) {
+          console.error("Storage deletion error:", storageError);
+          // We continue to DB deletion even if storage fails, 
+          // or you can throw error here depending on preference.
+        }
       }
-    };
 
-    const filesToDelete = [
-      extractPath(user.profile_image),
-      extractPath(user.medical_doc_url),
-      extractPath(user.verification_doc_url),
-      extractPath(user.document_url)
-    ].filter(Boolean);
+      // 2. Delete user record from Database
+      const { error: dbError } = await supabase
+        .from("service_users_table")
+        .delete()
+        .eq("id", id);
 
-    console.log("FINAL PATHS:", filesToDelete);
+      if (dbError) throw dbError;
 
-    if (filesToDelete.length === 0) {
-      console.warn("No valid files found to delete");
-    } else {
-      const { error } = await supabase
-        .storage
-        .from(bucket)
-        .remove(filesToDelete);
+      // Update local state
+      setUsers(prev => prev.filter(u => u.id !== id));
+      toast.success("User and all associated documents deleted.");
 
-      if (error) throw error;
+    } catch (err) {
+      console.error("DELETE ERROR:", err);
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
     }
-
-    const { error: dbError } = await supabase
-      .from("service_users_table")
-      .delete()
-      .eq("id", id);
-
-    if (dbError) throw dbError;
-
-    setUsers(prev => prev.filter(u => u.id !== id));
-
-    toast.success("Deleted successfully");
-
-  } catch (err) {
-    console.error(err);
-    toast.error(err.message);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   // --- Filter Logic ---
   const filteredUsers = users.filter((u) =>
