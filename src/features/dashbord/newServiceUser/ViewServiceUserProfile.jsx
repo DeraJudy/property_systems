@@ -1387,6 +1387,47 @@ const confirmDeleteLog = async () => {
 //   }
 // };
 
+// const finalizeKWS = async () => {
+//   if (!kwsName) return toast.error("Please provide a session title");
+
+//   try {
+//     const extractPath = (url) => {
+//       if (!url) return null;
+//       const parts = url.split('/kws-attachments/');
+//       return parts.length > 1 ? parts[1] : null;
+//     };
+
+//     const payload = {
+//       service_user_id: id,
+//       kws_name: kwsName,
+//       session_date: sessionDate,
+//       doc_url: docUrl,
+//       media_url: mediaUrl,
+//       doc_storage_path: extractPath(docUrl),
+//       media_storage_path: extractPath(mediaUrl),
+//       is_manual_entry: selectedKWSId === "new",
+//     };
+
+//     const { error } = await supabase.from("kws_finalized_records").insert([payload]);
+//     if (error) throw error;
+
+//     toast.success("Session saved successfully");
+
+    
+
+//     // CRITICAL: We DO NOT call handleCloseModal here. 
+//     // We close manually to avoid the cleanup logic.
+//     setIsUploadModalOpen(false);
+//     setDocUrl(null); // Clear URLs so they aren't "orphans"
+//     setMediaUrl(null);
+//     setKwsName("");
+//     fetchAllData();
+//   } catch (err) {
+//     toast.error("Failed to save: " + err.message);
+//   }
+// };
+
+
 const finalizeKWS = async () => {
   if (!kwsName) return toast.error("Please provide a session title");
 
@@ -1408,19 +1449,37 @@ const finalizeKWS = async () => {
       is_manual_entry: selectedKWSId === "new",
     };
 
-    const { error } = await supabase.from("kws_finalized_records").insert([payload]);
-    if (error) throw error;
+    // --- UPDATED LOGIC START ---
+    if (editingId) {
+      // If editingId exists, update the specific row
+      const { error } = await supabase
+        .from("kws_finalized_records")
+        .update(payload)
+        .eq("id", editingId);
 
-    toast.success("Session saved successfully");
+      if (error) throw error;
+      toast.success("Session updated successfully");
+    } else {
+      // If no editingId, it's a brand new record
+      const { error } = await supabase
+        .from("kws_finalized_records")
+        .insert([payload]);
 
-    // CRITICAL: We DO NOT call handleCloseModal here. 
-    // We close manually to avoid the cleanup logic.
+      if (error) throw error;
+      toast.success("Session saved successfully");
+    }
+    // --- UPDATED LOGIC END ---
+
+    // Cleanup UI State
     setIsUploadModalOpen(false);
-    setDocUrl(null); // Clear URLs so they aren't "orphans"
+    setEditingId(null); // CRITICAL: Reset the ID so the next "New" entry doesn't update this one
+    setDocUrl(null); 
     setMediaUrl(null);
     setKwsName("");
     fetchAllData();
+    
   } catch (err) {
+    console.error("Save Error:", err);
     toast.error("Failed to save: " + err.message);
   }
 };
@@ -1730,7 +1789,7 @@ const handleNewDocUpload = async () => {
                         size="sm" 
                         className="text-red-500 hover:text-red-700 hover:bg-red-50"
                         // onClick={() => handleDeleteLog(log)}
-                        onClick={() => handleDelete(logToDelete.id)}
+                        onClick={() => handleDeleteLog(logToDelete.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
