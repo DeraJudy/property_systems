@@ -1618,12 +1618,13 @@ const handleNewDocUpload = async () => {
           {/* ABOUT TAB */}
           <TabsContent value="about">
             <Card className="border-[#e1dbd2]">
-              <CardHeader>
-                <CardTitle className="text-black flex items-center gap-2"><User size={20}/> About Resident
 
-                  <div className="flex justify-between items-center mb-4">
+        
+
+              <CardHeader>
+                <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-bold text-[#123d2b] flex items-center gap-2">
-                  <FileText size={20} /> Additional Documents
+                  <FileText size={20} />About Documents
                 </h3>
                 <Button 
                   onClick={() => { setUploadTargetField("additional_documents"); setIsUploadModalsOpen(true); }}
@@ -1634,9 +1635,8 @@ const handleNewDocUpload = async () => {
                   <Plus size={16} className="mr-1" /> Add Doc
                 </Button>
               </div>
-
-                
-                </CardTitle></CardHeader>
+                {/* <CardTitle className="text-black flex items-center gap-2"><User size={20}/> About Resident </CardTitle> */}
+                </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   
@@ -1726,10 +1726,11 @@ const handleNewDocUpload = async () => {
                       </Button>
                       {/* DELETE BUTTON */}
                       <Button 
-                        variant="ghost" 
+                        variant="destructive" 
                         size="sm" 
                         className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                        onClick={() => handleDeleteLog(log)}
+                        // onClick={() => handleDeleteLog(log)}
+                        onClick={() => handleDelete(logToDelete.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -1972,7 +1973,7 @@ const handleNewDocUpload = async () => {
                             <Edit3 size={16} />
                           </button>
                           <button
-                            onClick={() => setLogToDelete(log)}
+                            onClick={() => setDocToDelete(doc)}
                             className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
                           >
                             <Trash2 size={16} />
