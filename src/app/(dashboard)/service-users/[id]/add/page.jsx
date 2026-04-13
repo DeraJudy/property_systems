@@ -5,6 +5,8 @@ const page = () => {
   return (
     <div>
         <SupportLogNewPage />
+
+        {/* Add support log page */}
     </div>
   )
 }

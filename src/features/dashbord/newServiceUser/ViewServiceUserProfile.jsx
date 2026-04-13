@@ -1050,7 +1050,7 @@ import {
   Briefcase,
   UserPlus,
   History,
-  ShieldAlert,
+  ShieldAlert, Clock, Copy,
   Play,
   Video
 } from "lucide-react";
@@ -1159,10 +1159,14 @@ const [newDocName, setNewDocName] = useState("");
 const [selectedFile, setSelectedFile] = useState(null);
 const [isUploading, setIsUploading] = useState(false);
 
+
   const [sessionDate, setSessionDate] = useState(() => {
     const now = new Date();
     return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
   });
+
+const [logToDelete, setLogToDelete] = useState(null);
+const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchAllData = async () => {
     try {
@@ -1195,6 +1199,60 @@ const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => { fetchAllData(); }, [id]);
 
+  // Add this function to handle the database deletion
+const handleDeleteLog = (log) => {
+  setLogToDelete(log);
+  setDeleteConfirmText(""); // Reset text when opening modal
+};
+
+const confirmDeleteLog = async () => {
+  // Pattern Check: Ensure the user typed 'DELETE'
+  if (deleteConfirmText !== "DELETE") {
+    return toast.error("Please type DELETE to confirm");
+  }
+
+  setIsDeleting(true);
+  try {
+    // 1. Storage Cleanup (FIRST)
+    // We must match the "id/filename" pattern from SupportLogNewPage
+    if (logToDelete.file_url) {
+      // Extract filename from the end of the URL
+      const fileName = logToDelete.file_url.split('/').pop();
+      
+      // Reconstruct the full path used in the bucket: service_user_id/filename
+      const storagePath = `${logToDelete.service_user_id}/${fileName}`;
+
+      const { error: storageError } = await supabase.storage
+        .from("support_documents")
+        .remove([storagePath]);
+
+      if (storageError) {
+        console.error("Storage cleanup error:", storageError.message);
+        // We continue so the database record is still removed if the file is missing
+      }
+    }
+
+    // 2. Database Deletion (SECOND)
+    const { error: dbError } = await supabase
+      .from("support_logs")
+      .delete()
+      .eq("id", logToDelete.id);
+
+    if (dbError) throw dbError;
+
+    toast.success("Log and file deleted successfully");
+    setLogToDelete(null);
+    setDeleteConfirmText("");
+    fetchAllData(); // Refresh the list
+  } catch (err) {
+    console.error(err);
+    toast.error("Deletion failed");
+  } finally {
+    setIsDeleting(false);
+  }
+};
+
+
   // --- KWS LOGIC ---
   const handleKWSSelect = (e) => {
     const kwsId = e.target.value;
@@ -1210,6 +1268,10 @@ const [isUploading, setIsUploading] = useState(false);
       setMediaUrl(selected.media_url);
     }
   };
+
+
+
+
 
   // const handleFileUpload = async (e, type) => {
   //   const file = e.target.files[0];
@@ -1534,7 +1596,7 @@ const handleNewDocUpload = async () => {
         </div>
 
         {/* HERO HEADER */}
-        <div className="bg-black text-black p-8 rounded-3xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="bg-black text-white p-8 rounded-3xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-6">
             {/* <div className="w-20 h-20 bg-[#1f6b4a] rounded-2xl flex items-center justify-center text-3xl font-bold uppercase">
               {userData.service_user_name?.[0]}
@@ -1546,17 +1608,17 @@ const handleNewDocUpload = async () => {
               </p> */}
             </div>
           </div>
-          <Badge className="bg-black text-black px-4 py-2 text-lg">Active Resident</Badge>
+          <Badge className=" text-white px-4 py-2 text-lg">Active Resident</Badge>
         </div>
 
         <Tabs defaultValue="about" className="space-y-6">
           <TabsList className="bg-[#e8e1d6] p-1 border border-[#e1dbd2] overflow-x-auto justify-start h-auto">
-            <TabsTrigger value="about" className="data-[state=active]:bg-[#123d2b] data-[state=active]:text-white">About</TabsTrigger>
-            <TabsTrigger value="logs" className="data-[state=active]:bg-[#123d2b] data-[state=active]:text-white">Support Logs</TabsTrigger>
-            <TabsTrigger value="documents" className="data-[state=active]:bg-[#123d2b] data-[state=active]:text-white">Documents</TabsTrigger>
-            <TabsTrigger value="eet" className="data-[state=active]:bg-[#123d2b] data-[state=active]:text-white">EET</TabsTrigger>
-            <TabsTrigger value="onboarding" className="data-[state=active]:bg-[#123d2b] data-[state=active]:text-white">Onboarding</TabsTrigger>
-            <TabsTrigger value="kws" className="data-[state=active]:bg-[#123d2b] data-[state=active]:text-white">Key Working Session</TabsTrigger>
+            <TabsTrigger value="about" className="data-[state=active]:bg-black data-[state=active]:text-white">About</TabsTrigger>
+            <TabsTrigger value="logs" className="data-[state=active]:bg-black data-[state=active]:text-white">Support Logs</TabsTrigger>
+            <TabsTrigger value="documents" className="data-[state=active]:bg-black data-[state=active]:text-white">Documents</TabsTrigger>
+            <TabsTrigger value="eet" className="data-[state=active]:bg-black data-[state=active]:text-white">EET</TabsTrigger>
+            <TabsTrigger value="onboarding" className="data-[state=active]:bg-black data-[state=active]:text-white">Onboarding</TabsTrigger>
+            <TabsTrigger value="kws" className="data-[state=active]:bg-black data-[state=active]:text-white">Key Working Session</TabsTrigger>
           </TabsList>
 
           {/* ABOUT TAB */}
@@ -1566,46 +1628,114 @@ const handleNewDocUpload = async () => {
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div>
-                        <h3 className="text-sm font-black text-gray-400 uppercase mb-4">Primary Information</h3>
-                        <DataRow label="Service User Name" value={userData.service_user_name} />
-                    </div>
-                    <div>
-                        <h3 className="text-sm font-black text-gray-400 uppercase mb-4">Initial Assessment</h3>
+                        {/* <h3 className="text-sm font-black text-gray-400 uppercase mb-4">Primary Information</h3> */}
                         {userData.about_file_url ? (
                             <DocCard title="About Document" url={userData.about_file_url} />
                         ) : <p className="text-sm italic text-gray-400">No primary assessment uploaded.</p>}
                     </div>
+                    {/* <div>
+                        <h3 className="text-sm font-black text-gray-400 uppercase mb-4">Initial Assessment</h3>
+                        {userData.about_file_url ? (
+                            <DocCard title="About Document" url={userData.about_file_url} />
+                        ) : <p className="text-sm italic text-gray-400">No primary assessment uploaded.</p>}
+                    </div> */}
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
           {/* SUPPORT LOGS TAB */}
-          <TabsContent value="logs">
-            <Card className="border-[#e1dbd2]">
-              <CardHeader className="flex flex-row justify-between items-center">
-                <CardTitle className="text-black flex items-center gap-2"><History size={20}/> Support History</CardTitle>
-                <Link href={`/service-users/${id}/add`}>
-                  <Button className="text-white hover:bg-[#123d2b]"><Plus size={16} className="mr-2"/> Add Support Log</Button>
-                </Link>
-              </CardHeader>
-              <CardContent>
-                {logs.length === 0 ? <p className="text-center py-10 italic text-gray-400">No logs found.</p> : (
-                  <div className="space-y-4">
-                    {logs.map(log => (
-                      <div key={log.id} className="p-4 bg-white border rounded-xl flex justify-between items-center shadow-sm">
-                        <div>
-                          <p className="font-bold text-black">{new Date(log.session_date).toLocaleDateString()}</p>
-                          <p className="text-sm text-gray-500 line-clamp-1">{log.notes || "No notes"}</p>
-                        </div>
-                        <Button variant="ghost" size="sm" onClick={() => router.push(`/support-logs/edit/${log.id}`)}>Edit</Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
+
+
+              {/* TAB: SUPPORT LOGS */}
+<TabsContent value="logs">
+  <Card className="border-[#e1dbd2]">
+    <CardHeader className="border-b border-[#e1dbd2]/50 flex flex-row items-center justify-between">
+      <CardTitle className="text-sm font-black flex items-center gap-2 text-[#123d2b] uppercase tracking-widest">
+        <ClipboardList className="w-4 h-4" /> Session History
+      </CardTitle>
+      <Link href={`/service-users/${id}/add`}>
+        <Button variant="outline" className="border-[#1f6b4a] text-[#1f6b4a] hover:bg-[#1f6b4a] hover:text-white">
+          <Plus className="mr-2 h-4 w-4" /> Add Support Log
+        </Button>
+      </Link>
+    </CardHeader>
+    <CardContent className="pt-6">
+      {logs.length > 0 ? (
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm border-collapse">
+            <thead>
+              <tr className="border-b border-[#e1dbd2] text-[#123d2b]/60 uppercase text-[10px] font-black tracking-widest">
+                <th className="pb-3 px-2">Date & Time</th>
+                <th className="pb-3 px-2">Staff</th>
+                <th className="pb-3 px-2">Type</th>
+                <th className="pb-3 px-2">Duration</th>
+                <th className="pb-3 px-2">Notes</th>
+                <th className="pb-3 px-2">Attachment</th>
+                <th className="pb-3 px-2 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[#e1dbd2]/30">
+              {logs.map((log) => (
+                <tr key={log.id} className="hover:bg-[#f1ede4]/20 transition-colors group">
+                  <td className="py-4 px-2 whitespace-nowrap">
+                    <div className="font-bold text-[#123d2b]">{new Date(log.session_date).toLocaleDateString()}</div>
+                    <div className="text-[10px] text-muted-foreground flex items-center gap-1">
+                      <Clock className="w-3 h-3" /> {log.session_time || "--:--"}
+                    </div>
+                  </td>
+                  <td className="py-4 px-2 text-[#123d2b] font-medium">{log.support_worker_name}</td>
+                  <td className="py-4 px-2">
+                    <Badge variant="outline" className="text-[10px] uppercase border-[#123d2b]/20">
+                      {log.session_type}
+                    </Badge>
+                  </td>
+                  <td className="py-4 px-2 font-mono text-xs text-[#123d2b]">{log.duration}</td>
+                  <td className="py-4 px-2 text-xs text-muted-foreground max-w-40 truncate" title={log.notes}>
+                    {log.notes}
+                  </td>
+                  <td className="py-4 px-2">
+                    {log.file_url ? (
+                      <button 
+                        onClick={() => openDocument(log.file_url)}
+                        className="flex items-center gap-1 text-[10px] font-bold text-[#1f6b4a] hover:underline"
+                      >
+                        <FileText className="w-3 h-3" /> VIEW
+                      </button>
+                    ) : (
+                      <span className="text-[10px] text-muted-foreground italic">None</span>
+                    )}
+                  </td>
+                  <td className="py-4 px-2 text-right">
+                    <div className="flex justify-end gap-2">
+                      <Button variant="ghost" size="sm" onClick={() => router.push(`/support-logs/edit/${log.id}`)}>
+                        <Edit3 className="h-4 w-4" />
+                      </Button>
+                      {/* DELETE BUTTON */}
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => handleDeleteLog(log)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="text-center py-12 text-muted-foreground italic text-sm">
+          No support logs found for this resident.
+        </div>
+      )}
+    </CardContent>
+  </Card>
+</TabsContent>
+
 
           {/* DOCUMENTS TAB */}
           <TabsContent value="documents">
@@ -1829,7 +1959,7 @@ const handleNewDocUpload = async () => {
                             <Edit3 size={16} />
                           </button>
                           <button
-                            onClick={() => setDocToDelete(doc)}
+                            onClick={() => setLogToDelete(log)}
                             className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
                           >
                             <Trash2 size={16} />
@@ -1930,8 +2060,8 @@ const handleNewDocUpload = async () => {
 </Dialog>
 
 
-    <Dialog open={isUploadModalsOpen} onOpenChange={setIsUploadModalsOpen}>
-  <DialogContent className="bg-[#fdfbf7] border-[#e1dbd2]">
+  <Dialog open={isUploadModalsOpen} onOpenChange={setIsUploadModalsOpen}>
+  <DialogContent className="fixed left-[50%] top-[50%] z-[100] w-full max-w-lg translate-x-[-50%] translate-y-[-50%] border-[#e1dbd2] bg-[#fdfbf7] p-6 shadow-2xl duration-200">
     <DialogHeader>
       <DialogTitle className="text-[#123d2b]">Upload New Document</DialogTitle>
     </DialogHeader>
@@ -1958,6 +2088,44 @@ const handleNewDocUpload = async () => {
         className="w-full bg-[#123d2b] hover:bg-[#1f6b4a]"
       >
         {isUploading ? <Loader2 className="animate-spin mr-2" /> : "Start Upload"}
+      </Button>
+    </div>
+  </DialogContent>
+</Dialog>
+
+    {/* Delete Support */}
+<Dialog open={!!logToDelete} onOpenChange={() => setLogToDelete(null)}>
+  <DialogContent className="bg-[#fdfbf7] border-[#e1dbd2]">
+    <DialogHeader>
+      <DialogTitle className="text-[#123d2b] flex items-center gap-2">
+        <ShieldAlert className="w-5 h-5 text-red-600" /> Confirm Deletion
+      </DialogTitle>
+    </DialogHeader>
+    
+    <div className="space-y-4 py-4">
+      <p className="text-sm text-gray-600">
+        This will permanently delete the support log and its associated file. 
+        To confirm, please type <span className="font-bold text-red-600">DELETE</span> below:
+      </p>
+      <Input
+        placeholder="Type DELETE to confirm"
+        value={deleteConfirmText}
+        onChange={(e) => setDeleteConfirmText(e.target.value)}
+        className="border-[#e1dbd2] focus:ring-red-500"
+      />
+    </div>
+
+    <div className="flex justify-end gap-3">
+      <Button variant="outline" onClick={() => setLogToDelete(null)}>
+        Cancel
+      </Button>
+      <Button 
+        variant="destructive" 
+        onClick={confirmDeleteLog}
+        disabled={isDeleting || deleteConfirmText !== "DELETE"}
+      >
+        {isDeleting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+        Delete Record
       </Button>
     </div>
   </DialogContent>
