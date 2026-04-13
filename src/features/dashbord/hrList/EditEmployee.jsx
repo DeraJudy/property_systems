@@ -1071,59 +1071,142 @@ const EditEmployeeForm = () => {
   }, [id, router]);
 
   // Synced handleFileUpload from AddEmployee with "trackKey" for dynamic lists
+//   const handleFileUpload = async (
+//     e,
+//     fieldName,
+//     index = null,
+//     listName = null,
+//     isMultiple = false,
+//   ) => {
+//     const files = Array.from(e.target.files);
+//     if (!files.length) return;
+
+//     const trackKey = listName ? `${listName}-${index}` : fieldName;
+//     setUploadingFields((prev) => ({ ...prev, [trackKey]: true }));
+
+//     try {
+//       const uploadResults = await Promise.all(
+//         files.map(async (file) => {
+//           const fileExt = file.name.split(".").pop();
+//           const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+          
+//           // Ensure we have an ID to use for the folder name
+// const folderId = formData.id || 'temp_id'; 
+
+// // New structure: [Employee ID]/[Category]/[File]
+// const filePath = `${folderId}/${fieldName}/${fileName}`;
+
+//           const { error: uploadError } = await supabase.storage
+//             .from("employee-docs")
+//             .upload(filePath, file);
+
+//           if (uploadError) throw uploadError;
+
+//           const { data } = supabase.storage
+//             .from("employee-docs")
+//             .getPublicUrl(filePath);
+//           return data.publicUrl;
+//         }),
+//       );
+
+//       if (listName !== null && index !== null) {
+//         const newList = [...formData[listName]];
+//         newList[index] = { ...newList[index], url: uploadResults[0] };
+//         setFormData((prev) => ({ ...prev, [listName]: newList }));
+//       } else {
+//         setFormData((prev) => ({
+//           ...prev,
+//           [fieldName]: isMultiple
+//             ? [...(prev[fieldName] || []), ...uploadResults]
+//             : uploadResults[0],
+//         }));
+//       }
+//       toast.success("File uploaded successfully");
+//     } catch (error) {
+//       console.error("Upload failed:", error);
+//       toast.error("Upload failed.");
+//     } finally {
+//       setUploadingFields((prev) => ({ ...prev, [trackKey]: false }));
+//     }
+//   };
+
   const handleFileUpload = async (
-    e,
-    fieldName,
-    index = null,
-    listName = null,
-    isMultiple = false,
-  ) => {
-    const files = Array.from(e.target.files);
-    if (!files.length) return;
+  e,
+  fieldName,
+  index = null,
+  listName = null,
+  isMultiple = false,
+) => {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
 
-    const trackKey = listName ? `${listName}-${index}` : fieldName;
-    setUploadingFields((prev) => ({ ...prev, [trackKey]: true }));
+  // In Edit mode, formData.id will already exist from the database
+  const employeeId = formData.id;
 
-    try {
-      const uploadResults = await Promise.all(
-        files.map(async (file) => {
-          const fileExt = file.name.split(".").pop();
-          const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-          const filePath = `employee-docs/${formData.full_name || "unnamed"}/${listName || fieldName}/${fileName}`;
+  if (!employeeId) {
+    toast.error("Employee ID missing. Cannot upload.");
+    return;
+  }
 
-          const { error: uploadError } = await supabase.storage
-            .from("employee-docs")
-            .upload(filePath, file);
+  const trackKey = listName ? `${listName}-${index}` : fieldName;
+  setUploadingFields((prev) => ({ ...prev, [trackKey]: true }));
 
-          if (uploadError) throw uploadError;
+  try {
+    const uploadResults = await Promise.all(
+      files.map(async (file) => {
+        const fileExt = file.name.split(".").pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
 
-          const { data } = supabase.storage
-            .from("employee-docs")
-            .getPublicUrl(filePath);
-          return data.publicUrl;
-        }),
-      );
+        // Uses the same structure: ID / FIELD / FILE
+        const filePath = `${employeeId}/${fieldName}/${fileName}`;
 
-      if (listName !== null && index !== null) {
-        const newList = [...formData[listName]];
-        newList[index] = { ...newList[index], url: uploadResults[0] };
-        setFormData((prev) => ({ ...prev, [listName]: newList }));
-      } else {
-        setFormData((prev) => ({
-          ...prev,
-          [fieldName]: isMultiple
-            ? [...(prev[fieldName] || []), ...uploadResults]
-            : uploadResults[0],
-        }));
-      }
-      toast.success("File uploaded successfully");
-    } catch (error) {
-      console.error("Upload failed:", error);
-      toast.error("Upload failed.");
-    } finally {
-      setUploadingFields((prev) => ({ ...prev, [trackKey]: false }));
+        // --- OPTIONAL: OLD FILE CLEANUP ---
+        // If you want to delete the previous file before uploading the new one:
+        const oldUrl = listName !== null && index !== null 
+          ? formData[listName][index]?.url 
+          : formData[fieldName];
+          
+        if (oldUrl && typeof oldUrl === 'string' && oldUrl.includes('employee-docs')) {
+           const oldPath = oldUrl.split('/employee-docs/')[1];
+           await supabase.storage.from("employee-docs").remove([decodeURIComponent(oldPath)]);
+        }
+        // ----------------------------------
+
+        const { error: uploadError } = await supabase.storage
+          .from("employee-docs")
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage
+          .from("employee-docs")
+          .getPublicUrl(filePath);
+
+        return data.publicUrl;
+      }),
+    );
+
+    // State update logic (same as your Add form)
+    if (listName !== null && index !== null) {
+      const newList = [...formData[listName]];
+      newList[index] = { ...newList[index], url: uploadResults[0] };
+      setFormData((prev) => ({ ...prev, [listName]: newList }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [fieldName]: isMultiple
+          ? [...(prev[fieldName] || []), ...uploadResults]
+          : uploadResults[0],
+      }));
     }
-  };
+    toast.success("File updated successfully");
+  } catch (error) {
+    console.error("Upload error:", error);
+    toast.error("Upload failed");
+  } finally {
+    setUploadingFields((prev) => ({ ...prev, [trackKey]: false }));
+  }
+};
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

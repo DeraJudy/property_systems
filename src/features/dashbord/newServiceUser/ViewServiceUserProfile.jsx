@@ -1206,33 +1206,27 @@ const handleDeleteLog = (log) => {
 };
 
 const confirmDeleteLog = async () => {
-  // Pattern Check: Ensure the user typed 'DELETE'
+  // 1. Pattern Check: Double check the text matches "DELETE"
   if (deleteConfirmText !== "DELETE") {
     return toast.error("Please type DELETE to confirm");
   }
 
   setIsDeleting(true);
   try {
-    // 1. Storage Cleanup (FIRST)
-    // We must match the "id/filename" pattern from SupportLogNewPage
-    if (logToDelete.file_url) {
-      // Extract filename from the end of the URL
-      const fileName = logToDelete.file_url.split('/').pop();
-      
-      // Reconstruct the full path used in the bucket: service_user_id/filename
-      const storagePath = `${logToDelete.service_user_id}/${fileName}`;
-
+    // 2. Step 1: Delete from Storage first using the exact file_path from DB
+    // This matches the ${id}/${fileName} structure from SupportLogNewPage
+    if (logToDelete.file_path) {
       const { error: storageError } = await supabase.storage
         .from("support_documents")
-        .remove([storagePath]);
+        .remove([logToDelete.file_path]);
 
       if (storageError) {
         console.error("Storage cleanup error:", storageError.message);
-        // We continue so the database record is still removed if the file is missing
+        // We continue to ensure the DB record is removed even if the file is missing
       }
     }
 
-    // 2. Database Deletion (SECOND)
+    // 3. Step 2: Delete from Database
     const { error: dbError } = await supabase
       .from("support_logs")
       .delete()
@@ -1240,10 +1234,10 @@ const confirmDeleteLog = async () => {
 
     if (dbError) throw dbError;
 
-    toast.success("Log and file deleted successfully");
+    toast.success("Support log and file deleted successfully");
     setLogToDelete(null);
     setDeleteConfirmText("");
-    fetchAllData(); // Refresh the list
+    fetchAllData(); // Refresh your table list
   } catch (err) {
     console.error(err);
     toast.error("Deletion failed");
@@ -1624,9 +1618,28 @@ const handleNewDocUpload = async () => {
           {/* ABOUT TAB */}
           <TabsContent value="about">
             <Card className="border-[#e1dbd2]">
-              <CardHeader><CardTitle className="text-black flex items-center gap-2"><User size={20}/> About Resident</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle className="text-black flex items-center gap-2"><User size={20}/> About Resident
+
+                  <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold text-[#123d2b] flex items-center gap-2">
+                  <FileText size={20} /> Additional Documents
+                </h3>
+                <Button 
+                  onClick={() => { setUploadTargetField("additional_documents"); setIsUploadModalsOpen(true); }}
+                  variant="outline" 
+                  size="sm" 
+                  className="border-[#1f6b4a] text-[#1f6b4a] hover:bg-[#e6f2ec]"
+                >
+                  <Plus size={16} className="mr-1" /> Add Doc
+                </Button>
+              </div>
+
+                
+                </CardTitle></CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  
                     <div>
                         {/* <h3 className="text-sm font-black text-gray-400 uppercase mb-4">Primary Information</h3> */}
                         {userData.about_file_url ? (
