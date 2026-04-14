@@ -126,7 +126,7 @@ export default function PropertyDetails() {
         <div className="p-6 flex-1 flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-3xl font-bold text-[#123d2b]">{property.property_name}</h1>
+              <h1 className="text-3xl font-bold text-black">{property.property_name}</h1>
               <p className="text-muted-foreground">{property.address}, {property.postcode}</p>
             </div>
             <Badge className="bg-[#1f6b4a] text-white capitalize px-3 py-1">
@@ -226,7 +226,7 @@ function StatBox({ label, value }) {
   return (
     <div className="space-y-1">
       <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">{label}</p>
-      <p className="text-lg font-bold text-[#123d2b] truncate">{value}</p>
+      <p className="text-lg font-bold text-black truncate">{value}</p>
     </div>
   );
 }
@@ -235,7 +235,7 @@ function DetailItem({ label, value }) {
   return (
     <div className="border-b border-[#f0ede8] pb-2">
       <p className="text-xs text-muted-foreground font-medium">{label}</p>
-      <p className="text-[#123d2b] font-semibold">{value || "—"}</p>
+      <p className="text-black font-semibold">{value || "—"}</p>
     </div>
   );
 }

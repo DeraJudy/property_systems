@@ -55,7 +55,7 @@ export default function Header({ setSidebarOpen }) {
   }, []);
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center border-b bg-white px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center border-b bg-[#FFFDD0] px-6">
       <Button
         variant="ghost"
         size="icon"
@@ -68,10 +68,10 @@ export default function Header({ setSidebarOpen }) {
       <div className="flex-1" />
 
       {/* Notifications */}
-      <Button variant="ghost" size="icon" className="relative">
+      {/* <Button variant="ghost" size="icon" className="relative">
         <Bell className="h-5 w-5 text-gray-500" />
         <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500" />
-      </Button>
+      </Button> */}
 
       {/* Profile Avatar */}
       {/* <div className="ml-4">
@@ -102,14 +102,14 @@ export default function Header({ setSidebarOpen }) {
           />
         </div>
       ) : (
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#206c3c] text-xs font-semibold text-white transition-transform hover:scale-105">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-xs font-semibold text-[#FFFDD0] transition-transform hover:scale-105">
           {initials || "U"}
         </div>
       )}
     </DropdownMenuTrigger>
     
     <DropdownMenuContent align="end" className="w-48 bg-[#fbf8f2] border-[#e1dbd2]">
-      <DropdownMenuLabel className="text-[#123d2b] font-bold">My Account</DropdownMenuLabel>
+      <DropdownMenuLabel className="text-black font-bold">My Account</DropdownMenuLabel>
       <DropdownMenuSeparator className="bg-[#e1dbd2]" />
       
       {/* <DropdownMenuItem className="cursor-pointer text-[#123d2b] hover:bg-[#f1ede4]">

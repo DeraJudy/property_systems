@@ -156,7 +156,7 @@ export default function DashboardShell({ children }) {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#faf6e7]">
+    <div className="flex min-h-screen bg-[#FFFDD0]">
       <Sidebar />
 
       <MobileSidebar

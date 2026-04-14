@@ -425,7 +425,7 @@ export default function PropertiesTable() {
 
   const propStatusColor = (status) => {
     switch (status?.toLowerCase()) {
-      case "active": return "bg-emerald-100 text-emerald-700 border-emerald-200";
+      case "active": return "bg-[#FFFDD0] text-black border-emerald-200";
       case "onboarding": return "bg-blue-100 text-blue-700 border-blue-200";
       case "inactive": return "bg-slate-100 text-slate-700 border-slate-200";
       default: return "bg-amber-100 text-amber-700 border-amber-200";
@@ -434,8 +434,8 @@ export default function PropertiesTable() {
 
   if (!mounted) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-[#f5f0e6]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#1f6b4a]" />
+      <div className="flex h-screen w-full items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-black" />
       </div>
     );
   }
@@ -446,11 +446,11 @@ export default function PropertiesTable() {
         
         <motion.div variants={item} className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-[#123d2b]">Properties</h1>
+            <h1 className="text-2xl font-bold text-black">Properties</h1>
             <p className="text-sm text-muted-foreground">Manage housing properties and performance</p>
           </div>
           <Link href="/addProperties">
-            <Button className="bg-[#1f6b4a] hover:bg-[#123d2b] text-white">
+            <Button className="bg-black hover:bg-[#FFFDD0] text-white">
               <Plus className="mr-2 h-4 w-4" /> Add Property
             </Button>
           </Link>
@@ -471,7 +471,7 @@ export default function PropertiesTable() {
                   <kpi.icon className="h-4 w-4 text-[#1f6b4a]" />
                 </div>
                 <div>
-                  <p className="text-xl font-bold text-[#123d2b]">{kpi.value}</p>
+                  <p className="text-xl font-bold text-black">{kpi.value}</p>
                   <p className="text-xs text-muted-foreground">{kpi.label}</p>
                 </div>
               </div>
@@ -483,7 +483,7 @@ export default function PropertiesTable() {
           <Tabs defaultValue="properties">
             <TabsList className="bg-[#e1dbd2]/50">
               <TabsTrigger value="properties">Properties</TabsTrigger>
-              <TabsTrigger value="voids">Void Management</TabsTrigger>
+              {/* <TabsTrigger value="voids">Void Management</TabsTrigger> */}
             </TabsList>
 
             <TabsContent value="properties" className="mt-4 space-y-4">
@@ -515,11 +515,11 @@ export default function PropertiesTable() {
                 <Table>
                   <TableHeader className="text-lg ">
                     <TableRow>
-                      <TableHead className="text-[#123d2b] font-bold">Property</TableHead>
-                      <TableHead className="hidden md:table-cell text-[#123d2b] font-bold">Address</TableHead>
-                      <TableHead className="text-[#123d2b] font-bold">Status</TableHead>
-                      <TableHead className="hidden sm:table-cell text-[#123d2b] font-bold">Occupancy</TableHead>
-                      <TableHead className="text-right text-[#123d2b] font-bold px-6">Actions</TableHead>
+                      <TableHead className="text-black font-bold">Property</TableHead>
+                      <TableHead className="hidden md:table-cell text-black font-bold">Address</TableHead>
+                      <TableHead className="text-black font-bold">Status</TableHead>
+                      <TableHead className="hidden sm:table-cell text-black font-bold">Occupancy</TableHead>
+                      <TableHead className="text-right text-black font-bold px-6">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -544,10 +544,10 @@ export default function PropertiesTable() {
                         >
                           <TableCell>
                             <div className="flex items-center gap-3">
-                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#f5f0e6]">
-                                <Home className="h-4 w-4 text-[#1f6b4a]" />
+                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#FFFDD0]">
+                                <Home className="h-4 w-4 text-black" />
                               </div>
-                              <span className="font-medium text-[#123d2b]">{p.property_name}</span>
+                              <span className="font-medium text-black">{p.property_name}</span>
                             </div>
                           </TableCell>
                           <TableCell className="hidden md:table-cell text-sm text-muted-foreground truncate max-w-50">
@@ -569,7 +569,7 @@ export default function PropertiesTable() {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8 text-slate-500 hover:text-[#1f6b4a] hover:bg-[#e6f2ec]"
+                                className="h-8 w-8 text-slate-500 hover:text-black hover:bg-[#e6f2ec]"
                                 onClick={(e) => handleEdit(e, p.id)}
                               >
                                 <Pencil className="h-4 w-4 " />
@@ -605,7 +605,7 @@ export default function PropertiesTable() {
       >
         <AlertDialogContent className="bg-white border-[#e1dbd2]">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-[#123d2b]">Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle className="text-black">Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This will permanently delete this property from the database. 
               If other records (like certificates or residents) depend on this property, 

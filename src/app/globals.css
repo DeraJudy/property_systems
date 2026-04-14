@@ -6,11 +6,13 @@
 @custom-variant dark (&:is(.dark *));
 
 .background {
-  background-color: #f5f0e6;
+  /* background-color: #f5f0e6; */
+  background-color: #FFFDD0;
 }
 
 .forground {
-  background-color: #123d2b;
+  /* background-color: #123d2b; */
+  background-color: black;
 }
 
 .card {
