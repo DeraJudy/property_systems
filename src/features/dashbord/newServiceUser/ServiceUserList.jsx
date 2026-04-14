@@ -290,9 +290,591 @@
 // }
 
 
+// "use client";
+
+// import React, { useEffect, useState } from "react";
+// import { createClient } from "@/lib/superbase/clientUtils";
+// import { 
+//   Edit, 
+//   Trash2, 
+//   Eye, 
+//   Search, 
+//   Loader2, 
+//   Plus, 
+//   UserCircle, UserPlus 
+// } from "lucide-react";
+// import { Button } from "@/components/ui/button";
+// import { Input } from "@/components/ui/input";
+// import { 
+//   Table, 
+//   TableBody, 
+//   TableCell, 
+//   TableHead, 
+//   TableHeader, 
+//   TableRow 
+// } from "@/components/ui/table";
+// import {
+//   AlertDialog,
+//   AlertDialogAction,
+//   AlertDialogCancel,
+//   AlertDialogContent,
+//   AlertDialogDescription,
+//   AlertDialogFooter,
+//   AlertDialogHeader,
+//   AlertDialogTitle,
+// } from "@/components/ui/alert-dialog";;
+// import { Badge } from "@/components/ui/badge";
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+// import { toast } from "sonner";
+// import Link from "next/link";
+// import { useRouter } from "next/navigation";
+
+// const supabase = createClient();
+
+// export default function ServiceUserList() {
+//   const router = useRouter();
+//   const [users, setUsers] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [userToDelete, setUserToDelete] = useState(null);
+// const [deleteConfirmText, setDeleteConfirmText] = useState("");
+// const [isDeleting, setIsDeleting] = useState(false);
+
+
+//   useEffect(() => {
+//     fetchUsers();
+//   }, []);
+
+//   const fetchUsers = async () => {
+//     try {
+//       setLoading(true);
+//       const { data, error } = await supabase
+//         .from("service_user_intake")
+//         .select("*")
+//         .order("created_at", { ascending: false });
+
+//       if (error) throw error;
+//       setUsers(data || []);
+//     } catch (err) {
+//       toast.error("Failed to fetch service users");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   //   const handleDelete = async (user) => {
+//   //   const confirm = window.confirm(`Are you sure you want to delete ${user.service_user_name}? This will also delete ALL their uploaded files.`);
+//   //   if (!confirm) return;
+
+//   //   try {
+//   //     const pathsToDelete = [];
+//   //     if (user.about_file_path) pathsToDelete.push(user.about_file_path);
+      
+//   //     [...user.eet_documents, ...user.onboarding_documents, ...user.additional_documents].forEach(doc => {
+//   //       if (doc.file_path) pathsToDelete.push(doc.file_path);
+//   //     });
+
+//   //     if (pathsToDelete.length > 0) {
+//   //       const { error: storageError } = await supabase.storage
+//   //         .from("service-user-intake-docs")
+//   //         .remove(pathsToDelete);
+//   //       if (storageError) throw storageError;
+//   //     }
+
+//   //     const { error: dbError } = await supabase
+//   //       .from("service_user_intake")
+//   //       .delete()
+//   //       .eq("id", user.id);
+
+//   //     if (dbError) throw dbError;
+
+//   //     toast.success("User deleted successfully");
+//   //     fetchUsers();
+//   //   } catch (err) {
+//   //     console.error(err);
+//   //     toast.error("Cleanup failed.");
+//   //   }
+//   // };
+
+//     const handleDelete = (user) => {
+//   setUserToDelete(user);
+//   setDeleteConfirmText(""); // Always reset when opening the modal
+// };
+
+// // 3. Update the execution function
+// const confirmDelete = async () => {
+//   // CRITICAL: Double check the text matches
+//   if (deleteConfirmText !== "DELETE") {
+//     return toast.error("Please type DELETE to confirm");
+//   }
+
+//   setIsDeleting(true);
+//   try {
+//     const pathsToDelete = [];
+//     if (userToDelete.about_file_path) pathsToDelete.push(userToDelete.about_file_path);
+    
+//     // Collect paths from all document arrays
+//     [
+//       ...(userToDelete.eet_documents || []), 
+//       ...(userToDelete.onboarding_documents || []), 
+//       ...(userToDelete.additional_documents || [])
+//     ].forEach(doc => {
+//       if (doc.file_path) pathsToDelete.push(doc.file_path);
+//     });
+
+//     // Step 1: Delete from Storage first (Prevent orphans)
+//     if (pathsToDelete.length > 0) {
+//       const { error: storageError } = await supabase.storage
+//         .from("service-user-intake-docs")
+//         .remove(pathsToDelete);
+//       if (storageError) console.error("Storage cleanup error:", storageError);
+//     }
+
+//     // Step 2: Delete from Database
+//     const { error: dbError } = await supabase
+//       .from("service_user_intake")
+//       .delete()
+//       .eq("id", userToDelete.id);
+
+//     if (dbError) throw dbError;
+
+//     toast.success(`${userToDelete.service_user_name} deleted successfully`);
+//     setUserToDelete(null);
+//     setDeleteConfirmText("");
+//     fetchUsers(); // Refresh list
+//   } catch (err) {
+//     console.error(err);
+//     toast.error("Deletion failed");
+//   } finally {
+//     setIsDeleting(false);
+//   }
+// };
+
+//   const filteredUsers = users.filter(user => 
+//     user.service_user_name?.toLowerCase().includes(searchTerm.toLowerCase())
+//   );
+
+//   if (loading) return (
+//     <div className="h-64 flex items-center justify-center">
+//       <Loader2 className="animate-spin text-black" size={32} />
+//     </div>
+//   );
+
+//   return (
+//     <div className="space-y-6 max-w-6xl mx-auto py-10 px-4">
+
+//       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+//          <div>
+//            <h1 className="text-3xl font-bold text-black">Service Users</h1>
+//            <p className="text-gray-500">Manage resident profiles and documents</p>
+//          </div>
+//          <Link href="/addServiceUser">
+//            <Button className="bg-black">
+//              <UserPlus className="mr-2 h-4 w-4" /> Add New User
+//            </Button>
+//          </Link>
+//        </div>
+
+//       <div className="flex justify-between items-center">
+//         <div className="relative w-full max-w-sm">
+//           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black/40" />
+//           <Input 
+//             placeholder="Search users..." 
+//             value={searchTerm}
+//             onChange={(e) => setSearchTerm(e.target.value)}
+//             className="pl-10 border-black/10 bg-white focus:ring-black"
+//           />
+//         </div>
+//         {/* <Link href="/service-users/new">
+//           <Button className="bg-white hover:bg-[#1f6b4a] text-[#fdfbf7] font-bold uppercase tracking-widest text-xs">
+//             <Plus className="mr-2 h-4 w-4" /> Add User
+//           </Button>
+//         </Link> */}
+//       </div>
+
+//       <Card className="border-black/10 bg-[#FFFDD0]  shadow-sm overflow-hidden rounded-2xl">
+//         <CardHeader className=" border-b border-black/5">
+//           <CardTitle className="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-2">
+//             <UserCircle size={18} /> Service Directory
+//           </CardTitle>
+//         </CardHeader>
+//         <CardContent className="p-0">
+//           <Table>
+//             <TableHeader className="">
+//               <TableRow className="border-black/5 ">
+//                 <TableHead className="text-black font-black uppercase text-[10px] tracking-tighter">Name</TableHead>
+//                 <TableHead className="text-black font-black uppercase">Total Documents</TableHead>
+//                 <TableHead className="font-bold">Property</TableHead>
+//                 <TableHead className="text-black font-black uppercase text-[10px] tracking-tighter">Status</TableHead>
+//                 <TableHead className="text-right text-black font-black uppercase text-[10px] tracking-tighter">Actions</TableHead>
+//               </TableRow>
+//             </TableHeader>
+//             <TableBody>
+//               {filteredUsers.length === 0 ? (
+//                 <TableRow>
+//                   <TableCell colSpan={3} className="text-center py-10 text-black/40 italic">
+//                     No records found.
+//                   </TableCell>
+//                 </TableRow>
+//               ) : (
+//                 filteredUsers.map((user) => (
+//                   <TableRow 
+//                     key={user.id} className="border-black/5 hover:bg-[#fdfbf7] transition-colors">
+//                     <TableCell 
+//                      className="hover:bg-gray-50/80 transition-colors cursor-pointer group font-bold 
+//                      text-black uppercase tracking-tight"
+//                     onClick={() => router.push(`/service-users/${user.id}`)} // Row click navigation
+//                     >
+//                       {user.service_user_name}
+//                     </TableCell>
+//                     <TableCell>
+//                        {/* <span className="bg-gray-100 px-2.5 py-0.5 rounded-full text-xs font-medium text-gray-600">
+//                          {1 + user.onboarding_documents.length + user.additional_documents.length} files
+//                        </span> */}
+
+//                        <span className="bg-gray-100 px-2.5 py-0.5 rounded-full text-xs font-medium text-gray-600">
+//   {
+//     (user.about_file_path ? 1 : 0) + 
+//     (user.onboarding_documents?.length || 0) + 
+//     (user.additional_documents?.length || 0)
+//   } files
+// </span>
+//                     </TableCell>
+//                     <TableCell>
+//                       <Badge variant="outline" className="bg-slate-50 font-medium">
+//                         {user.property_name || "Unassigned"}
+//                       </Badge>
+//                     </TableCell>
+//                     <TableCell>
+//                       <span className="px-3 py-1 bg-black/5 rounded-full text-[10px] font-black uppercase text-black">
+//                         Active
+//                       </span>
+//                     </TableCell> 
+//                     <TableCell className="text-right">
+//                       <div className="flex justify-end gap-1">
+//                         <Button 
+//                           variant="ghost" 
+//                           size="icon" 
+//                           onClick={() => router.push(`/service-users/${user.id}`)}
+//                           className="hover:bg-black hover:text-[#fdfbf7]"
+//                         >
+//                           <Eye className="h-4 w-4" />
+//                         </Button>
+
+//                         <Link href={`/service-users/${user.id}/edit`}>
+//                           <Button 
+//                             variant="ghost" 
+//                             size="icon" 
+//                             className="hover:bg-black hover:text-[#fdfbf7]"
+//                           >
+//                             <Edit className="h-4 w-4" />
+//                           </Button>
+//                         </Link>
+
+//                         <Button 
+//                            variant="ghost" 
+//                            size="icon" 
+//                            className="hover:bg-red-50"
+//                            onClick={() => handleDelete(user)}
+//                          >
+//                            <Trash2 className="h-4 w-4 text-red-600" />
+//                          </Button>
+//                       </div>
+//                     </TableCell>
+//                   </TableRow>
+//                 ))
+//               )}
+//             </TableBody>
+//           </Table>
+//         </CardContent>
+//       </Card>
+
+//       <AlertDialog 
+//   open={!!userToDelete} 
+//   onOpenChange={(open) => {
+//     if (!open) {
+//       setUserToDelete(null);
+//       setDeleteConfirmText("");
+//     }
+//   }}
+// >
+//   <AlertDialogContent className="bg-[#fbf8f2] border-[#e1dbd2]">
+//     <AlertDialogHeader>
+//       <AlertDialogTitle className="text-[#123d2b] flex items-center gap-2">
+//         <Trash2 className="text-red-600" size={20} /> 
+//         Confirm Permanent Deletion
+//       </AlertDialogTitle>
+
+//       {/* CRITICAL FIX: Added 'asChild'. 
+//           This prevents the <p> cannot contain <div> error 
+//       */}
+//       <AlertDialogDescription asChild>
+//         <div className="text-[#6b7d74]">
+//           <p>
+//             This will permanently delete <strong>{userToDelete?.service_user_name}</strong> and all associated records.
+//           </p>
+          
+//           <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-lg">
+//             <p className="text-red-700 text-sm font-medium mb-2">
+//               To confirm, type <span className="font-bold">DELETE</span> below:
+//             </p>
+//             <Input
+//               value={deleteConfirmText}
+//               onChange={(e) => setDeleteConfirmText(e.target.value)}
+//               placeholder="Type DELETE"
+//               className="border-red-200 focus:ring-red-500 bg-white text-black"
+//             />
+//           </div>
+//         </div>
+//       </AlertDialogDescription>
+//     </AlertDialogHeader>
+
+//     <AlertDialogFooter>
+//       <AlertDialogCancel 
+//         onClick={() => {
+//           setUserToDelete(null);
+//           setDeleteConfirmText("");
+//         }}
+//       >
+//         Cancel
+//       </AlertDialogCancel>
+//       <Button
+//         variant="destructive"
+//         disabled={deleteConfirmText !== "DELETE" || isDeleting}
+//         onClick={confirmDelete}
+//         className="bg-red-600 hover:bg-red-700"
+//       >
+//         {isDeleting ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : "Permanently Delete"}
+//       </Button>
+//     </AlertDialogFooter>
+//   </AlertDialogContent>
+// </AlertDialog>
+
+
+//     </div>
+//   );
+// }
+
+
+
+// // "use client";
+
+// // import React, { useEffect, useState } from "react";
+// // import { 
+// //   Search, Eye, Edit, Trash2, UserPlus, 
+// //   Loader2, Filter, 
+// // } from "lucide-react";
+// // import { createClient } from "@/lib/superbase/clientUtils";
+// // import { toast } from "sonner";
+// // import Link from "next/link";
+// // import { useRouter } from "next/navigation"; // Added for navigation
+// // import { Button } from "@/components/ui/button";
+// // import { Input } from "@/components/ui/input";
+// // import {
+// //   Table,
+// //   TableBody,
+// //   TableCell,
+// //   TableHead,
+// //   TableHeader,
+// //   TableRow,
+// // } from "@/components/ui/table";
+// // import {
+// //   Select,
+// //   SelectContent,
+// //   SelectItem,
+// //   SelectTrigger,
+// //   SelectValue,
+// // } from "@/components/ui/select"
+// // import { Card, CardContent } from "@/components/ui/card";
+// // import { motion } from "framer-motion";
+
+// // const item = { hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transition: { duration: 0.3 } } };
+
+// // const supabase = createClient();
+
+// // export default function ServiceUserList() {
+// //   const [users, setUsers] = useState([]);
+// //   const [loading, setLoading] = useState(true);
+// //   const [searchTerm, setSearchTerm] = useState("");
+// //   const router = useRouter();
+
+// //   useEffect(() => {
+// //     fetchUsers();
+// //   }, []);
+
+// //   const fetchUsers = async () => {
+// //     setLoading(true);
+// //     const { data, error } = await supabase
+// //       .from("service_user_intake")
+// //       .select("*")
+// //       .order("service_user_name", { ascending: true });
+
+// //     if (error) toast.error("Error fetching users");
+// //     else setUsers(data || []);
+// //     setLoading(false);
+// //   };
+
+// //   const handleDelete = async (user) => {
+// //     const confirm = window.confirm(`Are you sure you want to delete ${user.service_user_name}? This will also delete ALL their uploaded files.`);
+// //     if (!confirm) return;
+
+// //     try {
+// //       const pathsToDelete = [];
+// //       if (user.about_file_path) pathsToDelete.push(user.about_file_path);
+      
+// //       [...user.eet_documents, ...user.onboarding_documents, ...user.additional_documents].forEach(doc => {
+// //         if (doc.file_path) pathsToDelete.push(doc.file_path);
+// //       });
+
+// //       if (pathsToDelete.length > 0) {
+// //         const { error: storageError } = await supabase.storage
+// //           .from("service-user-intake-docs")
+// //           .remove(pathsToDelete);
+// //         if (storageError) throw storageError;
+// //       }
+
+// //       const { error: dbError } = await supabase
+// //         .from("service_user_intake")
+// //         .delete()
+// //         .eq("id", user.id);
+
+// //       if (dbError) throw dbError;
+
+// //       toast.success("User deleted successfully");
+// //       fetchUsers();
+// //     } catch (err) {
+// //       console.error(err);
+// //       toast.error("Cleanup failed.");
+// //     }
+// //   };
+
+// //   const filteredUsers = users.filter(user =>
+// //     user.service_user_name.toLowerCase().includes(searchTerm.toLowerCase())
+// //   );
+
+// //   return (
+// //     <div className="max-w-6xl mx-auto py-10 px-4">
+// //       {/* Header Area */}
+// //       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+// //         <div>
+// //           <h1 className="text-3xl font-bold text-[#123d2b]">Service Users</h1>
+// //           <p className="text-gray-500">Manage resident profiles and documents</p>
+// //         </div>
+// //         <Link href="/addServiceUser">
+// //           <Button className="bg-[#123d2b] hover:bg-[#1f6b4a]">
+// //             <UserPlus className="mr-2 h-4 w-4" /> Add New User
+// //           </Button>
+// //         </Link>
+// //       </div>
+
+// //       {/* Search and Filters */}
+// //       <motion.div variants={item} initial="hidden" animate="show" className="flex flex-col gap-3 sm:flex-row">
+// //          <div className="relative flex-1">
+// //           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+// //            <Input 
+// //             placeholder="Search by name..." 
+// //             className="pl-9 bg-white" 
+// //             value={searchTerm}
+// //             onChange={(e) => setSearchTerm(e.target.value)}
+// //           />
+// //         </div>
+// //         <Select defaultValue="all">
+// //           <SelectTrigger className="w-full sm:w-40 bg-white">
+// //             <Filter className="mr-2 h-4 w-4" />
+// //             <SelectValue />
+// //           </SelectTrigger>
+// //           <SelectContent>
+// //             <SelectItem value="all">All Status</SelectItem>
+// //             <SelectItem value="active">Active</SelectItem>
+// //           </SelectContent>
+// //         </Select>
+// //       </motion.div>
+
+// //       {/* Table Area - mt-12 adds the extra space you requested */}
+// //       <Card className="border-[#e1dbd2] mt-12 shadow-sm">
+// //         <CardContent className="p-0">
+// //           <Table>
+// //             <TableHeader className="bg-[#fbf8f2]">
+// //               <TableRow>
+// //                 <TableHead className="font-bold text-[#123d2b] py-4">Name</TableHead>
+// //                 <TableHead className="font-bold text-[#123d2b]">Total Documents</TableHead>
+// //                 <TableHead className="text-right font-bold text-[#123d2b]">Actions</TableHead>
+// //               </TableRow>
+// //             </TableHeader>
+// //             <TableBody>
+// //               {loading ? (
+// //                 <TableRow>
+// //                   <TableCell colSpan={3} className="text-center py-20">
+// //                     <Loader2 className="animate-spin mx-auto text-[#123d2b]" />
+// //                     <p className="text-sm text-gray-500 mt-2">Loading users...</p>
+// //                   </TableCell>
+// //                 </TableRow>
+// //               ) : filteredUsers.length === 0 ? (
+// //                 <TableRow>
+// //                   <TableCell colSpan={3} className="text-center py-20 text-gray-400 italic">
+// //                     No service users found matching your search.
+// //                   </TableCell>
+// //                 </TableRow>
+// //               ) : (
+// //                 filteredUsers.map((user) => (
+// //                   <TableRow 
+// //                     key={user.id} 
+// //                     className="hover:bg-gray-50/80 transition-colors cursor-pointer group"
+// //                     onClick={() => router.push(`/service-users/${user.id}`)} // Row click navigation
+// //                   >
+// //                     <TableCell className="font-semibold text-[#123d2b] uppercase tracking-tight py-4">
+// //                       {user.service_user_name}
+// //                     </TableCell>
+// //                     <TableCell>
+// //                       <span className="bg-gray-100 px-2.5 py-0.5 rounded-full text-xs font-medium text-gray-600">
+// //                         {1 + user.eet_documents.length + user.onboarding_documents.length + user.additional_documents.length} files
+// //                       </span>
+// //                     </TableCell>
+// //                     <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+// //                       <div className="flex justify-end gap-2">
+// //                         {/* VIEW BUTTON */}
+// //                         <Button 
+// //                           variant="ghost" 
+// //                           size="icon" 
+// //                           className="hover:bg-blue-50"
+// //                           onClick={() => router.push(`/service-users/${user.id}`)}
+// //                         >
+// //                           <Eye className="h-4 w-4 text-blue-600" />
+// //                         </Button>
+
+// //                         {/* EDIT BUTTON */}
+// //                         <Link href={`/editServiceUser/${user.id}`}>
+// //                           <Button variant="ghost" size="icon" className="hover:bg-amber-50">
+// //                             <Edit className="h-4 w-4 text-amber-600" />
+// //                           </Button>
+// //                         </Link>
+
+// //                         {/* DELETE BUTTON */}
+// //                         <Button 
+// //                           variant="ghost" 
+// //                           size="icon" 
+// //                           className="hover:bg-red-50"
+// //                           onClick={() => handleDelete(user)}
+// //                         >
+// //                           <Trash2 className="h-4 w-4 text-red-600" />
+// //                         </Button>
+// //                       </div>
+// //                     </TableCell>
+// //                   </TableRow>
+// //                 ))
+// //               )}
+// //             </TableBody>
+// //           </Table>
+// //         </CardContent>
+// //       </Card>
+// //     </div>
+// //   );
+// // }
+
+
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/superbase/clientUtils";
 import { 
   Edit, 
@@ -301,7 +883,8 @@ import {
   Search, 
   Loader2, 
   Plus, 
-  UserCircle, UserPlus 
+  UserCircle, 
+  UserPlus 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -322,7 +905,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";;
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -333,148 +916,120 @@ const supabase = createClient();
 
 export default function ServiceUserList() {
   const router = useRouter();
-  const [users, setUsers] = useState([]);
+  
+  // --- State Management ---
+  const [serviceUsers, setServiceUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [userToDelete, setUserToDelete] = useState(null);
-const [deleteConfirmText, setDeleteConfirmText] = useState("");
-const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
+  // --- Pagination State ---
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const itemsPerPage = 10;
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
+  // --- Fetch Logic ---
+  const fetchServiceUsers = useCallback(async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const { data, error } = await supabase
+      const from = (currentPage - 1) * itemsPerPage;
+      const to = from + itemsPerPage - 1;
+
+      // Fetch with count enabled for pagination
+      let query = supabase
         .from("service_user_intake")
-        .select("*")
-        .order("created_at", { ascending: false });
+        .select("*", { count: 'exact' });
+
+      if (searchTerm) {
+        query = query.ilike("service_user_name", `%${searchTerm}%`);
+      }
+
+      const { data, error, count } = await query
+        .order("created_at", { ascending: false })
+        .range(from, to);
 
       if (error) throw error;
-      setUsers(data || []);
-    } catch (err) {
-      toast.error("Failed to fetch service users");
+      
+      setServiceUsers(data || []);
+      setTotalCount(count || 0);
+    } catch (error) {
+      console.error("Error fetching service users:", error.message);
+      toast.error("Failed to load service users");
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, searchTerm]);
 
-  //   const handleDelete = async (user) => {
-  //   const confirm = window.confirm(`Are you sure you want to delete ${user.service_user_name}? This will also delete ALL their uploaded files.`);
-  //   if (!confirm) return;
+  useEffect(() => {
+    fetchServiceUsers();
+  }, [fetchServiceUsers]);
 
-  //   try {
-  //     const pathsToDelete = [];
-  //     if (user.about_file_path) pathsToDelete.push(user.about_file_path);
-      
-  //     [...user.eet_documents, ...user.onboarding_documents, ...user.additional_documents].forEach(doc => {
-  //       if (doc.file_path) pathsToDelete.push(doc.file_path);
-  //     });
+  // Reset to page 1 when searching
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
-  //     if (pathsToDelete.length > 0) {
-  //       const { error: storageError } = await supabase.storage
-  //         .from("service-user-intake-docs")
-  //         .remove(pathsToDelete);
-  //       if (storageError) throw storageError;
-  //     }
-
-  //     const { error: dbError } = await supabase
-  //       .from("service_user_intake")
-  //       .delete()
-  //       .eq("id", user.id);
-
-  //     if (dbError) throw dbError;
-
-  //     toast.success("User deleted successfully");
-  //     fetchUsers();
-  //   } catch (err) {
-  //     console.error(err);
-  //     toast.error("Cleanup failed.");
-  //   }
-  // };
-
-    const handleDelete = (user) => {
-  setUserToDelete(user);
-  setDeleteConfirmText(""); // Always reset when opening the modal
-};
-
-// 3. Update the execution function
-const confirmDelete = async () => {
-  // CRITICAL: Double check the text matches
-  if (deleteConfirmText !== "DELETE") {
-    return toast.error("Please type DELETE to confirm");
-  }
-
-  setIsDeleting(true);
-  try {
-    const pathsToDelete = [];
-    if (userToDelete.about_file_path) pathsToDelete.push(userToDelete.about_file_path);
-    
-    // Collect paths from all document arrays
-    [
-      ...(userToDelete.eet_documents || []), 
-      ...(userToDelete.onboarding_documents || []), 
-      ...(userToDelete.additional_documents || [])
-    ].forEach(doc => {
-      if (doc.file_path) pathsToDelete.push(doc.file_path);
-    });
-
-    // Step 1: Delete from Storage first (Prevent orphans)
-    if (pathsToDelete.length > 0) {
-      const { error: storageError } = await supabase.storage
-        .from("service-user-intake-docs")
-        .remove(pathsToDelete);
-      if (storageError) console.error("Storage cleanup error:", storageError);
+  // --- Delete Logic ---
+  const confirmDelete = async () => {
+    if (deleteConfirmText !== "DELETE") {
+      return toast.error("Please type DELETE to confirm");
     }
 
-    // Step 2: Delete from Database
-    const { error: dbError } = await supabase
-      .from("service_user_intake")
-      .delete()
-      .eq("id", userToDelete.id);
+    setIsDeleting(true);
+    try {
+      const pathsToDelete = [];
+      if (userToDelete.about_file_path) pathsToDelete.push(userToDelete.about_file_path);
+      
+      [
+        ...(userToDelete.onboarding_documents || []), 
+        ...(userToDelete.additional_documents || [])
+      ].forEach(doc => {
+        if (doc.file_path) pathsToDelete.push(doc.file_path);
+      });
 
-    if (dbError) throw dbError;
+      if (pathsToDelete.length > 0) {
+        await supabase.storage
+          .from("service-user-intake-docs")
+          .remove(pathsToDelete);
+      }
 
-    toast.success(`${userToDelete.service_user_name} deleted successfully`);
-    setUserToDelete(null);
-    setDeleteConfirmText("");
-    fetchUsers(); // Refresh list
-  } catch (err) {
-    console.error(err);
-    toast.error("Deletion failed");
-  } finally {
-    setIsDeleting(false);
-  }
-};
+      const { error: dbError } = await supabase
+        .from("service_user_intake")
+        .delete()
+        .eq("id", userToDelete.id);
 
-  const filteredUsers = users.filter(user => 
-    user.service_user_name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      if (dbError) throw dbError;
 
-  if (loading) return (
-    <div className="h-64 flex items-center justify-center">
-      <Loader2 className="animate-spin text-black" size={32} />
-    </div>
-  );
+      toast.success(`${userToDelete.service_user_name} deleted successfully`);
+      setUserToDelete(null);
+      setDeleteConfirmText("");
+      fetchServiceUsers(); 
+    } catch (err) {
+      console.error(err);
+      toast.error("Deletion failed");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto py-10 px-4">
-
+      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-         <div>
-           <h1 className="text-3xl font-bold text-black">Service Users</h1>
-           <p className="text-gray-500">Manage resident profiles and documents</p>
-         </div>
-         <Link href="/addServiceUser">
-           <Button className="bg-black">
-             <UserPlus className="mr-2 h-4 w-4" /> Add New User
-           </Button>
-         </Link>
-       </div>
+        <div>
+          <h1 className="text-3xl font-bold text-black">Service Users</h1>
+          <p className="text-gray-500">Manage resident profiles and documents</p>
+        </div>
+        <Link href="/addServiceUser">
+          <Button className="bg-black">
+            <UserPlus className="mr-2 h-4 w-4" /> Add New User
+          </Button>
+        </Link>
+      </div>
 
+      {/* Search */}
       <div className="flex justify-between items-center">
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black/40" />
@@ -485,52 +1040,57 @@ const confirmDelete = async () => {
             className="pl-10 border-black/10 bg-white focus:ring-black"
           />
         </div>
-        {/* <Link href="/service-users/new">
-          <Button className="bg-white hover:bg-[#1f6b4a] text-[#fdfbf7] font-bold uppercase tracking-widest text-xs">
-            <Plus className="mr-2 h-4 w-4" /> Add User
-          </Button>
-        </Link> */}
       </div>
 
-      <Card className="border-black/10 bg-[#FFFDD0]  shadow-sm overflow-hidden rounded-2xl">
-        <CardHeader className=" border-b border-black/5">
+      {/* Table Card */}
+      <Card className="border-black/10 bg-[#FFFDD0] shadow-sm overflow-hidden rounded-2xl">
+        <CardHeader className="border-b border-black/5">
           <CardTitle className="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-2">
             <UserCircle size={18} /> Service Directory
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
-            <TableHeader className="">
-              <TableRow className="border-black/5 ">
-                <TableHead className="text-black font-black uppercase text-[10px] tracking-tighter">Name</TableHead>
-                <TableHead className="text-black font-black uppercase">Total Documents</TableHead>
-                <TableHead className="font-bold">Property</TableHead>
-                <TableHead className="text-black font-black uppercase text-[10px] tracking-tighter">Status</TableHead>
-                <TableHead className="text-right text-black font-black uppercase text-[10px] tracking-tighter">Actions</TableHead>
+            <TableHeader>
+              <TableRow className="border-black/5 text-lg">
+                <TableHead className="text-black font-black uppercase ">Name</TableHead>
+                <TableHead className="text-black font-black uppercase ">Total Documents</TableHead>
+                <TableHead className="text-black font-black uppercase">Property</TableHead>
+                <TableHead className="text-black font-black uppercase ">Status</TableHead>
+                <TableHead className="text-right text-black font-black uppercase">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredUsers.length === 0 ? (
+              {loading ? (
                 <TableRow>
-                  <TableCell colSpan={3} className="text-center py-10 text-black/40 italic">
+                  <TableCell colSpan={5} className="text-center py-20">
+                    <Loader2 className="animate-spin mx-auto mb-2" />
+                    <span className="text-xs text-gray-400">Loading data...</span>
+                  </TableCell>
+                </TableRow>
+              ) : serviceUsers.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-10 text-black/40 italic">
                     No records found.
                   </TableCell>
                 </TableRow>
               ) : (
-                filteredUsers.map((user) => (
-                  <TableRow 
-                    key={user.id} className="border-black/5 hover:bg-[#fdfbf7] transition-colors">
+                serviceUsers.map((user) => (
+                  <TableRow key={user.id} className="border-black/5 hover:bg-[#fdfbf7] transition-colors">
                     <TableCell 
-                     className="hover:bg-gray-50/80 transition-colors cursor-pointer group font-bold 
-                     text-black uppercase tracking-tight"
-                    onClick={() => router.push(`/service-users/${user.id}`)} // Row click navigation
+                      className="font-bold text-black  tracking-tight cursor-pointer"
+                      onClick={() => router.push(`/service-users/${user.id}`)}
                     >
                       {user.service_user_name}
                     </TableCell>
                     <TableCell>
-                       <span className="bg-gray-100 px-2.5 py-0.5 rounded-full text-xs font-medium text-gray-600">
-                         {1 + user.onboarding_documents.length + user.additional_documents.length} files
-                       </span>
+                      <span className="bg-gray-100 px-2.5 py-0.5 rounded-full text-xs font-medium text-gray-600">
+                        {
+                          (user.about_file_path ? 1 : 0) + 
+                          (user.onboarding_documents?.length || 0) + 
+                          (user.additional_documents?.length || 0)
+                        } files
+                      </span>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="bg-slate-50 font-medium">
@@ -545,29 +1105,20 @@ const confirmDelete = async () => {
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
                         <Button 
-                          variant="ghost" 
-                          size="icon" 
+                          variant="ghost" size="icon" 
                           onClick={() => router.push(`/service-users/${user.id}`)}
                           className="hover:bg-black hover:text-[#fdfbf7]"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
-
                         <Link href={`/service-users/${user.id}/edit`}>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="hover:bg-black hover:text-[#fdfbf7]"
-                          >
+                          <Button variant="ghost" size="icon" className="hover:bg-black hover:text-[#fdfbf7]">
                             <Edit className="h-4 w-4" />
                           </Button>
                         </Link>
-
                         <Button 
-                           variant="ghost" 
-                           size="icon" 
-                           className="hover:bg-red-50"
-                           onClick={() => handleDelete(user)}
+                           variant="ghost" size="icon" className="hover:bg-red-50"
+                           onClick={() => setUserToDelete(user)}
                          >
                            <Trash2 className="h-4 w-4 text-red-600" />
                          </Button>
@@ -578,287 +1129,82 @@ const confirmDelete = async () => {
               )}
             </TableBody>
           </Table>
+
+          {/* Pagination Controls */}
+          <div className="flex items-center justify-between px-6 py-4 border-t border-black/5 bg-white/50">
+            <div className="text-xs text-gray-500">
+              Showing <strong>{(currentPage - 1) * itemsPerPage + 1}</strong> to{" "}
+              <strong>{Math.min(currentPage * itemsPerPage, totalCount)}</strong> of{" "}
+              <strong>{totalCount}</strong> users
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1 || loading}
+                className="h-8 text-xs border-black/10"
+              >
+                Previous
+              </Button>
+              
+              <span className="text-xs font-bold text-black">
+                Page {currentPage} of {Math.ceil(totalCount / itemsPerPage) || 1}
+              </span>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((prev) => prev + 1)}
+                disabled={currentPage >= Math.ceil(totalCount / itemsPerPage) || loading}
+                className="h-8 text-xs border-black/10"
+              >
+                Next
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      <AlertDialog 
-  open={!!userToDelete} 
-  onOpenChange={(open) => {
-    if (!open) {
-      setUserToDelete(null);
-      setDeleteConfirmText("");
-    }
-  }}
->
-  <AlertDialogContent className="bg-[#fbf8f2] border-[#e1dbd2]">
-    <AlertDialogHeader>
-      <AlertDialogTitle className="text-[#123d2b] flex items-center gap-2">
-        <Trash2 className="text-red-600" size={20} /> 
-        Confirm Permanent Deletion
-      </AlertDialogTitle>
-
-      {/* CRITICAL FIX: Added 'asChild'. 
-          This prevents the <p> cannot contain <div> error 
-      */}
-      <AlertDialogDescription asChild>
-        <div className="text-[#6b7d74]">
-          <p>
-            This will permanently delete <strong>{userToDelete?.service_user_name}</strong> and all associated records.
-          </p>
-          
-          <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-lg">
-            <p className="text-red-700 text-sm font-medium mb-2">
-              To confirm, type <span className="font-bold">DELETE</span> below:
-            </p>
-            <Input
-              value={deleteConfirmText}
-              onChange={(e) => setDeleteConfirmText(e.target.value)}
-              placeholder="Type DELETE"
-              className="border-red-200 focus:ring-red-500 bg-white text-black"
-            />
-          </div>
-        </div>
-      </AlertDialogDescription>
-    </AlertDialogHeader>
-
-    <AlertDialogFooter>
-      <AlertDialogCancel 
-        onClick={() => {
-          setUserToDelete(null);
-          setDeleteConfirmText("");
-        }}
-      >
-        Cancel
-      </AlertDialogCancel>
-      <Button
-        variant="destructive"
-        disabled={deleteConfirmText !== "DELETE" || isDeleting}
-        onClick={confirmDelete}
-        className="bg-red-600 hover:bg-red-700"
-      >
-        {isDeleting ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : "Permanently Delete"}
-      </Button>
-    </AlertDialogFooter>
-  </AlertDialogContent>
-</AlertDialog>
-
-
+      {/* Delete Modal */}
+      <AlertDialog open={!!userToDelete} onOpenChange={(open) => !open && setUserToDelete(null)}>
+        <AlertDialogContent className="bg-[#fbf8f2] border-[#e1dbd2]">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-[#123d2b] flex items-center gap-2">
+              <Trash2 className="text-red-600" size={20} /> 
+              Confirm Permanent Deletion
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="text-[#6b7d74] space-y-4">
+                <p>This will permanently delete <strong>{userToDelete?.service_user_name}</strong> and all associated files.</p>
+                <div className="p-3 bg-red-50 border border-red-100 rounded-lg">
+                  <p className="text-red-700 text-sm font-medium mb-2">Type <span className="font-bold">DELETE</span> to confirm:</p>
+                  <Input
+                    value={deleteConfirmText}
+                    onChange={(e) => setDeleteConfirmText(e.target.value)}
+                    placeholder="Type DELETE"
+                    className="border-red-200 focus:ring-red-500 bg-white text-black"
+                  />
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => { setUserToDelete(null); setDeleteConfirmText(""); }}>
+              Cancel
+            </AlertDialogCancel>
+            <Button
+              variant="destructive"
+              disabled={deleteConfirmText !== "DELETE" || isDeleting}
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {isDeleting ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : "Permanently Delete"}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
-
-
-
-// "use client";
-
-// import React, { useEffect, useState } from "react";
-// import { 
-//   Search, Eye, Edit, Trash2, UserPlus, 
-//   Loader2, Filter, 
-// } from "lucide-react";
-// import { createClient } from "@/lib/superbase/clientUtils";
-// import { toast } from "sonner";
-// import Link from "next/link";
-// import { useRouter } from "next/navigation"; // Added for navigation
-// import { Button } from "@/components/ui/button";
-// import { Input } from "@/components/ui/input";
-// import {
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableHead,
-//   TableHeader,
-//   TableRow,
-// } from "@/components/ui/table";
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from "@/components/ui/select"
-// import { Card, CardContent } from "@/components/ui/card";
-// import { motion } from "framer-motion";
-
-// const item = { hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transition: { duration: 0.3 } } };
-
-// const supabase = createClient();
-
-// export default function ServiceUserList() {
-//   const [users, setUsers] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [searchTerm, setSearchTerm] = useState("");
-//   const router = useRouter();
-
-//   useEffect(() => {
-//     fetchUsers();
-//   }, []);
-
-//   const fetchUsers = async () => {
-//     setLoading(true);
-//     const { data, error } = await supabase
-//       .from("service_user_intake")
-//       .select("*")
-//       .order("service_user_name", { ascending: true });
-
-//     if (error) toast.error("Error fetching users");
-//     else setUsers(data || []);
-//     setLoading(false);
-//   };
-
-//   const handleDelete = async (user) => {
-//     const confirm = window.confirm(`Are you sure you want to delete ${user.service_user_name}? This will also delete ALL their uploaded files.`);
-//     if (!confirm) return;
-
-//     try {
-//       const pathsToDelete = [];
-//       if (user.about_file_path) pathsToDelete.push(user.about_file_path);
-      
-//       [...user.eet_documents, ...user.onboarding_documents, ...user.additional_documents].forEach(doc => {
-//         if (doc.file_path) pathsToDelete.push(doc.file_path);
-//       });
-
-//       if (pathsToDelete.length > 0) {
-//         const { error: storageError } = await supabase.storage
-//           .from("service-user-intake-docs")
-//           .remove(pathsToDelete);
-//         if (storageError) throw storageError;
-//       }
-
-//       const { error: dbError } = await supabase
-//         .from("service_user_intake")
-//         .delete()
-//         .eq("id", user.id);
-
-//       if (dbError) throw dbError;
-
-//       toast.success("User deleted successfully");
-//       fetchUsers();
-//     } catch (err) {
-//       console.error(err);
-//       toast.error("Cleanup failed.");
-//     }
-//   };
-
-//   const filteredUsers = users.filter(user =>
-//     user.service_user_name.toLowerCase().includes(searchTerm.toLowerCase())
-//   );
-
-//   return (
-//     <div className="max-w-6xl mx-auto py-10 px-4">
-//       {/* Header Area */}
-//       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-//         <div>
-//           <h1 className="text-3xl font-bold text-[#123d2b]">Service Users</h1>
-//           <p className="text-gray-500">Manage resident profiles and documents</p>
-//         </div>
-//         <Link href="/addServiceUser">
-//           <Button className="bg-[#123d2b] hover:bg-[#1f6b4a]">
-//             <UserPlus className="mr-2 h-4 w-4" /> Add New User
-//           </Button>
-//         </Link>
-//       </div>
-
-//       {/* Search and Filters */}
-//       <motion.div variants={item} initial="hidden" animate="show" className="flex flex-col gap-3 sm:flex-row">
-//          <div className="relative flex-1">
-//           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-//            <Input 
-//             placeholder="Search by name..." 
-//             className="pl-9 bg-white" 
-//             value={searchTerm}
-//             onChange={(e) => setSearchTerm(e.target.value)}
-//           />
-//         </div>
-//         <Select defaultValue="all">
-//           <SelectTrigger className="w-full sm:w-40 bg-white">
-//             <Filter className="mr-2 h-4 w-4" />
-//             <SelectValue />
-//           </SelectTrigger>
-//           <SelectContent>
-//             <SelectItem value="all">All Status</SelectItem>
-//             <SelectItem value="active">Active</SelectItem>
-//           </SelectContent>
-//         </Select>
-//       </motion.div>
-
-//       {/* Table Area - mt-12 adds the extra space you requested */}
-//       <Card className="border-[#e1dbd2] mt-12 shadow-sm">
-//         <CardContent className="p-0">
-//           <Table>
-//             <TableHeader className="bg-[#fbf8f2]">
-//               <TableRow>
-//                 <TableHead className="font-bold text-[#123d2b] py-4">Name</TableHead>
-//                 <TableHead className="font-bold text-[#123d2b]">Total Documents</TableHead>
-//                 <TableHead className="text-right font-bold text-[#123d2b]">Actions</TableHead>
-//               </TableRow>
-//             </TableHeader>
-//             <TableBody>
-//               {loading ? (
-//                 <TableRow>
-//                   <TableCell colSpan={3} className="text-center py-20">
-//                     <Loader2 className="animate-spin mx-auto text-[#123d2b]" />
-//                     <p className="text-sm text-gray-500 mt-2">Loading users...</p>
-//                   </TableCell>
-//                 </TableRow>
-//               ) : filteredUsers.length === 0 ? (
-//                 <TableRow>
-//                   <TableCell colSpan={3} className="text-center py-20 text-gray-400 italic">
-//                     No service users found matching your search.
-//                   </TableCell>
-//                 </TableRow>
-//               ) : (
-//                 filteredUsers.map((user) => (
-//                   <TableRow 
-//                     key={user.id} 
-//                     className="hover:bg-gray-50/80 transition-colors cursor-pointer group"
-//                     onClick={() => router.push(`/service-users/${user.id}`)} // Row click navigation
-//                   >
-//                     <TableCell className="font-semibold text-[#123d2b] uppercase tracking-tight py-4">
-//                       {user.service_user_name}
-//                     </TableCell>
-//                     <TableCell>
-//                       <span className="bg-gray-100 px-2.5 py-0.5 rounded-full text-xs font-medium text-gray-600">
-//                         {1 + user.eet_documents.length + user.onboarding_documents.length + user.additional_documents.length} files
-//                       </span>
-//                     </TableCell>
-//                     <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-//                       <div className="flex justify-end gap-2">
-//                         {/* VIEW BUTTON */}
-//                         <Button 
-//                           variant="ghost" 
-//                           size="icon" 
-//                           className="hover:bg-blue-50"
-//                           onClick={() => router.push(`/service-users/${user.id}`)}
-//                         >
-//                           <Eye className="h-4 w-4 text-blue-600" />
-//                         </Button>
-
-//                         {/* EDIT BUTTON */}
-//                         <Link href={`/editServiceUser/${user.id}`}>
-//                           <Button variant="ghost" size="icon" className="hover:bg-amber-50">
-//                             <Edit className="h-4 w-4 text-amber-600" />
-//                           </Button>
-//                         </Link>
-
-//                         {/* DELETE BUTTON */}
-//                         <Button 
-//                           variant="ghost" 
-//                           size="icon" 
-//                           className="hover:bg-red-50"
-//                           onClick={() => handleDelete(user)}
-//                         >
-//                           <Trash2 className="h-4 w-4 text-red-600" />
-//                         </Button>
-//                       </div>
-//                     </TableCell>
-//                   </TableRow>
-//                 ))
-//               )}
-//             </TableBody>
-//           </Table>
-//         </CardContent>
-//       </Card>
-//     </div>
-//   );
-// }
