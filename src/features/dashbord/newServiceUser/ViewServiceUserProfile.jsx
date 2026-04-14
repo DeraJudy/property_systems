@@ -2495,106 +2495,96 @@ export default function ViewServiceUserProfile() {
 
         {/* SUPPORT LOG DETAIL POPUP */}
         <Dialog open={!!selectedLog} onOpenChange={() => setSelectedLog(null)}>
-          <DialogContent className="sm:max-w-[500px] border-[#e1dbd2] rounded-xl">
-            <DialogHeader className="border-b border-[#f7f2e9] pb-4">
-              <DialogTitle className="text-[#123d2b] flex items-center gap-2">
-                <ClipboardList className="h-5 w-5" /> Support Log Details
-              </DialogTitle>
-            </DialogHeader>
+  <DialogContent className="sm:max-w-[500px] border-[#e1dbd2] rounded-xl flex flex-col max-h-[90vh]">
+    <DialogHeader className="border-b border-[#f7f2e9] pb-4 flex-shrink-0">
+      <DialogTitle className="text-[#123d2b] flex items-center gap-2">
+        <ClipboardList className="h-5 w-5" /> Support Log Details
+      </DialogTitle>
+    </DialogHeader>
 
-            {selectedLog && (
-              <div className="py-6 space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-[10px] font-black uppercase text-gray-400">
-                      Date & Time
-                    </Label>
-                    <p className="text-sm font-bold text-[#123d2b]">
-                      {new Date(selectedLog.session_date).toLocaleDateString()}{" "}
-                       {/* {selectedLog.session_time} */}
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="text-[10px] font-black uppercase text-gray-400">
-                      Duration
-                    </Label>
-                    <p className="text-sm font-bold text-[#123d2b]">
-                      {selectedLog.duration}
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="text-[10px] font-black uppercase text-gray-400">
-                      Support Worker
-                    </Label>
-                    <p className="text-sm font-bold text-[#123d2b]">
-                      {selectedLog.support_worker_name}
-                    </p>
-                  </div>
-                  <div>
-                    <Label className="text-[10px] font-black uppercase text-gray-400">
-                      Session Type
-                    </Label>
-                    <div>
-                      <Badge className="bg-[#1f6b4a] text-white text-[10px] uppercase">
-                        {selectedLog.session_type}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-[#fcfcfc] border border-[#e1dbd2] p-4 rounded-lg">
-                  <Label className="text-[10px] font-black uppercase text-gray-400 block mb-2">
-                    Detailed Notes
-                  </Label>
-                  <button
-                    onClick={() => {
-                      if (selectedLog?.notes) {
-                        navigator.clipboard.writeText(selectedLog.notes);
-                        toast.success("Notes copied to clipboard");
-                      }
-                    }}
-                    className="flex items-center gap-1 text-[10px] font-black text-black hover:text-[#123d2b] transition-colors uppercase"
-                  >
-                    <Copy className="h-3 w-3" /> Copy
-                  </button>
-                  <p className="text-sm text-gray-700 leading-relaxed italic whitespace-pre-wrap">
-                    "
-                    {selectedLog.notes || "No notes provided for this session."}
-                    "
-                  </p>
-                </div>
-
-                {selectedLog.file_url && (
-                  <div className="flex items-center justify-between p-3 border border-[#1f6b4a]/20 bg-[#f1f8f5] rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-5 w-5 text-[#1f6b4a]" />
-                      <span className="text-xs font-bold text-[#123d2b]">
-                        Attached Record
-                      </span>
-                    </div>
-                    <Button
-                      size="sm"
-                      className="bg-[#1f6b4a] hover:bg-[#123d2b] h-8 text-[10px] font-black"
-                      onClick={() => openDocument(selectedLog.file_url)}
-                    >
-                      VIEW ATTACHMENT
-                    </Button>
-                  </div>
-                )}
+    {/* SCROLLABLE AREA START */}
+    <div className="py-6 space-y-6 overflow-y-auto flex-1 pr-2 custom-scrollbar">
+      {selectedLog && (
+        <>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-[10px] font-black uppercase text-gray-400">Date & Time</Label>
+              <p className="text-sm font-bold text-[#123d2b]">
+                {new Date(selectedLog.session_date).toLocaleDateString()}
+              </p>
+            </div>
+            <div>
+              <Label className="text-[10px] font-black uppercase text-gray-400">Duration</Label>
+              <p className="text-sm font-bold text-[#123d2b]">{selectedLog.duration}</p>
+            </div>
+            <div>
+              <Label className="text-[10px] font-black uppercase text-gray-400">Support Worker</Label>
+              <p className="text-sm font-bold text-[#123d2b]">{selectedLog.support_worker_name}</p>
+            </div>
+            <div>
+              <Label className="text-[10px] font-black uppercase text-gray-400">Session Type</Label>
+              <div>
+                <Badge className="bg-[#1f6b4a] text-white text-[10px] uppercase">
+                  {selectedLog.session_type}
+                </Badge>
               </div>
-            )}
+            </div>
+          </div>
 
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setSelectedLog(null)}
-                className="w-full"
+          <div className="bg-[#fcfcfc] border border-[#e1dbd2] p-4 rounded-lg">
+            <div className="flex justify-between items-center mb-2">
+              <Label className="text-[10px] font-black uppercase text-gray-400 block">
+                Detailed Notes
+              </Label>
+              <button
+                onClick={() => {
+                  if (selectedLog?.notes) {
+                    navigator.clipboard.writeText(selectedLog.notes);
+                    toast.success("Notes copied to clipboard");
+                  }
+                }}
+                className="flex items-center gap-1 text-[10px] font-black text-black hover:text-[#123d2b] transition-colors uppercase"
               >
-                Close Record
+                <Copy className="h-3 w-3" /> Copy
+              </button>
+            </div>
+            {/* Notes will wrap and expand this container, which is now scrollable */}
+            <p className="text-sm text-gray-700 leading-relaxed italic whitespace-pre-wrap">
+              "{selectedLog.notes || "No notes provided for this session."}"
+            </p>
+          </div>
+
+          {selectedLog.file_url && (
+            <div className="flex items-center justify-between p-3 border border-[#1f6b4a]/20 bg-[#f1f8f5] rounded-lg">
+              <div className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-[#1f6b4a]" />
+                <span className="text-xs font-bold text-[#123d2b]">Attached Record</span>
+              </div>
+              <Button
+                size="sm"
+                className="bg-[#1f6b4a] hover:bg-[#123d2b] h-8 text-[10px] font-black"
+                onClick={() => openDocument(selectedLog.file_url)}
+              >
+                VIEW ATTACHMENT
               </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+    {/* SCROLLABLE AREA END */}
+
+    <DialogFooter className="border-t border-[#f7f2e9] pt-4 flex-shrink-0">
+      <Button
+        variant="outline"
+        onClick={() => setSelectedLog(null)}
+        className="w-full"
+      >
+        Close Record
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
       </div>
     </div>
   );
