@@ -1942,104 +1942,122 @@ const handleNewDocUpload = async () => {
               {/* </div> */}
 
               <div className="border rounded-xl bg-white overflow-hidden shadow-sm">
-                 <table className="w-full text-left">
-                   <thead className="bg-slate-50 border-b">
-                     <tr>
-                       <th className="p-4 text-[10px] uppercase font-black text-slate-400">
-                         Date & Time
-                       </th>
-                       <th className="p-4 text-[10px] font-black uppercase text-slate-500">
-                         Title
-                      </th>
-                       <th className="p-4 text-[10px] font-black uppercase text-slate-500">
-                         Attachment
-                       </th>
-                       <th className="p-4 text-[10px] font-black uppercase text-slate-500 text-right">
-                         Video
-                       </th>
-                       <th className="p-4 text-[10px] font-black uppercase text-slate-500 text-right">
-                         Actions
-                       </th>
-                    </tr>
-                   </thead>
-                   <tbody className="divide-y divide-slate-100">
-                     {kwsDocs.map((doc) => (
-                      <tr
-                        key={doc.id}
-                        className="hover:bg-slate-50/30 transition-colors"
-                      >
-                        <td className="p-4 text-sm font-bold text-slate-600">
-                          {new Date(doc.session_date).toLocaleDateString(
-                            "en-GB",
-                            {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            },
-                          )}
-                        </td>
-                        <td className="p-4 text-sm font-bold text-[#123d2b]">
-                          {doc.kws_name}
-                        </td>
-                        <td className="p-4">
-                          {doc.doc_url && (
-                            <Button
-                              variant="ghost"
-                              className="h-8 text-[10px] font-black gap-2 bg-blue-50 text-blue-600 border border-blue-100 px-3"
-                              onClick={() => openDocument(doc.doc_url)}
-                            >
-                              <FileText className="w-3 h-3" /> VIEW DOC
-                            </Button>
-                          )}
-                        </td>
-                        <td className="p-4">
-                          {doc.media_url && (
-                            <div
-                              className="relative h-14 w-24 bg-slate-900 rounded overflow-hidden cursor-pointer shadow-sm ring-1 ring-slate-200"
-                              onClick={() => setViewingMedia(doc.media_url)}
-                            >
-                              {doc.media_url.match(/\.(mp4|webm|mov|ogg)/i) ? (
-                                <div className="relative h-full w-full">
-                                  <video
-                                    src={`${doc.media_url}#t=0.1`}
-                                    className="object-cover w-full h-full opacity-60"
-                                  />
-                                  <Play className="absolute inset-0 m-auto text-white w-4 h-4" />
-                                </div>
-                              ) : (
-                                <img
-                                  src={doc.media_url}
-                                  className="object-cover w-full h-full"
-                                  alt="thumbnail"
-                                />
-                              )}
-                            </div>
-                          )}
-                        </td>
-                        <td className="p-4 text-right flex justify-end gap-2">
-                          <button
-                            onClick={() => {
-                              setEditingId(doc.id);
-                              setKwsName(doc.kws_name);
-                              setDocUrl(doc.doc_url);
-                              setMediaUrl(doc.media_url);
-                              setIsUploadModalOpen(true);
-                            }}
-                            className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg"
-                          >
-                            <Edit3 size={16} />
-                          </button>
-                          <button
-                            onClick={() => setDocToDelete(doc)}
-                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                 <div className="overflow-hidden border border-[#e1dbd2] rounded-xl bg-white shadow-sm">
+  <table className="w-full text-left border-collapse">
+    <thead className="bg-[#fcfcfc] border-b border-[#e1dbd2]">
+      <tr>
+        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60">
+          Date & Time
+        </th>
+        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60">
+          Title
+        </th>
+        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60">
+          Attachment
+        </th>
+        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60 text-right">
+          Media
+        </th>
+        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60 text-right">
+          Actions
+        </th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-[#f7f2e9]">
+      {kwsDocs.map((doc) => (
+        <tr
+          key={doc.id}
+          className="hover:bg-[#f1f8f5]/50 transition-colors group"
+        >
+          {/* DATE COLUMN */}
+          <td className="p-4 text-sm font-bold text-gray-600">
+            {new Date(doc.session_date).toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })}
+          </td>
+
+          {/* TITLE COLUMN */}
+          <td className="p-4 text-sm font-bold text-[#123d2b]">
+            {doc.kws_name}
+          </td>
+
+          {/* DOCUMENT VIEW BUTTON */}
+          <td className="p-4">
+            {doc.doc_url && (
+              <Button
+                variant="ghost"
+                className="h-7 text-[10px] font-black gap-2 bg-[#f1f8f5] text-[#1f6b4a] border border-[#1f6b4a]/10 px-3 hover:bg-[#1f6b4a] hover:text-white transition-all rounded-md"
+                onClick={() => openDocument(doc.doc_url)}
+              >
+                <FileText className="w-3.5 h-3.5" /> VIEW DOC
+              </Button>
+            )}
+          </td>
+
+          {/* VIDEO/MEDIA THUMBNAIL */}
+          <td className="p-4 text-right">
+            <div className="flex justify-end">
+              {doc.media_url && (
+                <div
+                  className="relative h-12 w-20 bg-black rounded-lg overflow-hidden cursor-pointer shadow-sm ring-1 ring-[#e1dbd2] group-hover:ring-[#1f6b4a] transition-all"
+                  onClick={() => setViewingMedia(doc.media_url)}
+                >
+                  {doc.media_url.match(/\.(mp4|webm|mov|ogg)/i) ? (
+                    <div className="relative h-full w-full">
+                      <video
+                        src={`${doc.media_url}#t=0.1`}
+                        className="object-cover w-full h-full opacity-70"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Play className="text-white w-4 h-4 fill-white" />
+                      </div>
+                    </div>
+                  ) : (
+                    <img
+                      src={doc.media_url}
+                      className="object-cover w-full h-full"
+                      alt="thumbnail"
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+          </td>
+
+          {/* ACTION BUTTONS */}
+          <td className="p-4 text-right">
+            <div className="flex justify-end gap-1">
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 text-blue-500 hover:bg-blue-50 hover:text-blue-700 rounded-full"
+                onClick={() => {
+                  setEditingId(doc.id);
+                  setKwsName(doc.kws_name);
+                  setDocUrl(doc.doc_url);
+                  setMediaUrl(doc.media_url);
+                  setIsUploadModalOpen(true);
+                }}
+              >
+                <Edit3 size={15} />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 text-red-500 hover:bg-red-50 hover:text-red-700 rounded-full"
+                onClick={() => setDocToDelete(doc)}
+              >
+                <Trash2 size={15} />
+              </Button>
+            </div>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
             </div>
           </div>
           </TabsContent>

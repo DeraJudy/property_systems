@@ -273,6 +273,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import Link from "next/link";
 
 const EmployeeDetailView = () => {
   const router = useRouter();
@@ -428,31 +429,34 @@ const EmployeeDetailView = () => {
   return (
     <div className="p-6 min-h-screen font-sans bg-[#fcfcfc]">
       <div className="max-w-6xl mx-auto space-y-6">
-        <Button variant="ghost" onClick={() => router.back()} className="text-black hover:bg-white">
+
+        <div className="flex justify-between items-center">
+                  <Button variant="ghost" onClick={() => router.back()} className="text-black hover:bg-white">
           <ArrowLeft className="mr-2 h-4 w-4" /> Back to Safer Recruitment
         </Button>
-
-        {/* HEADER */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-xl border border-[#e1dbd2] shadow-sm gap-4">
-          <div className="flex items-center gap-5">
-            {/* <div className="h-20 w-20 bg-[#123d2b] rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-inner">
-              {employee.full_name?.charAt(0)}
-            </div> */}
-            <div>
-              <h1 className="text-3xl font-bold text-black">{employee.full_name}</h1>
-              {/* <div className="flex flex-wrap gap-3 mt-1 text-sm text-gray-500 font-medium">
-                <span className="flex items-center gap-1"><Briefcase className="h-4 w-4"/> {employee.job_role || "Role not assigned"}</span>
-                <span className="flex items-center gap-1"><History className="h-4 w-4"/> Member ID: {id.slice(0,8).toUpperCase()}</span>
-              </div> */}
-            </div>
-          </div>
-          <Button onClick={() => router.push(`/hrList/${id}/edit`)} className="bg-black text-white hover:bg-[#123d2b] px-6">
+                  <Link href={`/service-users/${id}/edit`}>
+                    <Button onClick={() => router.push(`/hrList/${id}/edit`)} className="bg-black text-white hover:bg-[#123d2b] px-6">
             Edit Employee
           </Button>
-        </div>
+                  </Link>
+                </div>
+
+        {/* HEADER */}
+        <div className="bg-[#FFFDD0] text-black p-8 rounded-3xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-6">
+                  <div className="flex items-center gap-6">
+                    <div>
+                      <h1 className="text-3xl font-bold text-black">{employee.full_name}</h1>
+                      {/* <p className="text-emerald-100/70 flex items-center gap-2 mt-1">
+                        <Calendar size={14} /> Registered: {new Date(userData.created_at).toLocaleDateString()}
+                      </p> */}
+                    </div>
+                  </div>
+                  <Badge className=" text-white px-4 py-2 text-lg">Active Employee</Badge>
+                </div>
+        
 
         <Tabs defaultValue="personal_records" className="w-full">
-          <TabsList className="bg-white border-[#e1dbd2] p-1 h-12 shadow-sm overflow-x-auto justify-start md:justify-center">
+          {/* <TabsList className="bg-white border-[#e1dbd2] p-1 h-12 shadow-sm overflow-x-auto justify-start md:justify-center">
             {[
               { id: "personal_records", label: "Personal" },
               { id: "staff_documents", label: "Staff Records" },
@@ -466,7 +470,27 @@ const EmployeeDetailView = () => {
                 {tab.label}
               </TabsTrigger>
             ))}
-          </TabsList>
+          </TabsList> */}
+
+          <TabsList className="bg-[#e8e1d6] p-1 border border-[#e1dbd2] overflow-x-auto justify-start h-auto">
+  {[
+    { id: "personal_records", label: "Personal" },
+    { id: "staff_documents", label: "Staff Records" },
+    { id: "references_attachments", label: "References" },
+    { id: "training_induction_records", label: "Training" },
+    { id: "qualifications", label: "Qualifications" },
+    { id: "supervisions", label: "Supervisions" },
+    { id: "other_documents", label: "Miscellaneous" }
+  ].map((tab) => (
+    <TabsTrigger 
+      key={tab.id} 
+      value={tab.id} 
+      className="px-4 text-xs font-bold uppercase tracking-tight data-[state=active]:bg-black data-[state=active]:text-white"
+    >
+      {tab.label}
+    </TabsTrigger>
+  ))}
+</TabsList>
 
           <div className="mt-6">
             <TabsContent value="personal_records"><DocumentList title="Personal Documents" fieldName="personal_records" icon={User} /></TabsContent>

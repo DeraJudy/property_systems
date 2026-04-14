@@ -442,13 +442,13 @@ const handleDeleteEmployee = async () => {
     <motion.div variants={container} initial="hidden" animate="show" className="p-6 min-h-screen space-y-6 ">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="font-black text-3xl text-[#123d2b]">Workforce Directory</h2>
+          <h2 className="font-black text-3xl text-black">Workforce Directory</h2>
           <p className="text-[#6b7d74]">Manage employee records and compliance</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={fetchEmployees}><RefreshCw className="mr-2 h-4 w-4" /> Refresh</Button>
           <Button variant="outline" onClick={exportAllEmployees}><FileSpreadsheet className="mr-2 h-4 w-4" /> Export</Button>
-          <Button className="bg-[#1f6b4a]" onClick={() => router.push("/hrList/addEmployee")}><Plus className="mr-2 h-4 w-4" /> Add New Employee</Button>
+          <Button className="bg-black text-white hover:bg-[#123d2b]" onClick={() => router.push("/hrList/addEmployee")}><Plus className="mr-2 h-4 w-4" /> Add New Employee</Button>
         </div>
       </div>
 
