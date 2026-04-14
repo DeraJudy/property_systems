@@ -319,7 +319,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const supabase = createClient();
 
 const DocumentSection = ({ title, field, icon: Icon, formData, addListEntry, updateListField, removeListEntry, uploadingFields, handleFileUpload }) => (
-  <Card className="bg-white border-black/10 shadow-sm mb-6">
+  <Card className="bg-[#FFFDD0] border-black/10 shadow-sm mb-6">
     <CardHeader className="border-b border-black/5 flex flex-row items-center justify-between">
       <CardTitle className="text-black text-lg flex items-center gap-2 font-black uppercase tracking-widest">
         <Icon className="h-5 w-5" /> {title}
@@ -335,7 +335,7 @@ const DocumentSection = ({ title, field, icon: Icon, formData, addListEntry, upd
     </CardHeader>
     <CardContent className="space-y-4 pt-6">
       {formData[field]?.map((item, index) => (
-        <div key={item.id || index} className="flex gap-4 items-end bg-[#fdfbf7] p-4 border border-black/5 rounded-xl shadow-sm">
+        <div key={item.id || index} className="flex gap-4 items-end bg-[#FFFDD0] p-4 border border-black/5 rounded-xl shadow-sm">
           <div className="flex-2 space-y-2">
             <Label className="text-[10px] font-black uppercase text-black/50 tracking-tighter">Document Title / Description</Label>
             <Input
@@ -382,7 +382,7 @@ export default function EditServiceUserForm() {
     service_user_name: "",
     about_file_url: "",
     about_file_path: "",
-    eet_documents: [],
+    // eet_documents: [],
     onboarding_documents: [],
     additional_documents: [],
   });
@@ -401,7 +401,7 @@ export default function EditServiceUserForm() {
         if (data) {
           setFormData({
             ...data,
-            eet_documents: data.eet_documents || [],
+            // eet_documents: data.eet_documents || [],
             onboarding_documents: data.onboarding_documents || [],
             additional_documents: data.additional_documents || [],
           });
@@ -525,7 +525,7 @@ export default function EditServiceUserForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fdfbf7] py-10 px-4">
+    <div className="min-h-screen py-10 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8 flex justify-between items-center">
           <div>
@@ -542,7 +542,7 @@ export default function EditServiceUserForm() {
           </div>
         </div>
 
-        <Card className="mb-6 border-black/10 bg-white">
+        <Card className="mb-6 border-black/10">
           <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label className="font-black uppercase text-[10px] tracking-widest text-black/60">Service User Name <span className="text-red-500">*</span></Label>
@@ -554,7 +554,7 @@ export default function EditServiceUserForm() {
               />
             </div>
             <div className="space-y-2">
-              <Label className="font-black uppercase text-[10px] tracking-widest text-black/60">About File (Primary Doc)</Label>
+              <Label className="font-black uppercase text-[10px] tracking-widest text-black/60">About Me File (Primary Doc)</Label>
               <Input 
                 type="file" 
                 onChange={(e) => handleFileUpload(e, "about_file")} 
@@ -568,7 +568,7 @@ export default function EditServiceUserForm() {
           </CardContent>
         </Card>
 
-        <DocumentSection title="EET Documents" field="eet_documents" icon={FileText} {...{formData, addListEntry, updateListField, removeListEntry, uploadingFields, handleFileUpload}} />
+        {/* <DocumentSection title="EET Documents" field="eet_documents" icon={FileText} {...{formData, addListEntry, updateListField, removeListEntry, uploadingFields, handleFileUpload}} /> */}
         <DocumentSection title="Onboarding Documents" field="onboarding_documents" icon={User} {...{formData, addListEntry, updateListField, removeListEntry, uploadingFields, handleFileUpload}} />
         <DocumentSection title="Additional Documents" field="additional_documents" icon={Plus} {...{formData, addListEntry, updateListField, removeListEntry, uploadingFields, handleFileUpload}} />
 

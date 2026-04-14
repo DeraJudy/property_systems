@@ -603,6 +603,7 @@
 //                                   <FileText className="w-3 h-3" />
 //                                   VIEW
 //                                 </a>
+
 //                               ) : (
 //                                 <span className="text-[10px] text-muted-foreground italic">
 //                                   None
@@ -1695,7 +1696,7 @@ export default function ViewServiceUserProfile() {
               value="about"
               className="data-[state=active]:bg-[#FFFDD0] data-[state=active]:text=black"
             >
-              About
+              About Me
             </TabsTrigger>
             <TabsTrigger
               value="logs"
@@ -1709,12 +1710,12 @@ export default function ViewServiceUserProfile() {
             >
               Documents
             </TabsTrigger>
-            <TabsTrigger
+            {/* <TabsTrigger
               value="eet"
               className="data-[state=active]:bg-black data-[state=active]:text-white"
             >
               EET
-            </TabsTrigger>
+            </TabsTrigger> */}
             <TabsTrigger
               value="onboarding"
               className="data-[state=active]:bg-black data-[state=active]:text-white"
@@ -1798,7 +1799,7 @@ export default function ViewServiceUserProfile() {
                     <table className="w-full text-left text-sm border-collapse">
                       <thead>
                         <tr className="bg-[#fcfcfc] border-b border-[#e1dbd2] text-[#123d2b]/60 uppercase text-[10px] font-black tracking-widest">
-                          <th className="py-4 px-4">Date & Time</th>
+                          {/* <th className="py-4 px-4">Date & Time</th> */}
                           <th className="py-4 px-4">Staff</th>
                           <th className="py-4 px-4">Type</th>
                           <th className="py-4 px-4">Duration</th>
@@ -1814,7 +1815,7 @@ export default function ViewServiceUserProfile() {
                             className="hover:bg-[#f1f8f5]/50 transition-colors group cursor-pointer"
                             onClick={() => setSelectedLog(log)} // Trigger Popup on Row Click
                           >
-                            <td className="py-4 px-4 whitespace-nowrap">
+                            {/* <td className="py-4 px-4 whitespace-nowrap">
                               <div className="font-bold text-[#123d2b]">
                                 {new Date(
                                   log.session_date,
@@ -1824,7 +1825,7 @@ export default function ViewServiceUserProfile() {
                                 <Clock className="w-3 h-3" />{" "}
                                 {log.session_time || "--:--"}
                               </div>
-                            </td>
+                            </td> */}
                             <td className="py-4 px-4 text-[#123d2b] font-bold">
                               {log.support_worker_name}
                             </td>

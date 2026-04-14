@@ -386,6 +386,16 @@ const  SupportLogNewPage = () => {
   const [showFollowUpDate, setShowFollowUpDate] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
 
+  // Static list of support workers
+  const supportWorkers = [
+    "Omar",
+    "Megan",
+    "Adnan",
+    "Abdul",
+    "Jamie",
+    "Jermaine"
+  ];
+
   const [formData, setFormData] = useState({
     service_user_id: id,
     service_user_name: "",
@@ -393,8 +403,8 @@ const  SupportLogNewPage = () => {
     support_worker_name: "",
     session_type: "",
     session_mode: "",
-    session_date: new Date().toISOString().split("T")[0],
-    session_time: "",
+    // session_date: new Date().toISOString().split("T")[0],
+    // session_time: "",
     duration: "",
     notes: "",
     follow_up_date: null,
@@ -536,12 +546,29 @@ const  SupportLogNewPage = () => {
               </div>
             </div>
 
-            <div>
+            {/* <div>
               <Label>Support Worker</Label>
               <div className="mt-1 flex items-center gap-2 px-3 py-2 bg-accent/50 rounded-md border border-input text-sm font-medium">
                 <User className="w-4 h-4 text-[#123d2b]" /> {formData.support_worker_name}
               </div>
+            </div> */}
+
+            <div>
+              <Label>Support Worker</Label>
+              <Select onValueChange={(val) => setFormData({...formData, support_worker_name: val})}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select worker" />
+                </SelectTrigger>
+                <SelectContent>
+                  {supportWorkers.map((worker) => (
+                    <SelectItem key={worker} value={worker}>
+                      {worker}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
+
 
             <div>
               <Label>Session Type</Label>
@@ -571,7 +598,7 @@ const  SupportLogNewPage = () => {
               </Select>
             </div>
 
-            <div>
+            {/* <div>
               <Label>Session Date</Label>
               <Input 
                 className="mt-1" 
@@ -579,16 +606,16 @@ const  SupportLogNewPage = () => {
                 value={formData.session_date} 
                 onChange={(e) => setFormData({...formData, session_date: e.target.value})} 
               />
-            </div>
+            </div> */}
 
-            <div>
+            {/* <div>
               <Label>Session Time</Label>
               <Input 
                 className="mt-1" 
                 type="time" 
                 onChange={(e) => setFormData({...formData, session_time: e.target.value})} 
               />
-            </div>
+            </div> */}
 
             <div>
               <Label>Duration (HH:MM)</Label>
