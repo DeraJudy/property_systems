@@ -157,14 +157,14 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="hidden lg:flex w-64 flex-col bg-[#1E5A43] border-r border-[#184F38]">
+    <aside className="hidden lg:flex w-64 flex-col bg-black border-r border-[(#FFFDD0]">
       {/* Logo */}
-      <div className="flex h-16 items-center gap-2 px-5 border-b border-[#184F38] shrink-0">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#206c3c]">
+      <div className="flex h-16 items-center gap-2 px-5 border-b border-[(#FFFDD0] shrink-0">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[(#FFFDD0]">
           <Building2 className="h-4 w-4 text-white" />
         </div>
-        <Link href="/" className="text-sm font-bold text-white">
-          <span className="text-sm font-bold text-white">Kenley Property</span>
+        <Link href="/" className="text-sm font-bold text-[(#FFFDD0]">
+          <span className="text-sm font-bold text-[#FFFDD0]">Kenley Property</span>
         </Link>
       </div>
 
