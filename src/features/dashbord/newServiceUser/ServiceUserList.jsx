@@ -323,7 +323,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";;
-
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -504,6 +504,7 @@ const confirmDelete = async () => {
               <TableRow className="border-black/5 ">
                 <TableHead className="text-black font-black uppercase text-[10px] tracking-tighter">Name</TableHead>
                 <TableHead className="text-black font-black uppercase">Total Documents</TableHead>
+                <TableHead className="font-bold">Property</TableHead>
                 <TableHead className="text-black font-black uppercase text-[10px] tracking-tighter">Status</TableHead>
                 <TableHead className="text-right text-black font-black uppercase text-[10px] tracking-tighter">Actions</TableHead>
               </TableRow>
@@ -532,10 +533,15 @@ const confirmDelete = async () => {
                        </span>
                     </TableCell>
                     <TableCell>
+                      <Badge variant="outline" className="bg-slate-50 font-medium">
+                        {user.property_name || "Unassigned"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
                       <span className="px-3 py-1 bg-black/5 rounded-full text-[10px] font-black uppercase text-black">
                         Active
                       </span>
-                    </TableCell>
+                    </TableCell> 
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
                         <Button 

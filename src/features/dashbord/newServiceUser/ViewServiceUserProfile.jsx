@@ -1043,10 +1043,13 @@ import {
   Edit3,
   Upload,
   ShieldAlert,
+  Home,
   Clock,
   Copy,
   Play,
-  Video, Fingerprint, ImageIcon 
+  Video,
+  Fingerprint,
+  ImageIcon,
 } from "lucide-react";
 import { createClient } from "@/lib/superbase/clientUtils";
 import { toast } from "sonner";
@@ -1675,9 +1678,16 @@ export default function ViewServiceUserProfile() {
               {userData.service_user_name?.[0]}
             </div> */}
             <div>
-              <h1 className="text-3xl text-black font-bold uppercase">
+              <h1 className="text-3xl mt-10 text-black font-bold uppercase">
                 {userData.service_user_name}
               </h1>
+
+              <div className="flex items-center gap-2 text-slate-500">
+                <Home className="h-4 w-4" />
+                <span className="text-xs font-bold uppercase tracking-tight">
+                  {userData?.property_name || "No Property Assigned"}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -1706,7 +1716,6 @@ export default function ViewServiceUserProfile() {
                 </div>
               )}
             </div>
-           
           </div>
         </div>
 
@@ -1755,8 +1764,7 @@ export default function ViewServiceUserProfile() {
             <Card className="border-none shadow-sm bg-[#fdfbf7]">
               <CardHeader className="pb-2">
                 <CardTitle className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-[#1f6b4a]" /> Primary
-                  Documentation
+                  <FileText className="h-4 w-4 text-[#1f6b4a]" /> About Me
                 </CardTitle>
               </CardHeader>
               <CardContent>

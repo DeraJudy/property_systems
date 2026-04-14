@@ -494,8 +494,8 @@ import {
   User,
   CheckCircle2,
   Youtube,
-  Instagram,
-  Music2,
+  Instagram, ArrowLeft,
+  Music2, Home
 } from "lucide-react";
 import { createClient } from "@/lib/superbase/clientUtils";
 import { toast } from "sonner";
@@ -503,6 +503,13 @@ import { useRouter } from "next/navigation"; // 1. Import useRouter
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const supabase = createClient();
@@ -593,6 +600,7 @@ export default function ServiceUserIntakeForm() {
 
   const [formData, setFormData] = useState({
     service_user_name: "",
+    property_name: "",
     profile_image_url: "", // New field
     profile_image_path: "",
     about_file_url: "",
@@ -785,6 +793,12 @@ export default function ServiceUserIntakeForm() {
 
   return (
     <div className="max-w-4xl mx-auto py-10 px-4">
+
+      <Button variant="ghost" onClick={() => router.back()} className="mb-4 -ml-4 hover:bg-black/5">
+                    <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                  </Button>
+
+
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-[#123d2b]">
@@ -855,6 +869,25 @@ export default function ServiceUserIntakeForm() {
                   PNG, JPG or GIF (max. 2MB)
                 </p>
               </div>
+
+                {/* Add Property name */}
+              <div className="space-y-2">
+              <Label className="font-bold">Assigned Property</Label>
+              <Select 
+                onValueChange={(val) => setFormData({...formData, property_name: val})}
+                value={formData.property_name}
+              >
+                <SelectTrigger className="border-2 focus:ring-[#123d2b] bg-white">
+                  <SelectValue placeholder="Select Property" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Malborne House">Malborne House</SelectItem>
+                  <SelectItem value="215 St Pauls">215 St Pauls</SelectItem>
+                  <SelectItem value="217-219 St Pauls">217-219 St Pauls</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             </div>
           </div>
         </CardContent>

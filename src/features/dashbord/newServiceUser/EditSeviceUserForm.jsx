@@ -315,6 +315,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const supabase = createClient();
 
@@ -578,6 +585,23 @@ export default function EditServiceUserForm() {
       </p>
     </div>
   </div>
+</div>
+
+<div className="space-y-2">
+  <Label className="font-black uppercase tracking-widest text-[10px]">Property</Label>
+  <Select 
+    value={formData.property_name} 
+    onValueChange={(val) => setFormData({...formData, property_name: val})}
+  >
+    <SelectTrigger className="border-black/10 focus:ring-black h-12">
+      <SelectValue placeholder="Select Property" />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="Malborne House">Malborne House</SelectItem>
+      <SelectItem value="215 St Pauls">215 St Pauls</SelectItem>
+      <SelectItem value="217-219 St Pauls">217-219 St Pauls</SelectItem>
+    </SelectContent>
+  </Select>
 </div>
 
             <div className="space-y-2">
