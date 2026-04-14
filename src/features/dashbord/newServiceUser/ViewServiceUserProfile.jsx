@@ -1627,13 +1627,13 @@ const handleNewDocUpload = async () => {
 
 
   if (loading) return (
-    <div className="h-screen flex items-center justify-center bg-[#fdfbf7]">
+    <div className="h-screen flex items-center justify-center ">
       <Loader2 className="animate-spin text-blac" size={40} />
     </div>
   );
 
   return (
-    <div className="min-h-screen py-10 px-4 bg-[#fdfbf7]">
+    <div className="min-h-screen py-10 px-4">
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* TOP NAV */}
