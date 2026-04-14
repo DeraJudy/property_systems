@@ -1161,7 +1161,7 @@ const EditEmployee = () => {
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center bg-[#f7f2e9]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#1f6b4a]" />
+        <Loader2 className="h-8 w-8 animate-spin text-black" />
       </div>
     );
   }
@@ -1169,9 +1169,9 @@ const EditEmployee = () => {
   const stats = getCompletionStatus();
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6 bg-[#f7f2e9] min-h-screen">
+    <div className="max-w-5xl mx-auto p-6 space-y-6 min-h-screen">
       <div className="flex items-center justify-between">
-        <Button variant="ghost" onClick={() => router.back()} className="text-[#1f6b4a]">
+        <Button variant="ghost" onClick={() => router.back()} className="text-black">
           <ArrowLeft className="mr-2 h-4 w-4" /> Back
         </Button>
         <h1 className="text-2xl font-bold text-[#123d2b]">Edit Employee</h1>
@@ -1182,12 +1182,12 @@ const EditEmployee = () => {
         <CardContent className="pt-6">
           <div className="flex gap-2 mb-4">
             {stats.sections.map((s, i) => (
-              <div key={i} className={`h-2 flex-1 rounded-full ${s.filled ? 'bg-[#1f6b4a]' : 'bg-gray-200'}`} />
+              <div key={i} className={`h-2 flex-1 rounded-full ${s.filled ? 'bg-black' : 'bg-gray-200'}`} />
             ))}
           </div>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
             {stats.sections.map((s, i) => (
-              <span key={i} className={`text-[10px] flex items-center gap-1 ${s.filled ? 'text-[#1f6b4a]' : 'text-gray-400'}`}>
+              <span key={i} className={`text-[10px] flex items-center gap-1 ${s.filled ? 'text-black' : 'text-gray-400'}`}>
                 {s.filled ? <CheckCircle2 className="w-3 h-3" /> : <AlertCircle className="w-3 h-3" />} {s.name}
               </span>
             ))}
@@ -1222,7 +1222,7 @@ const EditEmployee = () => {
             <CardTitle className="text-[#123d2b] text-lg flex items-center gap-2">
               <section.icon className="h-5 w-5" /> {section.title}
             </CardTitle>
-            <Button variant="outline" size="sm" onClick={() => addListEntry(section.id, { name: "", url: "" })} className="border-[#1f6b4a] text-[#1f6b4a] bg-white">
+            <Button variant="outline" size="sm" onClick={() => addListEntry(section.id, { name: "", url: "" })} className="border-[#1f6b4a] text-black  bg-text">
               <Plus className="h-4 w-4" /> Add
             </Button>
           </CardHeader>
@@ -1252,7 +1252,7 @@ const EditEmployee = () => {
       {/* Buttons */}
       <div className="flex justify-end gap-4 pb-20">
         <Button variant="outline" onClick={() => router.back()}>Cancel</Button>
-        <Button onClick={handleSubmit} disabled={isSubmitting} className="bg-[#1f6b4a] text-white px-10">
+        <Button onClick={handleSubmit} disabled={isSubmitting} className="bg-black text-white px-10">
           {isSubmitting ? <Loader2 className="animate-spin" /> : "Update Employee"}
         </Button>
       </div>
@@ -1282,7 +1282,7 @@ const EditEmployee = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Go Back</AlertDialogCancel>
-            <AlertDialogAction onClick={processUpdate} className="bg-[#1f6b4a] text-white">Update Anyway</AlertDialogAction>
+            <AlertDialogAction onClick={processUpdate} className="bg-black text-white">Update Anyway</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

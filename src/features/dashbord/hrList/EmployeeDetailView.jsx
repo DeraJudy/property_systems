@@ -2,9 +2,9 @@
 
 // import React, { useEffect, useState } from "react";
 // import { useParams, useRouter } from "next/navigation";
-// import { 
-//   ArrowLeft, FileText, ExternalLink, User, ShieldCheck, 
-//   GraduationCap, ClipboardList, Calendar, Briefcase, 
+// import {
+//   ArrowLeft, FileText, ExternalLink, User, ShieldCheck,
+//   GraduationCap, ClipboardList, Calendar, Briefcase,
 //   AlertCircle, Info
 // } from "lucide-react";
 // import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -58,10 +58,10 @@
 //         <span className="text-sm font-medium text-gray-700">{label}</span>
 //       </div>
 //       {url ? (
-//         <a 
-//           href={getFileViewUrl(url)} 
-//           target="_blank" 
-//           rel="noopener noreferrer" 
+//         <a
+//           href={getFileViewUrl(url)}
+//           target="_blank"
+//           rel="noopener noreferrer"
 //           className="flex items-center gap-1 text-[11px] font-bold text-[#1f6b4a] hover:underline bg-[#f1f8f5] px-2 py-1 rounded"
 //         >
 //           VIEW FILE <ExternalLink className="h-3 w-3" />
@@ -247,15 +247,26 @@
 
 // export default EmployeeDetailView;
 
-
 "use client";
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { 
-  ArrowLeft, Download, FileText, User, 
-  Briefcase, FileCheck, BookOpen, GraduationCap, History, 
-  Loader2, Plus, Trash2, UploadCloud, ExternalLink, AlertCircle
+import {
+  ArrowLeft,
+  Download,
+  FileText,
+  User,
+  Briefcase,
+  FileCheck,
+  BookOpen,
+  GraduationCap,
+  History,
+  Loader2,
+  Plus,
+  Trash2,
+  UploadCloud,
+  ExternalLink,
+  AlertCircle,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Label } from "@/components/ui/label";
@@ -281,10 +292,15 @@ const EmployeeDetailView = () => {
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
-  
+
   // Modal States
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [uploadData, setUploadData] = useState({ fieldName: "", title: "", docName: "", file: null });
+  const [uploadData, setUploadData] = useState({
+    fieldName: "",
+    title: "",
+    docName: "",
+    file: null,
+  });
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
@@ -294,7 +310,11 @@ const EmployeeDetailView = () => {
 
   const fetchEmployee = async () => {
     try {
-      const { data, error } = await supabase.from("employees").select("*").eq("id", id).single();
+      const { data, error } = await supabase
+        .from("employees")
+        .select("*")
+        .eq("id", id)
+        .single();
       if (error) throw error;
       setEmployee(data);
     } catch (error) {
@@ -311,7 +331,8 @@ const EmployeeDetailView = () => {
 
   const handleFileUpload = async () => {
     const { fieldName, docName, file } = uploadData;
-    if (!docName || !file) return toast.error("Please provide both a name and a file.");
+    if (!docName || !file)
+      return toast.error("Please provide both a name and a file.");
 
     setIsUploading(true);
     try {
@@ -325,9 +346,9 @@ const EmployeeDetailView = () => {
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("employee-docs")
-        .getPublicUrl(filePath);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("employee-docs").getPublicUrl(filePath);
 
       const newDoc = { name: docName, url: publicUrl };
       const updatedList = [...(employee[fieldName] || []), newDoc];
@@ -353,7 +374,10 @@ const EmployeeDetailView = () => {
     if (!confirm("Delete this document permanently?")) return;
     const newList = employee[fieldName].filter((_, i) => i !== index);
     try {
-      const { error } = await supabase.from("employees").update({ [fieldName]: newList }).eq("id", id);
+      const { error } = await supabase
+        .from("employees")
+        .update({ [fieldName]: newList })
+        .eq("id", id);
       if (error) throw error;
       setEmployee({ ...employee, [fieldName]: newList });
       toast.success("Document removed");
@@ -362,23 +386,24 @@ const EmployeeDetailView = () => {
     }
   };
 
-  if (!mounted || loading) return (
-    <div className="p-20 text-center font-medium font-sans">
-      <Loader2 className="h-10 w-10 animate-spin mx-auto mb-4 text-[#1f6b4a]" />
-      Loading Employee Profile...
-    </div>
-  );
+  if (!mounted || loading)
+    return (
+      <div className="p-20 text-center font-medium font-sans">
+        <Loader2 className="h-10 w-10 animate-spin mx-auto mb-4 text-black" />
+        Loading Employee Profile...
+      </div>
+    );
 
   const DocumentList = ({ title, fieldName, icon: Icon }) => (
     <Card className="border-[#e1dbd2] shadow-sm">
       <CardHeader className="border-b border-[#f7f2e9] flex flex-row items-center justify-between py-4">
-        <CardTitle className="text-md flex items-center gap-2 text-[#123d2b]">
+        <CardTitle className="text-md flex items-center gap-2 text-black">
           <Icon className="h-5 w-5" /> {title}
         </CardTitle>
-        <Button 
-          size="sm" 
+        <Button
+          size="sm"
           onClick={() => openUploadModal(fieldName, title)}
-          className="bg-black text-white hover:bg-[#123d2b] h-8 text-xs"
+          className="bg-black text-white hover:bg-[#FFFDD0] hover:text-black h-8 text-xs"
         >
           <Plus className="h-3 w-3 mr-1" /> ADD DOCUMENT
         </Button>
@@ -387,27 +412,34 @@ const EmployeeDetailView = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {employee[fieldName]?.length > 0 ? (
             employee[fieldName].map((doc, i) => (
-              <div key={i} className="flex items-center justify-between p-3 bg-white border border-[#e1dbd2] rounded-lg shadow-sm">
+              <div
+                key={i}
+                className="flex items-center justify-between p-3 bg-white border border-[#e1dbd2] rounded-lg shadow-sm"
+              >
                 <div className="flex items-center gap-3 overflow-hidden">
-                  <FileText className="h-5 w-5 text-[#1f6b4a] shrink-0" />
+                  <FileText className="h-5 w-5 text-black shrink-0" />
                   <div className="overflow-hidden">
-                    <p className="text-sm font-medium text-gray-700 truncate">{doc.name}</p>
-                    <p className="text-[10px] text-gray-400 uppercase font-bold">Verified File</p>
+                    <p className="text-sm font-medium text-gray-700 truncate">
+                      {doc.name}
+                    </p>
+                    <p className="text-[10px] text-gray-400 uppercase font-bold">
+                      Verified File
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <a 
-                    href={doc.url} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
+                  <a
+                    href={doc.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center gap-1 text-[11px] font-bold text-[#1f6b4a] hover:underline bg-[#f1f8f5] px-2 py-1 rounded"
                   >
                     VIEW <ExternalLink className="h-3 w-3" />
                   </a>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    onClick={() => removeDocument(fieldName, i)} 
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => removeDocument(fieldName, i)}
                     className="h-7 w-7 text-red-500 hover:text-red-700 hover:bg-red-50"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -417,8 +449,10 @@ const EmployeeDetailView = () => {
             ))
           ) : (
             <div className="col-span-full py-8 flex flex-col items-center justify-center border-2 border-dashed border-[#e1dbd2] rounded-xl text-gray-400">
-               <AlertCircle className="h-8 w-8 mb-2 opacity-20" />
-               <p className="text-xs font-medium italic">No documents found in this category</p>
+              <AlertCircle className="h-8 w-8 mb-2 opacity-20" />
+              <p className="text-xs font-medium italic">
+                No documents found in this category
+              </p>
             </div>
           )}
         </div>
@@ -429,31 +463,39 @@ const EmployeeDetailView = () => {
   return (
     <div className="p-6 min-h-screen font-sans ">
       <div className="max-w-6xl mx-auto space-y-6">
-
         <div className="flex justify-between items-center">
-                  <Button variant="ghost" onClick={() => router.back()} className="text-black hover:bg-white">
-          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Safer Recruitment
-        </Button>
-                  <Link href={`/service-users/${id}/edit`}>
-                    <Button onClick={() => router.push(`/hrList/${id}/edit`)} className="bg-black text-white hover:bg-[#123d2b] px-6">
-            Edit Employee
+          <Button
+            variant="ghost"
+            onClick={() => router.back()}
+            className="text-black 
+                  hover:bg-black hover:text-white"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Safer Recruitment
           </Button>
-                  </Link>
-                </div>
+          <Link href={`/hrList/${id}/edit`}>
+            <Button
+              onClick={() => router.push(`/hrList/${id}/edit`)}
+              className="bg-black text-white hover:bg-[#FFFDD0] hover:text-black px-6"
+            >
+              Edit Employee
+            </Button>
+          </Link>
+        </div>
 
         {/* HEADER */}
-        <div className="bg-[#f5f0e6] text-black p-8 rounded-3xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-6">
-                  <div className="flex items-center gap-6">
-                    <div>
-                      <h1 className="text-3xl font-bold text-black">{employee.full_name}</h1>
-                      {/* <p className="text-emerald-100/70 flex items-center gap-2 mt-1">
+        <div className="bg-[#FFFDD0]  text-black p-8 rounded-3xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex items-center gap-6">
+            <div>
+              <h1 className="text-3xl font-bold text-black">
+                {employee.full_name}
+              </h1>
+              {/* <p className="text-emerald-100/70 flex items-center gap-2 mt-1">
                         <Calendar size={14} /> Registered: {new Date(userData.created_at).toLocaleDateString()}
                       </p> */}
-                    </div>
-                  </div>
-                  <Badge className=" text-white px-4 py-2 text-lg">Active Employee</Badge>
-                </div>
-        
+            </div>
+          </div>
+          {/* <Badge className=" text-white px-4 py-2 text-lg">Active Employee</Badge> */}
+        </div>
 
         <Tabs defaultValue="personal_records" className="w-full">
           {/* <TabsList className="bg-white border-[#e1dbd2] p-1 h-12 shadow-sm overflow-x-auto justify-start md:justify-center">
@@ -473,33 +515,75 @@ const EmployeeDetailView = () => {
           </TabsList> */}
 
           <TabsList className="bg-[#e8e1d6] p-1 border border-[#e1dbd2] overflow-x-auto justify-start h-auto">
-  {[
-    { id: "personal_records", label: "Personal" },
-    { id: "staff_documents", label: "Staff Records" },
-    { id: "references_attachments", label: "References" },
-    { id: "training_induction_records", label: "Training" },
-    { id: "qualifications", label: "Qualifications" },
-    { id: "supervisions", label: "Supervisions" },
-    { id: "other_documents", label: "Miscellaneous" }
-  ].map((tab) => (
-    <TabsTrigger 
-      key={tab.id} 
-      value={tab.id} 
-      className="px-4 text-xs font-bold uppercase tracking-tight data-[state=active]:bg-black data-[state=active]:text-white"
-    >
-      {tab.label}
-    </TabsTrigger>
-  ))}
-</TabsList>
+            {[
+              { id: "personal_records", label: "Personal" },
+              { id: "staff_documents", label: "Staff Records" },
+              { id: "references_attachments", label: "References" },
+              { id: "training_induction_records", label: "Training" },
+              { id: "qualifications", label: "Qualifications" },
+              { id: "supervisions", label: "Supervisions" },
+              { id: "other_documents", label: "Miscellaneous" },
+            ].map((tab) => (
+              <TabsTrigger
+                key={tab.id}
+                value={tab.id}
+                className="px-4 text-xs font-bold uppercase tracking-tight data-[state=active]:bg-[#FFFDD0]  data-[state=active]:text-black"
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
 
           <div className="mt-6">
-            <TabsContent value="personal_records"><DocumentList title="Personal Documents" fieldName="personal_records" icon={User} /></TabsContent>
-            <TabsContent value="staff_documents"><DocumentList title="Staff Records" fieldName="staff_documents" icon={Briefcase} /></TabsContent>
-            <TabsContent value="references_attachments"><DocumentList title="Reference Documents" fieldName="references_attachments" icon={FileCheck} /></TabsContent>
-            <TabsContent value="training_induction_records"><DocumentList title="Training & Induction" fieldName="training_induction_records" icon={BookOpen} /></TabsContent>
-            <TabsContent value="qualifications"><DocumentList title="Professional Qualifications" fieldName="qualifications" icon={GraduationCap} /></TabsContent>
-            <TabsContent value="supervisions"><DocumentList title="Supervision Records" fieldName="supervisions" icon={History} /></TabsContent>
-            <TabsContent value="other_documents"><DocumentList title="Other Relevant Documents" fieldName="other_documents" icon={FileText} /></TabsContent>
+            <TabsContent value="personal_records">
+              <DocumentList
+                title="Personal Documents"
+                fieldName="personal_records"
+                icon={User}
+              />
+            </TabsContent>
+            <TabsContent value="staff_documents">
+              <DocumentList
+                title="Staff Records"
+                fieldName="staff_documents"
+                icon={Briefcase}
+              />
+            </TabsContent>
+            <TabsContent value="references_attachments">
+              <DocumentList
+                title="Reference Documents"
+                fieldName="references_attachments"
+                icon={FileCheck}
+              />
+            </TabsContent>
+            <TabsContent value="training_induction_records">
+              <DocumentList
+                title="Training & Induction"
+                fieldName="training_induction_records"
+                icon={BookOpen}
+              />
+            </TabsContent>
+            <TabsContent value="qualifications">
+              <DocumentList
+                title="Professional Qualifications"
+                fieldName="qualifications"
+                icon={GraduationCap}
+              />
+            </TabsContent>
+            <TabsContent value="supervisions">
+              <DocumentList
+                title="Supervision Records"
+                fieldName="supervisions"
+                icon={History}
+              />
+            </TabsContent>
+            <TabsContent value="other_documents">
+              <DocumentList
+                title="Other Relevant Documents"
+                fieldName="other_documents"
+                icon={FileText}
+              />
+            </TabsContent>
           </div>
         </Tabs>
       </div>
@@ -508,7 +592,9 @@ const EmployeeDetailView = () => {
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="sm:max-w-md rounded-xl border-[#e1dbd2]">
           <DialogHeader>
-            <DialogTitle className="text-black">Upload to {uploadData.title}</DialogTitle>
+            <DialogTitle className="text-black">
+              Upload to {uploadData.title}
+            </DialogTitle>
             <DialogDescription>
               Enter a name for this record and select the file to upload.
             </DialogDescription>
@@ -516,28 +602,38 @@ const EmployeeDetailView = () => {
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label className="text-xs font-bold text-gray-500 uppercase">Document Name</Label>
-              <Input 
+              <Label className="text-xs font-bold text-gray-500 uppercase">
+                Document Name
+              </Label>
+              <Input
                 placeholder="e.g. Passport Copy 2024"
                 className="border-[#e1dbd2] focus:border-[#1f6b4a] focus:ring-[#1f6b4a]"
                 value={uploadData.docName}
-                onChange={(e) => setUploadData({...uploadData, docName: e.target.value})}
+                onChange={(e) =>
+                  setUploadData({ ...uploadData, docName: e.target.value })
+                }
               />
             </div>
-            
+
             <div className="space-y-2">
-              <Label className="text-xs font-bold text-gray-500 uppercase">File Selection</Label>
+              <Label className="text-xs font-bold text-gray-500 uppercase">
+                File Selection
+              </Label>
               <div className="border-2 border-dashed border-[#e1dbd2] rounded-lg p-6 text-center relative hover:bg-gray-50 transition-colors">
-                <input 
-                  type="file" 
+                <input
+                  type="file"
                   accept=".pdf,.doc,.docx,.xlsx,image/*"
-                  className="absolute inset-0 opacity-0 cursor-pointer" 
-                  onChange={(e) => setUploadData({...uploadData, file: e.target.files[0]})}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  onChange={(e) =>
+                    setUploadData({ ...uploadData, file: e.target.files[0] })
+                  }
                 />
                 {uploadData.file ? (
                   <div className="flex items-center justify-center gap-2 text-[#1f6b4a] font-semibold">
                     <FileCheck className="h-5 w-5" />
-                    <span className="text-sm truncate max-w-[200px]">{uploadData.file.name}</span>
+                    <span className="text-sm truncate max-w-50">
+                      {uploadData.file.name}
+                    </span>
                   </div>
                 ) : (
                   <div className="text-gray-400">
@@ -550,13 +646,19 @@ const EmployeeDetailView = () => {
           </div>
 
           <DialogFooter className="gap-2 sm:gap-0">
-            <Button variant="outline" onClick={() => setIsModalOpen(false)}>Cancel</Button>
-            <Button 
+            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button
               onClick={handleFileUpload}
               disabled={isUploading}
-              className="bg-[#1f6b4a] hover:bg-[#123d2b]"
+              className="bg-black hover:bg-[#FFFDD0] hover:text-black text-white"
             >
-              {isUploading ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : <UploadCloud className="h-4 w-4 mr-2" />}
+              {isUploading ? (
+                <Loader2 className="animate-spin h-4 w-4 mr-2" />
+              ) : (
+                <UploadCloud className="h-4 w-4 mr-2" />
+              )}
               Upload Document
             </Button>
           </DialogFooter>
