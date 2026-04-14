@@ -270,7 +270,7 @@ const Page = () => {
 
   return (
     <div className="p-6">
-      <Card className="border-[#e1dbd2]">
+     
         <CardHeader className="flex flex-row items-center justify-between p-6">
           <CardTitle className="text-lg font-bold text-black">
             Key Working Sessions
@@ -282,16 +282,17 @@ const Page = () => {
             <Plus className="w-4 h-4" /> New KWS Entry
           </Button>
         </CardHeader>
-
+      
+ 
         <section className="p-6">
           {loading ? (
             <div className="flex justify-center p-12">
               <Loader2 className="animate-spin h-8 w-8 text-black" />
             </div>
           ) : (
-<div className="border border-black/10 rounded-xl bg-[#FFFDF0] overflow-hidden shadow-sm">
+<div className="border border-black/10 rounded-xl bg-[#FFFDD0] overflow-hidden shadow-sm">
   <table className="w-full text-left border-collapse">
-    <thead className="bg-[#F5F1E8] border-b border-black">
+    <thead className="bg-[#FFFDD0] border-b border-black">
       <tr>
         {/* Main column takes more space */}
         <th className="p-4 w-1/2 text-[10px] font-black uppercase tracking-wider text-black">
@@ -306,7 +307,7 @@ const Page = () => {
           Preview
         </th>
         {/* Actions column - narrow and right-aligned */}
-        <th className="p-4 w-24 text-right"></th>
+        <th className="p-4 w-24 text-right">Actions</th>
       </tr>
     </thead>
     <tbody className="divide-y divide-black/5">
@@ -393,7 +394,7 @@ const Page = () => {
 </div>
           )}
         </section>
-      </Card>
+      {/* </Card> */}
 
       {/* MODALS (UPLOAD, VIEWER, DELETE) REMAIN THE SAME AS YOUR ORIGINAL CODE */}
       {/* ... keeping the Dialog sections from your code below ... */}

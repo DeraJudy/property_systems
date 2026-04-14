@@ -401,19 +401,19 @@ const handleDeleteEmployee = async () => {
   const EmployeeTable = ({ data, emptyMessage = "No records found." }) => {
   if (data.length === 0) return <Card className="p-20 text-center">{emptyMessage}</Card>;
   return (
-    <Card className="bg-[#fbf8f2] border-[#e1dbd2] overflow-hidden">
+    <Card className="bg-[#FFFDD0]  border-[#e1dbd2] overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
             {/* Arranged Header: Only Name and Actions */}
-            <TableHead className="font-bold text-[#123d2b]">Employee</TableHead>
+            <TableHead className="font-bold text-black">Employee</TableHead>
             <TableHead className="text-right font-bold text-[#123d2b]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {data.map((e) => (
             <TableRow key={e.id} className="hover:bg-[#e6f2ec] cursor-pointer" onClick={() => router.push(`/hrList/${e.id}`)}>
-              <TableCell className="font-medium text-[#123d2b]">{e.full_name}</TableCell>
+              <TableCell className="font-medium text-black">{e.full_name}</TableCell>
               
               <TableCell className="text-right" onClick={(ev) => ev.stopPropagation()}>
                 <div className="flex justify-end gap-1">
@@ -446,8 +446,8 @@ const handleDeleteEmployee = async () => {
           <p className="text-[#6b7d74]">Manage employee records and compliance</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={fetchEmployees}><RefreshCw className="mr-2 h-4 w-4" /> Refresh</Button>
-          <Button variant="outline" onClick={exportAllEmployees}><FileSpreadsheet className="mr-2 h-4 w-4" /> Export</Button>
+          <Button variant="outline" onClick={fetchEmployees}><RefreshCw className="mr-2 h-4 w-4 bg-[#FFFDD0] " /> Refresh</Button>
+          <Button variant="outline" onClick={exportAllEmployees}><FileSpreadsheet className="mr-2 h-4 w-4 bg-[#FFFDD0] " /> Export</Button>
           <Button className="bg-black text-white hover:bg-[#123d2b]" onClick={() => router.push("/hrList/addEmployee")}><Plus className="mr-2 h-4 w-4" /> Add New Employee</Button>
         </div>
       </div>
@@ -461,7 +461,7 @@ const handleDeleteEmployee = async () => {
 
       <Tabs defaultValue="all">
         <TabsList className="bg-[#ece7df]">
-          <TabsTrigger value="all">All Staff</TabsTrigger>
+          <TabsTrigger className="bg-[#FFFDD0]" value="all">All Staff</TabsTrigger>
           {/* <TabsTrigger value="compliance">Compliance</TabsTrigger> */}
         </TabsList>
         <TabsContent value="all"><EmployeeTable data={employeeList} /></TabsContent>

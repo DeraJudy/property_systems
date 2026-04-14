@@ -427,7 +427,7 @@ const EmployeeDetailView = () => {
   );
 
   return (
-    <div className="p-6 min-h-screen font-sans bg-[#fcfcfc]">
+    <div className="p-6 min-h-screen font-sans ">
       <div className="max-w-6xl mx-auto space-y-6">
 
         <div className="flex justify-between items-center">
