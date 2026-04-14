@@ -1843,17 +1843,17 @@ export default function ViewServiceUserProfile() {
                             className="hover:bg-[#f1f8f5]/50 transition-colors group cursor-pointer"
                             onClick={() => setSelectedLog(log)} // Trigger Popup on Row Click
                           >
-                            {/* <td className="py-4 px-4 whitespace-nowrap">
+                            <td className="py-4 px-4 whitespace-nowrap">
                               <div className="font-bold text-[#123d2b]">
                                 {new Date(
                                   log.session_date,
                                 ).toLocaleDateString()}
                               </div>
-                              <div className="text-[10px] text-muted-foreground flex items-center gap-1">
+                              {/* <div className="text-[10px] text-muted-foreground flex items-center gap-1">
                                 <Clock className="w-3 h-3" />{" "}
                                 {log.session_time || "--:--"}
-                              </div>
-                            </td> */}
+                              </div> */}
+                            </td>
                             <td className="py-4 px-4 text-[#123d2b] font-bold">
                               {log.support_worker_name}
                             </td>
@@ -2511,7 +2511,7 @@ export default function ViewServiceUserProfile() {
                     </Label>
                     <p className="text-sm font-bold text-[#123d2b]">
                       {new Date(selectedLog.session_date).toLocaleDateString()}{" "}
-                      at {selectedLog.session_time}
+                       {/* {selectedLog.session_time} */}
                     </p>
                   </div>
                   <div>

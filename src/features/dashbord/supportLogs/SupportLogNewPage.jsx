@@ -403,7 +403,7 @@ const  SupportLogNewPage = () => {
     support_worker_name: "",
     session_type: "",
     session_mode: "",
-    // session_date: new Date().toISOString().split("T")[0],
+    session_date: new Date().toISOString().split("T")[0],
     // session_time: "",
     duration: "",
     notes: "",
@@ -598,7 +598,7 @@ const  SupportLogNewPage = () => {
               </Select>
             </div>
 
-            {/* <div>
+            <div>
               <Label>Session Date</Label>
               <Input 
                 className="mt-1" 
@@ -606,7 +606,7 @@ const  SupportLogNewPage = () => {
                 value={formData.session_date} 
                 onChange={(e) => setFormData({...formData, session_date: e.target.value})} 
               />
-            </div> */}
+            </div>
 
             {/* <div>
               <Label>Session Time</Label>
