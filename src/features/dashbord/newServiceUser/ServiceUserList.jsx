@@ -528,7 +528,7 @@ const confirmDelete = async () => {
                     </TableCell>
                     <TableCell>
                        <span className="bg-gray-100 px-2.5 py-0.5 rounded-full text-xs font-medium text-gray-600">
-                         {1 + user.eet_documents.length + user.onboarding_documents.length + user.additional_documents.length} files
+                         {1 + user.onboarding_documents.length + user.additional_documents.length} files
                        </span>
                     </TableCell>
                     <TableCell>

@@ -382,6 +382,8 @@ export default function EditServiceUserForm() {
     service_user_name: "",
     about_file_url: "",
     about_file_path: "",
+    profile_image_url: "",   // Added
+  profile_image_path: "",
     // eet_documents: [],
     onboarding_documents: [],
     additional_documents: [],
@@ -518,7 +520,7 @@ export default function EditServiceUserForm() {
 
   if (fetching) {
     return (
-      <div className="h-screen flex items-center justify-center bg-[#fdfbf7]">
+      <div className="h-screen flex items-center justify-center ">
         <Loader2 className="animate-spin text-black" size={40} />
       </div>
     );
@@ -535,6 +537,7 @@ export default function EditServiceUserForm() {
             <h1 className="text-4xl font-black text-black tracking-tight">Edit Intake Record</h1>
             <p className="text-black/50 font-medium">Updating documentation for {formData.service_user_name}</p>
           </div>
+          
           <div className="flex gap-3">
              <div className="p-3 bg-black text-white rounded-2xl">
                <User size={24} />
@@ -544,6 +547,39 @@ export default function EditServiceUserForm() {
 
         <Card className="mb-6 border-black/10">
           <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <div className="space-y-4 md:col-span-2 border-b border-black/5 pb-6 mb-2">
+  <Label className="font-black uppercase tracking-widest text-[10px]">Profile Picture</Label>
+  <div className="flex items-center gap-6">
+    {/* Preview Circle */}
+    <div className="h-24 w-24 rounded-2xl border-2 border-black/10 flex items-center justify-center overflow-hidden bg-white shadow-inner">
+      {formData.profile_image_url ? (
+        <img 
+          src={formData.profile_image_url} 
+          alt="Profile" 
+          className="h-full w-full object-cover" 
+        />
+      ) : (
+        <User className="h-10 w-10 text-black/20" />
+      )}
+    </div>
+
+    {/* Upload Controls */}
+    <div className="flex-1 space-y-2">
+      <Input 
+        type="file" 
+        accept="image/*" 
+        onChange={(e) => handleFileUpload(e, "profile_image")} 
+        disabled={uploadingFields["profile_image"]}
+        className="border-black/10 focus:ring-black h-10"
+      />
+      <p className="text-[10px] font-bold text-black/40 uppercase">
+        {uploadingFields["profile_image"] ? "Uploading..." : "JPG or PNG. Max 2MB."}
+      </p>
+    </div>
+  </div>
+</div>
+
             <div className="space-y-2">
               <Label className="font-black uppercase text-[10px] tracking-widest text-black/60">Service User Name <span className="text-red-500">*</span></Label>
               <Input 

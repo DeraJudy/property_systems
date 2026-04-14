@@ -1041,14 +1041,12 @@ import {
   Trash2,
   ClipboardList,
   Edit3,
-  Briefcase,
-  UserPlus,
-  History,
+  Upload,
   ShieldAlert,
   Clock,
   Copy,
   Play,
-  Video,
+  Video, Fingerprint
 } from "lucide-react";
 import { createClient } from "@/lib/superbase/clientUtils";
 import { toast } from "sonner";
@@ -1680,14 +1678,36 @@ export default function ViewServiceUserProfile() {
               <h1 className="text-3xl text-black font-bold uppercase">
                 {userData.service_user_name}
               </h1>
-              {/* <p className="text-emerald-100/70 flex items-center gap-2 mt-1">
-                <Calendar size={14} /> Registered: {new Date(userData.created_at).toLocaleDateString()}
-              </p> */}
             </div>
           </div>
-          <Badge className="bg-[#FFFDD0] text-black px-4 py-2 text-lg">
-            Active Resident
-          </Badge>
+
+          {/* Profile Image Section */}
+          <div className="relative group">
+            <div className="h-32 w-32 rounded-2xl border-4 border-white shadow-xl overflow-hidden bg-white flex items-center justify-center">
+              {userData?.profile_image_url ? (
+                <img
+                  src={userData.profile_image_url}
+                  alt="Profile"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center w-full h-full bg-slate-50 text-slate-400 group-hover:bg-slate-100 transition-colors cursor-pointer relative">
+                  <ImageIcon className="h-8 w-8 mb-1" />
+                  <span className="text-[10px] font-bold uppercase tracking-tighter">
+                    No Photo
+                  </span>
+                  {/* Hidden Input for fancy upload triggering */}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    onChange={(e) => handleFileUpload(e, "profile_image")}
+                  />
+                </div>
+              )}
+            </div>
+           
+          </div>
         </div>
 
         <Tabs defaultValue="about" className="space-y-6">
@@ -1732,45 +1752,45 @@ export default function ViewServiceUserProfile() {
 
           {/* ABOUT TAB */}
           <TabsContent value="about">
-            <Card className="border-[#e1dbd2]">
-              <CardHeader>
-                {/* <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold text-[#123d2b] flex items-center gap-2">
-                  <FileText size={20} />About Documents
-                </h3>
-                <Button 
-                  onClick={() => { setUploadTargetField("additional_documents"); setIsUploadModalsOpen(true); }}
-                  variant="outline" 
-                  size="sm" 
-                  className="border-[#1f6b4a] text-[#1f6b4a] hover:bg-[#e6f2ec]"
-                >
-                  <Plus size={16} className="mr-1" /> Add Doc
-                </Button>
-              </div> */}
-                {/* <CardTitle className="text-black flex items-center gap-2"><User size={20}/> About Resident </CardTitle> */}
+            <Card className="border-none shadow-sm bg-[#fdfbf7]">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-[#1f6b4a]" /> Primary
+                  Documentation
+                </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div>
-                    {/* <h3 className="text-sm font-black text-gray-400 uppercase mb-4">Primary Information</h3> */}
-                    {userData.about_file_url ? (
-                      <DocCard
-                        title="About Document"
-                        url={userData.about_file_url}
-                      />
-                    ) : (
-                      <p className="text-sm italic text-gray-400">
-                        No primary assessment uploaded.
-                      </p>
-                    )}
+              <CardContent>
+                {userData?.about_file_url ? (
+                  <div className="flex flex-col gap-3">
+                    <p className="text-[11px] text-slate-500 font-medium italic">
+                      "Primary record for service user intake and background."
+                    </p>
+                    <Button
+                      className="w-full bg-black hover:bg-[#1f6b4a] font-bold text-xs py-5"
+                      onClick={() => openDocument(userData.about_file_url)}
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" /> VIEW ABOUT
+                      DOCUMENT
+                    </Button>
                   </div>
-                  {/* <div>
-                        <h3 className="text-sm font-black text-gray-400 uppercase mb-4">Initial Assessment</h3>
-                        {userData.about_file_url ? (
-                            <DocCard title="About Document" url={userData.about_file_url} />
-                        ) : <p className="text-sm italic text-gray-400">No primary assessment uploaded.</p>}
-                    </div> */}
-                </div>
+                ) : (
+                  <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 flex flex-col items-center bg-white">
+                    <Upload className="h-8 w-8 text-slate-300 mb-2" />
+                    <p className="text-[10px] font-bold text-slate-400 uppercase mb-3 text-center">
+                      No About Document Found
+                    </p>
+                    <label className="w-full">
+                      <Input
+                        type="file"
+                        className="hidden"
+                        onChange={(e) => handleFileUpload(e, "about_file")}
+                      />
+                      <div className="bg-[#1f6b4a] text-white text-[10px] font-black py-3 rounded-lg text-center cursor-pointer hover:bg-[#123d2b] transition-colors">
+                        UPLOAD NOW
+                      </div>
+                    </label>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -2026,7 +2046,7 @@ export default function ViewServiceUserProfile() {
                 </div>
                 <Button
                   onClick={() => setIsUploadModalOpen(true)}
-                  className="text-black text-white"
+                  className=" text-white"
                 >
                   <Plus size={20} className="mr-2" /> New Session Record
                 </Button>
