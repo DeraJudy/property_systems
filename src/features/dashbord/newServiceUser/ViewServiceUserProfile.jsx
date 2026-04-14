@@ -1046,7 +1046,7 @@ import {
   Clock,
   Copy,
   Play,
-  Video, Fingerprint
+  Video, Fingerprint, ImageIcon 
 } from "lucide-react";
 import { createClient } from "@/lib/superbase/clientUtils";
 import { toast } from "sonner";
