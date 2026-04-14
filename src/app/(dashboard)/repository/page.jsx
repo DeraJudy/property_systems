@@ -398,7 +398,7 @@ const Page = () => {
         open={isUploadModalOpen}
         onOpenChange={(open) => !open && closeModal()}
       >
-        <DialogContent className="sm:max-w-[450px]">
+        <DialogContent className="sm:max-w-112.5">
           <DialogHeader>
             <DialogTitle className="text-[#123d2b] font-black flex gap-2">
               <Briefcase className="w-5 h-5" />{" "}

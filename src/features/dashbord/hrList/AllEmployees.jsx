@@ -399,40 +399,42 @@ const handleDeleteEmployee = async () => {
   const dbsPercent = totalEmployees ? Math.round((dbsCompliant / totalEmployees) * 100) : 0;
 
   const EmployeeTable = ({ data, emptyMessage = "No records found." }) => {
-    if (data.length === 0) return <Card className="p-20 text-center">{emptyMessage}</Card>;
-    return (
-      <Card className="bg-[#fbf8f2] border-[#e1dbd2] overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Employee</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>DBS</TableHead>
-              <TableHead>Induction</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+  if (data.length === 0) return <Card className="p-20 text-center">{emptyMessage}</Card>;
+  return (
+    <Card className="bg-[#fbf8f2] border-[#e1dbd2] overflow-hidden">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            {/* Arranged Header: Only Name and Actions */}
+            <TableHead className="font-bold text-[#123d2b]">Employee</TableHead>
+            <TableHead className="text-right font-bold text-[#123d2b]">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data.map((e) => (
+            <TableRow key={e.id} className="hover:bg-[#e6f2ec] cursor-pointer" onClick={() => router.push(`/hrList/${e.id}`)}>
+              <TableCell className="font-medium text-[#123d2b]">{e.full_name}</TableCell>
+              
+              <TableCell className="text-right" onClick={(ev) => ev.stopPropagation()}>
+                <div className="flex justify-end gap-1">
+                  <Button variant="ghost" size="sm" onClick={(ev) => downloadEmployeeData(e, ev)}>
+                    <Download className="h-4 w-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => router.push(`/hrList/${e.id}/edit`)}>
+                    <Edit className="h-4 w-4 text-blue-600" />
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => { setEmployeeToDelete(e); setIsDeleteDialogOpen(true); }}>
+                    <Trash2 className="h-4 w-4 text-red-500" />
+                  </Button>
+                </div>
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((e) => (
-              <TableRow key={e.id} className="hover:bg-[#e6f2ec] cursor-pointer" onClick={() => router.push(`/hrList/${e.id}`)}>
-                <TableCell className="font-medium text-[#123d2b]">{e.full_name}</TableCell>
-                <TableCell>{e.job_role}</TableCell>
-                <TableCell><StatusBadge status={e.dbs_number ? "Valid" : "Missing"} /></TableCell>
-                <TableCell><StatusBadge status={e.induction_completed_date ? "Completed" : "Incomplete"} /></TableCell>
-                <TableCell className="text-right" onClick={(ev) => ev.stopPropagation()}>
-                  <div className="flex justify-end gap-1">
-                    <Button variant="ghost" size="sm" onClick={(ev) => downloadEmployeeData(e, ev)}><Download className="h-4 w-4" /></Button>
-                    <Button variant="ghost" size="sm" onClick={() => router.push(`/hrList/${e.id}/edit`)}><Edit className="h-4 w-4 text-blue-600" /></Button>
-                    <Button variant="ghost" size="sm" onClick={() => { setEmployeeToDelete(e); setIsDeleteDialogOpen(true); }}><Trash2 className="h-4 w-4 text-red-500" /></Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Card>
-    );
-  };
+          ))}
+        </TableBody>
+      </Table>
+    </Card>
+  );
+};
 
   if (loading) return <div className="p-10 text-center">Loading Workforce...</div>;
 

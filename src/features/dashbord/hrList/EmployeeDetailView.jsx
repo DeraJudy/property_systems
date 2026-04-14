@@ -255,11 +255,11 @@ import { useRouter, useParams } from "next/navigation";
 import { 
   ArrowLeft, Download, FileText, User, 
   Briefcase, FileCheck, BookOpen, GraduationCap, History, 
-  Loader2, Plus, Trash2, UploadCloud, Search
+  Loader2, Plus, Trash2, UploadCloud, ExternalLink, AlertCircle
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -279,6 +279,7 @@ const EmployeeDetailView = () => {
   const { id } = useParams();
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
   
   // Modal States
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -286,6 +287,7 @@ const EmployeeDetailView = () => {
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     fetchEmployee();
   }, [id]);
 
@@ -359,92 +361,114 @@ const EmployeeDetailView = () => {
     }
   };
 
-  if (loading) return (
-    <div className="flex h-screen items-center justify-center bg-[#F5F5DC]">
-      <Loader2 className="h-10 w-10 animate-spin text-black" />
+  if (!mounted || loading) return (
+    <div className="p-20 text-center font-medium font-sans">
+      <Loader2 className="h-10 w-10 animate-spin mx-auto mb-4 text-[#1f6b4a]" />
+      Loading Employee Profile...
     </div>
   );
 
   const DocumentList = ({ title, fieldName, icon: Icon }) => (
-    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
-      <div className="flex items-center justify-between border-b-2 border-black pb-2">
-        <div className="flex items-center gap-2">
-          <Icon className="h-5 w-5" />
-          <h3 className="font-black uppercase tracking-widest">{title}</h3>
-        </div>
+    <Card className="border-[#e1dbd2] shadow-sm bg-white">
+      <CardHeader className="border-b border-[#f7f2e9] flex flex-row items-center justify-between py-4">
+        <CardTitle className="text-md flex items-center gap-2 text-[#123d2b]">
+          <Icon className="h-5 w-5" /> {title}
+        </CardTitle>
         <Button 
           size="sm" 
           onClick={() => openUploadModal(fieldName, title)}
-          className="bg-black text-[#F5F5DC] rounded-none hover:bg-zinc-800"
+          className="bg-black text-white hover:bg-[#123d2b] h-8 text-xs"
         >
-          <Plus className="h-4 w-4 mr-1" /> ADD DOCUMENT
+          <Plus className="h-3 w-3 mr-1" /> ADD DOCUMENT
         </Button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {employee[fieldName]?.length > 0 ? (
-          employee[fieldName].map((doc, i) => (
-            <Card key={i} className="border-black/20 bg-white rounded-none hover:border-black transition-all">
-              <CardContent className="p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="bg-black text-[#F5F5DC] p-2"><FileText className="h-5 w-5" /></div>
-                  <div className="max-w-[180px]">
-                    <p className="text-sm font-black text-black truncate">{doc.name}</p>
+      </CardHeader>
+      <CardContent className="pt-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {employee[fieldName]?.length > 0 ? (
+            employee[fieldName].map((doc, i) => (
+              <div key={i} className="flex items-center justify-between p-3 bg-white border border-[#e1dbd2] rounded-lg shadow-sm">
+                <div className="flex items-center gap-3 overflow-hidden">
+                  <FileText className="h-5 w-5 text-[#1f6b4a] shrink-0" />
+                  <div className="overflow-hidden">
+                    <p className="text-sm font-medium text-gray-700 truncate">{doc.name}</p>
                     <p className="text-[10px] text-gray-400 uppercase font-bold">Verified File</p>
                   </div>
                 </div>
-                <div className="flex gap-1">
-                  <Button size="icon" variant="ghost" className="hover:bg-black hover:text-[#F5F5DC] rounded-none" asChild>
-                    <a href={doc.url} target="_blank" rel="noopener noreferrer"><Download className="h-4 w-4" /></a>
-                  </Button>
-                  <Button size="icon" variant="ghost" onClick={() => removeDocument(fieldName, i)} className="text-red-600 hover:bg-red-600 hover:text-white rounded-none">
-                    <Trash2 className="h-4 w-4" />
+                <div className="flex items-center gap-1">
+                  <a 
+                    href={doc.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex items-center gap-1 text-[11px] font-bold text-[#1f6b4a] hover:underline bg-[#f1f8f5] px-2 py-1 rounded"
+                  >
+                    VIEW <ExternalLink className="h-3 w-3" />
+                  </a>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => removeDocument(fieldName, i)} 
+                    className="h-7 w-7 text-red-500 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
-          ))
-        ) : (
-          <div className="col-span-full py-12 flex flex-col items-center justify-center border-2 border-dashed border-black/10 text-gray-400">
-             <UploadCloud className="h-10 w-10 mb-2 opacity-20 text-black" />
-             <p className="text-[10px] font-black uppercase tracking-[0.2em]">Archive Empty</p>
-          </div>
-        )}
-      </div>
-    </div>
+              </div>
+            ))
+          ) : (
+            <div className="col-span-full py-8 flex flex-col items-center justify-center border-2 border-dashed border-[#e1dbd2] rounded-xl text-gray-400">
+               <AlertCircle className="h-8 w-8 mb-2 opacity-20" />
+               <p className="text-xs font-medium italic">No documents found in this category</p>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 
   return (
-    <div className="min-h-screen bg-[#F5F5DC] p-6 text-black font-sans">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10 border-b-4 border-black pb-6">
-          <div className="space-y-4">
-            <Button variant="outline" onClick={() => router.back()} className="border-black text-black hover:bg-black hover:text-[#F5F5DC] rounded-none font-bold">
-              <ArrowLeft className="h-4 w-4 mr-2" /> BACK TO DIRECTORY
-            </Button>
-            <h1 className="text-6xl font-black uppercase italic leading-none tracking-tighter">{employee.full_name}</h1>
+    <div className="p-6 min-h-screen font-sans bg-[#fcfcfc]">
+      <div className="max-w-6xl mx-auto space-y-6">
+        <Button variant="ghost" onClick={() => router.back()} className="text-black hover:bg-white">
+          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Safer Recruitment
+        </Button>
+
+        {/* HEADER */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-xl border border-[#e1dbd2] shadow-sm gap-4">
+          <div className="flex items-center gap-5">
+            {/* <div className="h-20 w-20 bg-[#123d2b] rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-inner">
+              {employee.full_name?.charAt(0)}
+            </div> */}
+            <div>
+              <h1 className="text-3xl font-bold text-black">{employee.full_name}</h1>
+              {/* <div className="flex flex-wrap gap-3 mt-1 text-sm text-gray-500 font-medium">
+                <span className="flex items-center gap-1"><Briefcase className="h-4 w-4"/> {employee.job_role || "Role not assigned"}</span>
+                <span className="flex items-center gap-1"><History className="h-4 w-4"/> Member ID: {id.slice(0,8).toUpperCase()}</span>
+              </div> */}
+            </div>
           </div>
-          {/* <Badge className="bg-black text-[#F5F5DC] rounded-none px-6 py-2 text-xl font-black italic">ID: {id.slice(0,8)}</Badge> */}
+          <Button onClick={() => router.push(`/hrList/${id}/edit`)} className="bg-black text-white hover:bg-[#123d2b] px-6">
+            Edit Employee
+          </Button>
         </div>
 
         <Tabs defaultValue="personal_records" className="w-full">
-          <TabsList className="bg-black p-1 rounded-none w-full flex flex-wrap h-auto shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <TabsList className="bg-white border-[#e1dbd2] p-1 h-12 shadow-sm overflow-x-auto justify-start md:justify-center">
             {[
               { id: "personal_records", label: "Personal" },
               { id: "staff_documents", label: "Staff Records" },
               { id: "references_attachments", label: "References" },
               { id: "training_induction_records", label: "Training" },
-              { id: "qualifications", label: "Quals" },
+              { id: "qualifications", label: "Qualifications" },
               { id: "supervisions", label: "Supervisions" },
               { id: "other_documents", label: "Miscellaneous" }
             ].map((tab) => (
-              <TabsTrigger key={tab.id} value={tab.id} className="flex-1 text-[10px] font-black uppercase tracking-widest data-[state=active]:bg-[#F5F5DC] data-[state=active]:text-black text-white rounded-none py-3">
+              <TabsTrigger key={tab.id} value={tab.id} className="px-4 text-xs font-bold uppercase tracking-tight">
                 {tab.label}
               </TabsTrigger>
             ))}
           </TabsList>
 
-          <div className="mt-8 bg-white/40 p-8 border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,0.05)]">
+          <div className="mt-6">
             <TabsContent value="personal_records"><DocumentList title="Personal Documents" fieldName="personal_records" icon={User} /></TabsContent>
             <TabsContent value="staff_documents"><DocumentList title="Staff Records" fieldName="staff_documents" icon={Briefcase} /></TabsContent>
             <TabsContent value="references_attachments"><DocumentList title="Reference Documents" fieldName="references_attachments" icon={FileCheck} /></TabsContent>
@@ -456,61 +480,60 @@ const EmployeeDetailView = () => {
         </Tabs>
       </div>
 
-      {/* NEW UPLOAD MODAL */}
+      {/* UPLOAD MODAL */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="bg-[#F5F5DC] border-4 border-black rounded-none shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] max-w-md">
+        <DialogContent className="sm:max-w-md rounded-xl border-[#e1dbd2]">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-black uppercase italic tracking-tighter border-b-2 border-black pb-2">
-              New Upload: {uploadData.title}
-            </DialogTitle>
-            <DialogDescription className="text-black font-bold text-xs uppercase pt-2">
-              Fill in the metadata for the electronic filing system.
+            <DialogTitle className="text-black">Upload to {uploadData.title}</DialogTitle>
+            <DialogDescription>
+              Enter a name for this record and select the file to upload.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-6 py-4">
+          <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest">Document Title</Label>
+              <Label className="text-xs font-bold text-gray-500 uppercase">Document Name</Label>
               <Input 
                 placeholder="e.g. Passport Copy 2024"
-                className="rounded-none border-2 border-black bg-white focus:ring-0"
+                className="border-[#e1dbd2] focus:border-[#1f6b4a] focus:ring-[#1f6b4a]"
                 value={uploadData.docName}
                 onChange={(e) => setUploadData({...uploadData, docName: e.target.value})}
               />
             </div>
             
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest">Select File</Label>
-              <div className="border-2 border-dashed border-black bg-white p-4 text-center relative cursor-pointer hover:bg-zinc-50 transition-colors">
+              <Label className="text-xs font-bold text-gray-500 uppercase">File Selection</Label>
+              <div className="border-2 border-dashed border-[#e1dbd2] rounded-lg p-6 text-center relative hover:bg-gray-50 transition-colors">
                 <input 
                   type="file" 
+                  accept=".pdf,.doc,.docx,.xlsx,image/*"
                   className="absolute inset-0 opacity-0 cursor-pointer" 
                   onChange={(e) => setUploadData({...uploadData, file: e.target.files[0]})}
                 />
                 {uploadData.file ? (
-                  <p className="text-xs font-bold text-green-700 truncate">{uploadData.file.name}</p>
+                  <div className="flex items-center justify-center gap-2 text-[#1f6b4a] font-semibold">
+                    <FileCheck className="h-5 w-5" />
+                    <span className="text-sm truncate max-w-[200px]">{uploadData.file.name}</span>
+                  </div>
                 ) : (
-                  <p className="text-[10px] font-black uppercase text-gray-400">Click to browse or drop file</p>
+                  <div className="text-gray-400">
+                    <UploadCloud className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-xs">Click or drag file to upload</p>
+                  </div>
                 )}
               </div>
             </div>
           </div>
 
-          <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => setIsModalOpen(false)}
-              className="rounded-none border-black border-2 font-black uppercase text-xs"
-            >
-              Cancel
-            </Button>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="outline" onClick={() => setIsModalOpen(false)}>Cancel</Button>
             <Button 
               onClick={handleFileUpload}
               disabled={isUploading}
-              className="rounded-none bg-black text-[#F5F5DC] hover:bg-zinc-800 font-black uppercase text-xs px-8"
+              className="bg-[#1f6b4a] hover:bg-[#123d2b]"
             >
               {isUploading ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : <UploadCloud className="h-4 w-4 mr-2" />}
-              Begin Upload
+              Upload Document
             </Button>
           </DialogFooter>
         </DialogContent>
