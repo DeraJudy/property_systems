@@ -1827,7 +1827,7 @@ export default function ViewServiceUserProfile() {
                     <table className="w-full text-left text-sm border-collapse">
                       <thead>
                         <tr className="bg-[#fcfcfc] border-b border-[#e1dbd2] text-[#123d2b]/60 uppercase text-[10px] font-black tracking-widest">
-                          {/* <th className="py-4 px-4">Date & Time</th> */}
+                          <th className="py-4 px-4">Date </th>
                           <th className="py-4 px-4">Staff</th>
                           <th className="py-4 px-4">Type</th>
                           <th className="py-4 px-4">Duration</th>
@@ -1890,16 +1890,16 @@ export default function ViewServiceUserProfile() {
                               onClick={(e) => e.stopPropagation()}
                             >
                               <div className="flex justify-end gap-1">
-                                {/* <Button
+                                <Button
                                   variant="ghost"
                                   size="icon"
                                   className="h-8 w-8 text-blue-500"
                                   onClick={() =>
-                                    router.push(`/support-logs/${log.id}/edit`)
+                                    router.push(`/service-users/${log.id}/editSupport`)
                                   }
                                 >
                                   <Edit3 className="h-4 w-4" />
-                                </Button> */}
+                                </Button>
                                 <Button
                                   variant="ghost"
                                   size="icon"

@@ -6,6 +6,8 @@ export default function ServicePage() {
     <div className="space-y-6">
       
       {/* <ServiceUsersTable /> */}
+
+      {/* Service User Table */}
       <ServiceUserList />
 
     </div>
