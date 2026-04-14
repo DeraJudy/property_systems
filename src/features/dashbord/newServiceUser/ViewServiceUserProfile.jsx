@@ -116,7 +116,6 @@
 //   const [selectedDocFile, setSelectedDocFile] = useState(null);
 // const [selectedMediaFile, setSelectedMediaFile] = useState(null);
 
-
 //   const [existingKWSList, setExistingKWSList] = useState([]);
 //   const [selectedKWSId, setSelectedKWSId] = useState("");
 
@@ -153,15 +152,15 @@
 //       if (logsError) console.error("Logs Error:", logsError.message);
 
 //     // const { data: kwsData, error: kwsError } = await supabase
-//     //   .from('kws_documents') 
+//     //   .from('kws_documents')
 //     //   .select('id, kws_name, doc_url, media_url');
 
 //     // if (kwsError) console.error("Dropdown Fetch Error:", kwsError.message);
-//     // setExistingKWSList(kwsData || []); 
+//     // setExistingKWSList(kwsData || []);
 
 //     // // 2. Fetch for Table (Records to show in UI)
 //     // const { data: finalizedData, error: finalizedError } = await supabase
-//     //   .from('kws_finalized_records') 
+//     //   .from('kws_finalized_records')
 //     //   .select('*')
 //     //   .eq('service_user_id', id)
 //     //   .order('session_date', { ascending: false });
@@ -189,8 +188,8 @@
 //     //   setExistingKWSList(kws || []);
 //     //   setKwsDocs(kws || []);
 
-//     setUserData(user); 
-// setLogs(supportLogs || []); 
+//     setUserData(user);
+// setLogs(supportLogs || []);
 // setExistingKWSList(dropdownData || []); // Use dropdownData instead of kws
 // setKwsDocs(tableData || []);
 
@@ -290,7 +289,6 @@
 //   }
 // };
 
-  
 //     const confirmDelete = async () => {
 //   if (deleteConfirmText !== "DELETE") {
 //     toast.error("Please type DELETE to confirm");
@@ -301,7 +299,7 @@
 //     // 1. Storage Cleanup (Only if it's a manual entry)
 //     if (docToDelete.is_manual_entry === true) {
 //       const filesToDelete = [];
-      
+
 //       // Helper to extract the filename from the Supabase public URL
 //       const getFileName = (url) => {
 //         if (!url) return null;
@@ -322,7 +320,7 @@
 
 //         if (storageError) {
 //           console.error("Storage deletion error:", storageError.message);
-//           // We continue to DB deletion even if storage fails, 
+//           // We continue to DB deletion even if storage fails,
 //           // or you can throw error here if storage must be deleted first.
 //         }
 //       }
@@ -337,12 +335,12 @@
 //     if (dbError) throw dbError;
 
 //     toast.success("Record deleted successfully");
-    
+
 //     // 3. Reset state and refresh UI
 //     setDocToDelete(null);
 //     setDeleteConfirmText(""); // Clear the input field
 //     fetchAllData(); // Refresh the table list
-    
+
 //   } catch (error) {
 //     console.error("Delete error:", error);
 //     toast.error("Deletion failed");
@@ -382,7 +380,7 @@
 //     setSelectedKWSId("new");
 //     setEditingId(null);
 //     setDeleteConfirmText("");
-    
+
 //     const now = new Date();
 //     setSessionDate(new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16));
 //   }
@@ -500,9 +498,6 @@
 //             </Button>
 //           </Link>
 
-         
-          
-          
 //         </div>
 //               </div>
 //               {logs.length === 0 ? <p className="text-center py-10 text-gray-500 italic">No support logs recorded yet.</p> : (
@@ -805,8 +800,8 @@
 //         </Tabs>
 
 //         {/* KWS UPLOAD MODAL */}
-//         <Dialog 
-//   open={isUploadModalOpen} 
+//         <Dialog
+//   open={isUploadModalOpen}
 //   onOpenChange={(open) => {
 //     // Prevent closing by clicking outside or hitting ESC unless we run cleanup
 //     if (!open) handleCloseModal();
@@ -825,7 +820,7 @@
 //         <label className="text-[10px] font-black uppercase text-[#6b7d74] mb-2 block">
 //           Link to Existing Session (Optional)
 //         </label>
-//         <select 
+//         <select
 //           value={selectedKWSId}
 //           onChange={handleKWSSelect}
 //           className="w-full p-3 rounded-xl border border-[#e1dbd2] bg-white text-sm outline-none"
@@ -901,15 +896,15 @@
 //               </div> */}
 
 //               {/* 4. ATTACHMENTS SECTION */}
-// <div 
+// <div
 //   onClick={() => document.getElementById('doc-upload')?.click()}
 //   className={`relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all hover:bg-emerald-50/50 ${docUrl ? "bg-emerald-50 border-emerald-500" : "border-[#e1dbd2] hover:border-[#1f6b4a]"}`}
 // >
-//   <input 
-//     id="doc-upload" 
-//     type="file" 
-//     className="hidden" 
-//     accept=".pdf,.doc,.docx" 
+//   <input
+//     id="doc-upload"
+//     type="file"
+//     className="hidden"
+//     accept=".pdf,.doc,.docx"
 //     onChange={(e) => handleFileUpload(e, 'doc')}
 //   />
 //   {isUploadingDoc ? (
@@ -924,15 +919,15 @@
 // </div>
 
 // {/* MEDIA UPLOAD */}
-// <div 
+// <div
 //   onClick={() => document.getElementById('media-upload')?.click()}
 //   className={`relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all hover:bg-emerald-50/50 ${mediaUrl ? "bg-emerald-50 border-emerald-500" : "border-[#e1dbd2] hover:border-[#1f6b4a]"}`}
 // >
-//   <input 
-//     id="media-upload" 
-//     type="file" 
-//     className="hidden" 
-//     accept="video/*,image/*" 
+//   <input
+//     id="media-upload"
+//     type="file"
+//     className="hidden"
+//     accept="video/*,image/*"
 //     onChange={(e) => handleFileUpload(e, 'media')}
 //   />
 //   {isUploadingMedia ? (
@@ -944,8 +939,6 @@
 //     {mediaUrl ? "Media Linked ✓" : "Click to Upload Media (Video/Img)"}
 //   </p>
 // </div>
-
-
 
 //               <div className="flex gap-3">
 //         <Button variant="outline" onClick={handleCloseModal} className="flex-1 py-6 rounded-xl font-bold">
@@ -985,7 +978,7 @@
 //                   )}
 //                 </DialogContent>
 //               </Dialog>
-        
+
 //               {/* DELETE CONFIRMATION */}
 //               <Dialog
 //                 open={!!docToDelete}
@@ -1050,9 +1043,11 @@ import {
   Briefcase,
   UserPlus,
   History,
-  ShieldAlert, Clock, Copy,
+  ShieldAlert,
+  Clock,
+  Copy,
   Play,
-  Video
+  Video,
 } from "lucide-react";
 import { createClient } from "@/lib/superbase/clientUtils";
 import { toast } from "sonner";
@@ -1062,7 +1057,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -1076,30 +1073,34 @@ const supabase = createClient();
 // --- Helper: Data Display Row ---
 const DataRow = ({ label, value }) => (
   <div className="py-3 border-b border-black/10 flex justify-between items-center">
-    <span className="text-xs font-bold text-black/60 uppercase tracking-wider">{label}</span>
+    <span className="text-xs font-bold text-black/60 uppercase tracking-wider">
+      {label}
+    </span>
     <span className="text-black font-semibold">{value || "N/A"}</span>
   </div>
 );
 
 const openDocument = (url) => {
   if (!url) return;
-  
+
   // Get the file extension (e.g., 'docx')
-  const extension = url.split('.').pop().toLowerCase();
-  
+  const extension = url.split(".").pop().toLowerCase();
+
   // Define files browsers CAN open (PDFs and Images)
-  const nativeBrowsers = ['pdf', 'jpg', 'jpeg', 'png', 'webp'];
+  const nativeBrowsers = ["pdf", "jpg", "jpeg", "png", "webp"];
 
   if (nativeBrowsers.includes(extension)) {
     // Open directly in a new tab
-    window.open(url, '_blank');
-  } else if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(extension)) {
+    window.open(url, "_blank");
+  } else if (
+    ["doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(extension)
+  ) {
     // Route through Microsoft's Office Online Viewer
     const viewerUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(url)}`;
-    window.open(viewerUrl, '_blank');
+    window.open(viewerUrl, "_blank");
   } else {
     // Fallback for everything else
-    window.open(url, '_blank');
+    window.open(url, "_blank");
   }
 };
 
@@ -1108,8 +1109,10 @@ const DocCard = ({ title, url }) => {
   if (!url) return null;
 
   return (
-    <div className="flex items-center justify-between p-4 bg-white border 
-    border-black rounded-xl shadow-sm hover:shadow-md transition-all">
+    <div
+      className="flex items-center justify-between p-4 bg-white border 
+    border-black rounded-xl shadow-sm hover:shadow-md transition-all"
+    >
       <div className="flex items-center gap-3">
         <div className="p-2 bg-[#e6f2ec] rounded-lg text-black">
           <FileText size={18} />
@@ -1132,7 +1135,7 @@ const DocCard = ({ title, url }) => {
 export default function ViewServiceUserProfile() {
   const router = useRouter();
   const { id } = useParams();
-  
+
   // Basic Data State
   const [userData, setUserData] = useState(null);
   const [logs, setLogs] = useState([]);
@@ -1153,36 +1156,52 @@ export default function ViewServiceUserProfile() {
   const [docToDelete, setDocToDelete] = useState(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
 
-const [isUploadModalsOpen, setIsUploadModalsOpen] = useState(false);
-const [uploadTargetField, setUploadTargetField] = useState(""); // "eet_documents", etc.
-const [newDocName, setNewDocName] = useState("");
-const [selectedFile, setSelectedFile] = useState(null);
-const [isUploading, setIsUploading] = useState(false);
-
+  const [isUploadModalsOpen, setIsUploadModalsOpen] = useState(false);
+  const [uploadTargetField, setUploadTargetField] = useState(""); // "eet_documents", etc.
+  const [newDocName, setNewDocName] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [selectedLog, setSelectedLog] = useState(null);
 
   const [sessionDate, setSessionDate] = useState(() => {
     const now = new Date();
-    return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    return new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 16);
   });
 
-const [logToDelete, setLogToDelete] = useState(null);
-const [isDeleting, setIsDeleting] = useState(false);
+  const [logToDelete, setLogToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchAllData = async () => {
     try {
       setLoading(true);
       // 1. Main Profile
-      const { data: user, error: userError } = await supabase.from("service_user_intake").select("*").eq("id", id).single();
+      const { data: user, error: userError } = await supabase
+        .from("service_user_intake")
+        .select("*")
+        .eq("id", id)
+        .single();
       if (userError) throw userError;
 
       // 2. Support Logs
-      const { data: supportLogs } = await supabase.from("support_logs").select("*").eq("service_user_id", id).order("session_date", { ascending: false });
+      const { data: supportLogs } = await supabase
+        .from("support_logs")
+        .select("*")
+        .eq("service_user_id", id)
+        .order("session_date", { ascending: false });
 
       // 3. KWS Dropdown options
-      const { data: dropdownData } = await supabase.from('kws_documents').select('id, kws_name, doc_url, media_url');
+      const { data: dropdownData } = await supabase
+        .from("kws_documents")
+        .select("id, kws_name, doc_url, media_url");
 
       // 4. KWS Table Records
-      const { data: tableData } = await supabase.from("kws_finalized_records").select("*").eq("service_user_id", id).order("session_date", { ascending: false });
+      const { data: tableData } = await supabase
+        .from("kws_finalized_records")
+        .select("*")
+        .eq("service_user_id", id)
+        .order("session_date", { ascending: false });
 
       setUserData(user);
       setLogs(supportLogs || []);
@@ -1197,62 +1216,65 @@ const [isDeleting, setIsDeleting] = useState(false);
     }
   };
 
-  useEffect(() => { fetchAllData(); }, [id]);
+  useEffect(() => {
+    fetchAllData();
+  }, [id]);
 
   // Add this function to handle the database deletion(Support Plan)
-const handleDeleteLog = (log) => {
-  setLogToDelete(log);
-  setDeleteConfirmText(""); // Reset text when opening modal
-};
+  const handleDeleteLog = (log) => {
+    setLogToDelete(log);
+    setDeleteConfirmText(""); // Reset text when opening modal
+  };
 
-const confirmDeleteLog = async () => {
-  // 1. Pattern Check: Double check the text matches "DELETE"
-  if (deleteConfirmText !== "DELETE") {
-    return toast.error("Please type DELETE to confirm");
-  }
-
-  setIsDeleting(true);
-  try {
-    // 2. Step 1: Delete from Storage first using the exact file_path from DB
-    // This matches the ${id}/${fileName} structure from SupportLogNewPage
-    if (logToDelete.file_path) {
-      const { error: storageError } = await supabase.storage
-        .from("support_documents")
-        .remove([logToDelete.file_path]);
-
-      if (storageError) {
-        console.error("Storage cleanup error:", storageError.message);
-        // We continue to ensure the DB record is removed even if the file is missing
-      }
+  const confirmDeleteLog = async () => {
+    // 1. Pattern Check: Double check the text matches "DELETE"
+    if (deleteConfirmText !== "DELETE") {
+      return toast.error("Please type DELETE to confirm");
     }
 
-    // 3. Step 2: Delete from Database
-    const { error: dbError } = await supabase
-      .from("support_logs")
-      .delete()
-      .eq("id", logToDelete.id);
+    setIsDeleting(true);
+    try {
+      // 2. Step 1: Delete from Storage first using the exact file_path from DB
+      // This matches the ${id}/${fileName} structure from SupportLogNewPage
+      if (logToDelete.file_path) {
+        const { error: storageError } = await supabase.storage
+          .from("support_documents")
+          .remove([logToDelete.file_path]);
 
-    if (dbError) throw dbError;
+        if (storageError) {
+          console.error("Storage cleanup error:", storageError.message);
+          // We continue to ensure the DB record is removed even if the file is missing
+        }
+      }
 
-    toast.success("Support log and file deleted successfully");
-    setLogToDelete(null);
-    setDeleteConfirmText("");
-    fetchAllData(); // Refresh your table list
-  } catch (err) {
-    console.error(err);
-    toast.error("Deletion failed");
-  } finally {
-    setIsDeleting(false);
-  }
-};
+      // 3. Step 2: Delete from Database
+      const { error: dbError } = await supabase
+        .from("support_logs")
+        .delete()
+        .eq("id", logToDelete.id);
 
+      if (dbError) throw dbError;
+
+      toast.success("Support log and file deleted successfully");
+      setLogToDelete(null);
+      setDeleteConfirmText("");
+      fetchAllData(); // Refresh your table list
+    } catch (err) {
+      console.error(err);
+      toast.error("Deletion failed");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   // --- KWS LOGIC ---
   const handleKWSSelect = (e) => {
     const kwsId = e.target.value;
     setSelectedKWSId(kwsId);
     if (kwsId === "new") {
-      setKwsName(""); setDocUrl(null); setMediaUrl(null);
+      setKwsName("");
+      setDocUrl(null);
+      setMediaUrl(null);
       return;
     }
     const selected = existingKWSList.find((k) => k.id.toString() === kwsId);
@@ -1263,10 +1285,6 @@ const confirmDeleteLog = async () => {
     }
   };
 
-
-
-
-
   // const handleFileUpload = async (e, type) => {
   //   const file = e.target.files[0];
   //   if (!file) return;
@@ -1276,14 +1294,14 @@ const confirmDeleteLog = async () => {
 
   //   try {
   //     loadingSetter(true);
-      
+
   //     // 1. Generate a unique filename to avoid 409 Conflict
   //     const fileExt = file.name.split('.').pop();
   //     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
   //     const fileName = `${uniqueSuffix}.${fileExt}`;
   //     const filePath = `${id}/${fileName}`;
 
-  //     // 2. Use 'upsert: true' if you want to allow overwriting, 
+  //     // 2. Use 'upsert: true' if you want to allow overwriting,
   //     // but unique filenames (above) are safer for audit trails.
   //     const { error: uploadError } = await supabase.storage
   //       .from("kws-attachments")
@@ -1309,336 +1327,339 @@ const confirmDeleteLog = async () => {
   // };
 
   const handleFileUpload = async (e, type) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  
-  const isDoc = type === 'doc';
-  const loadingSetter = isDoc ? setIsUploadingDoc : setIsUploadingMedia;
-  const setter = isDoc ? setDocUrl : setMediaUrl;
+    const file = e.target.files[0];
+    if (!file) return;
 
-  try {
-    loadingSetter(true);
-    
-    // Sanitize the name: replace spaces with underscores and make lowercase
-    const folderName = userData.service_user_name.replace(/\s+/g, '_').toLowerCase();
-    const fileExt = file.name.split('.').pop();
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const fileName = `${uniqueSuffix}.${fileExt}`;
-    
-    // NEW PATH: kws-attachments/john_doe/123456789.pdf
-    const filePath = `${folderName}/${fileName}`;
+    const isDoc = type === "doc";
+    const loadingSetter = isDoc ? setIsUploadingDoc : setIsUploadingMedia;
+    const setter = isDoc ? setDocUrl : setMediaUrl;
 
-    const { error: uploadError } = await supabase.storage
-      .from("kws-attachments")
-      .upload(filePath, file);
+    try {
+      loadingSetter(true);
 
-    if (uploadError) throw uploadError;
+      // Sanitize the name: replace spaces with underscores and make lowercase
+      const folderName = userData.service_user_name
+        .replace(/\s+/g, "_")
+        .toLowerCase();
+      const fileExt = file.name.split(".").pop();
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      const fileName = `${uniqueSuffix}.${fileExt}`;
 
-    const { data } = supabase.storage
-      .from("kws-attachments")
-      .getPublicUrl(filePath);
+      // NEW PATH: kws-attachments/john_doe/123456789.pdf
+      const filePath = `${folderName}/${fileName}`;
 
-    setter(data.publicUrl);
-    toast.success(`${isDoc ? 'Document' : 'Media'} uploaded`);
-  } catch (error) {
-    console.error("Upload Error:", error);
-    toast.error("Upload failed");
-  } finally {
-    loadingSetter(false);
-  }
-};
+      const { error: uploadError } = await supabase.storage
+        .from("kws-attachments")
+        .upload(filePath, file);
 
-//   const finalizeKWS = async () => {
-//   if (!kwsName) return toast.error("Please provide a session title");
+      if (uploadError) throw uploadError;
 
-//   try {
-//     // Helper to extract path from a Supabase Public URL
-//     // This looks for everything after '/kws-attachments/'
-//     const extractPath = (url) => {
-//       if (!url) return null;
-//       const parts = url.split('/kws-attachments/');
-//       return parts.length > 1 ? parts[1] : null;
-//     };
+      const { data } = supabase.storage
+        .from("kws-attachments")
+        .getPublicUrl(filePath);
 
-//     const payload = {
-//       service_user_id: id,
-//       kws_name: kwsName,
-//       session_date: sessionDate,
-//       doc_url: docUrl,
-//       media_url: mediaUrl,
-//       // We add these columns to your table to make deletion easy
-//       doc_storage_path: extractPath(docUrl),
-//       media_storage_path: extractPath(mediaUrl),
-//       is_manual_entry: selectedKWSId === "new",
-//     };
+      setter(data.publicUrl);
+      toast.success(`${isDoc ? "Document" : "Media"} uploaded`);
+    } catch (error) {
+      console.error("Upload Error:", error);
+      toast.error("Upload failed");
+    } finally {
+      loadingSetter(false);
+    }
+  };
 
-//     const { error } = await supabase
-//       .from("kws_finalized_records")
-//       .insert([payload]);
+  //   const finalizeKWS = async () => {
+  //   if (!kwsName) return toast.error("Please provide a session title");
 
-//     if (error) throw error;
+  //   try {
+  //     // Helper to extract path from a Supabase Public URL
+  //     // This looks for everything after '/kws-attachments/'
+  //     const extractPath = (url) => {
+  //       if (!url) return null;
+  //       const parts = url.split('/kws-attachments/');
+  //       return parts.length > 1 ? parts[1] : null;
+  //     };
 
-//     toast.success("Session finalized and saved");
-//     handleCloseModal(); // This should reset your states
-//     fetchAllData();
-//   } catch (err) {
-//     console.error("Save Error:", err);
-//     toast.error("Failed to save final record");
-//   }
-// };
+  //     const payload = {
+  //       service_user_id: id,
+  //       kws_name: kwsName,
+  //       session_date: sessionDate,
+  //       doc_url: docUrl,
+  //       media_url: mediaUrl,
+  //       // We add these columns to your table to make deletion easy
+  //       doc_storage_path: extractPath(docUrl),
+  //       media_storage_path: extractPath(mediaUrl),
+  //       is_manual_entry: selectedKWSId === "new",
+  //     };
 
-// const finalizeKWS = async () => {
-//   if (!kwsName) return toast.error("Please provide a session title");
+  //     const { error } = await supabase
+  //       .from("kws_finalized_records")
+  //       .insert([payload]);
 
-//   try {
-//     const extractPath = (url) => {
-//       if (!url) return null;
-//       const parts = url.split('/kws-attachments/');
-//       return parts.length > 1 ? parts[1] : null;
-//     };
+  //     if (error) throw error;
 
-//     const payload = {
-//       service_user_id: id,
-//       kws_name: kwsName,
-//       session_date: sessionDate,
-//       doc_url: docUrl,
-//       media_url: mediaUrl,
-//       doc_storage_path: extractPath(docUrl),
-//       media_storage_path: extractPath(mediaUrl),
-//       is_manual_entry: selectedKWSId === "new",
-//     };
+  //     toast.success("Session finalized and saved");
+  //     handleCloseModal(); // This should reset your states
+  //     fetchAllData();
+  //   } catch (err) {
+  //     console.error("Save Error:", err);
+  //     toast.error("Failed to save final record");
+  //   }
+  // };
 
-//     const { error } = await supabase.from("kws_finalized_records").insert([payload]);
-//     if (error) throw error;
+  // const finalizeKWS = async () => {
+  //   if (!kwsName) return toast.error("Please provide a session title");
 
-//     toast.success("Session saved successfully");
+  //   try {
+  //     const extractPath = (url) => {
+  //       if (!url) return null;
+  //       const parts = url.split('/kws-attachments/');
+  //       return parts.length > 1 ? parts[1] : null;
+  //     };
 
-    
+  //     const payload = {
+  //       service_user_id: id,
+  //       kws_name: kwsName,
+  //       session_date: sessionDate,
+  //       doc_url: docUrl,
+  //       media_url: mediaUrl,
+  //       doc_storage_path: extractPath(docUrl),
+  //       media_storage_path: extractPath(mediaUrl),
+  //       is_manual_entry: selectedKWSId === "new",
+  //     };
 
-//     // CRITICAL: We DO NOT call handleCloseModal here. 
-//     // We close manually to avoid the cleanup logic.
-//     setIsUploadModalOpen(false);
-//     setDocUrl(null); // Clear URLs so they aren't "orphans"
-//     setMediaUrl(null);
-//     setKwsName("");
-//     fetchAllData();
-//   } catch (err) {
-//     toast.error("Failed to save: " + err.message);
-//   }
-// };
+  //     const { error } = await supabase.from("kws_finalized_records").insert([payload]);
+  //     if (error) throw error;
 
+  //     toast.success("Session saved successfully");
 
-const finalizeKWS = async () => {
-  if (!kwsName) return toast.error("Please provide a session title");
+  //     // CRITICAL: We DO NOT call handleCloseModal here.
+  //     // We close manually to avoid the cleanup logic.
+  //     setIsUploadModalOpen(false);
+  //     setDocUrl(null); // Clear URLs so they aren't "orphans"
+  //     setMediaUrl(null);
+  //     setKwsName("");
+  //     fetchAllData();
+  //   } catch (err) {
+  //     toast.error("Failed to save: " + err.message);
+  //   }
+  // };
 
-  try {
+  const finalizeKWS = async () => {
+    if (!kwsName) return toast.error("Please provide a session title");
+
+    try {
+      const extractPath = (url) => {
+        if (!url) return null;
+        const parts = url.split("/kws-attachments/");
+        return parts.length > 1 ? parts[1] : null;
+      };
+
+      const payload = {
+        service_user_id: id,
+        kws_name: kwsName,
+        session_date: sessionDate,
+        doc_url: docUrl,
+        media_url: mediaUrl,
+        doc_storage_path: extractPath(docUrl),
+        media_storage_path: extractPath(mediaUrl),
+        is_manual_entry: selectedKWSId === "new",
+      };
+
+      // --- UPDATED LOGIC START ---
+      if (editingId) {
+        // If editingId exists, update the specific row
+        const { error } = await supabase
+          .from("kws_finalized_records")
+          .update(payload)
+          .eq("id", editingId);
+
+        if (error) throw error;
+        toast.success("Session updated successfully");
+      } else {
+        // If no editingId, it's a brand new record
+        const { error } = await supabase
+          .from("kws_finalized_records")
+          .insert([payload]);
+
+        if (error) throw error;
+        toast.success("Session saved successfully");
+      }
+      // --- UPDATED LOGIC END ---
+
+      // Cleanup UI State
+      setIsUploadModalOpen(false);
+      setEditingId(null); // CRITICAL: Reset the ID so the next "New" entry doesn't update this one
+      setDocUrl(null);
+      setMediaUrl(null);
+      setKwsName("");
+      fetchAllData();
+    } catch (err) {
+      console.error("Save Error:", err);
+      toast.error("Failed to save: " + err.message);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (deleteConfirmText !== "DELETE")
+      return toast.error("Type DELETE to confirm");
+    if (!docToDelete) return;
+
+    try {
+      // 1. Identify files to remove from Storage
+      // We use the storage paths saved during finalizeKWS
+      const filesToRemove = [];
+      if (docToDelete.doc_storage_path)
+        filesToRemove.push(docToDelete.doc_storage_path);
+      if (docToDelete.media_storage_path)
+        filesToRemove.push(docToDelete.media_storage_path);
+
+      // This will successfully find "john_doe/file.pdf" and delete it
+      await supabase.storage.from("kws-attachments").remove(filesToRemove);
+
+      // 2. DELETE FROM STORAGE FIRST
+      if (filesToRemove.length > 0) {
+        const { error: storageError } = await supabase.storage
+          .from("kws-attachments")
+          .remove(filesToRemove);
+
+        if (storageError) {
+          console.error("Storage cleanup failed:", storageError);
+          // We continue to DB deletion so the UI stays in sync,
+          // but we log the error for the admin.
+        }
+      }
+
+      // 3. DELETE FROM DATABASE SECOND
+      const { error: dbError } = await supabase
+        .from("kws_finalized_records")
+        .delete()
+        .eq("id", docToDelete.id);
+
+      if (dbError) throw dbError;
+
+      toast.success("Record and files permanently removed");
+
+      // Cleanup UI State
+      setDocToDelete(null);
+      setDeleteConfirmText("");
+      fetchAllData();
+    } catch (error) {
+      console.error("Deletion Error:", error);
+      toast.error("Failed to delete record: " + error.message);
+    }
+  };
+
+  // 1. Update handleCloseModal to include auto-delete logic
+  const handleCloseModal = async () => {
+    // --- AUTO-DELETE ON CANCEL ---
+    // If the user uploaded files but is now closing the modal WITHOUT saving (finalizing),
+    // we must delete those files from storage to prevent "orphans".
+    const filesToDelete = [];
+
     const extractPath = (url) => {
       if (!url) return null;
-      const parts = url.split('/kws-attachments/');
+      const parts = url.split("/kws-attachments/");
       return parts.length > 1 ? parts[1] : null;
     };
 
-    const payload = {
-      service_user_id: id,
-      kws_name: kwsName,
-      session_date: sessionDate,
-      doc_url: docUrl,
-      media_url: mediaUrl,
-      doc_storage_path: extractPath(docUrl),
-      media_storage_path: extractPath(mediaUrl),
-      is_manual_entry: selectedKWSId === "new",
-    };
+    if (docUrl) filesToDelete.push(extractPath(docUrl));
+    if (mediaUrl) filesToDelete.push(extractPath(mediaUrl));
 
-    // --- UPDATED LOGIC START ---
-    if (editingId) {
-      // If editingId exists, update the specific row
-      const { error } = await supabase
-        .from("kws_finalized_records")
-        .update(payload)
-        .eq("id", editingId);
-
-      if (error) throw error;
-      toast.success("Session updated successfully");
-    } else {
-      // If no editingId, it's a brand new record
-      const { error } = await supabase
-        .from("kws_finalized_records")
-        .insert([payload]);
-
-      if (error) throw error;
-      toast.success("Session saved successfully");
-    }
-    // --- UPDATED LOGIC END ---
-
-    // Cleanup UI State
-    setIsUploadModalOpen(false);
-    setEditingId(null); // CRITICAL: Reset the ID so the next "New" entry doesn't update this one
-    setDocUrl(null); 
-    setMediaUrl(null);
-    setKwsName("");
-    fetchAllData();
-    
-  } catch (err) {
-    console.error("Save Error:", err);
-    toast.error("Failed to save: " + err.message);
-  }
-};
-
-  const confirmDelete = async () => {
-  if (deleteConfirmText !== "DELETE") return toast.error("Type DELETE to confirm");
-  if (!docToDelete) return;
-
-  try {
-    // 1. Identify files to remove from Storage
-    // We use the storage paths saved during finalizeKWS
-    const filesToRemove = [];
-  if (docToDelete.doc_storage_path) filesToRemove.push(docToDelete.doc_storage_path);
-  if (docToDelete.media_storage_path) filesToRemove.push(docToDelete.media_storage_path);
-
-  // This will successfully find "john_doe/file.pdf" and delete it
-  await supabase.storage.from("kws-attachments").remove(filesToRemove);
-
-    // 2. DELETE FROM STORAGE FIRST
-    if (filesToRemove.length > 0) {
-      const { error: storageError } = await supabase.storage
-        .from("kws-attachments")
-        .remove(filesToRemove);
-
-      if (storageError) {
-        console.error("Storage cleanup failed:", storageError);
-        // We continue to DB deletion so the UI stays in sync, 
-        // but we log the error for the admin.
+    if (filesToDelete.length > 0) {
+      try {
+        await supabase.storage
+          .from("kws-attachments")
+          .remove(filesToDelete.filter(Boolean));
+        console.log("Cleanup: Orphaned files removed from storage.");
+      } catch (err) {
+        console.error("Cleanup Error:", err);
       }
     }
 
-    // 3. DELETE FROM DATABASE SECOND
-    const { error: dbError } = await supabase
-      .from("kws_finalized_records")
-      .delete()
-      .eq("id", docToDelete.id);
-
-    if (dbError) throw dbError;
-
-    toast.success("Record and files permanently removed");
-    
-    // Cleanup UI State
-    setDocToDelete(null);
-    setDeleteConfirmText("");
-    fetchAllData(); 
-
-  } catch (error) {
-    console.error("Deletion Error:", error);
-    toast.error("Failed to delete record: " + error.message);
-  }
-};
-
-  // 1. Update handleCloseModal to include auto-delete logic
-const handleCloseModal = async () => {
-  // --- AUTO-DELETE ON CANCEL ---
-  // If the user uploaded files but is now closing the modal WITHOUT saving (finalizing),
-  // we must delete those files from storage to prevent "orphans".
-  const filesToDelete = [];
-  
-  const extractPath = (url) => {
-    if (!url) return null;
-    const parts = url.split('/kws-attachments/');
-    return parts.length > 1 ? parts[1] : null;
+    // --- RESET STATE ---
+    setIsUploadModalOpen(false);
+    setKwsName("");
+    setDocUrl(null);
+    setMediaUrl(null);
+    setSelectedKWSId("new");
+    setEditingId(null);
   };
 
-  if (docUrl) filesToDelete.push(extractPath(docUrl));
-  if (mediaUrl) filesToDelete.push(extractPath(mediaUrl));
-
-  if (filesToDelete.length > 0) {
-    try {
-      await supabase.storage
-        .from("kws-attachments")
-        .remove(filesToDelete.filter(Boolean));
-      console.log("Cleanup: Orphaned files removed from storage.");
-    } catch (err) {
-      console.error("Cleanup Error:", err);
+  const handleNewDocUpload = async () => {
+    if (!newDocName || !selectedFile) {
+      return toast.error("Please provide both a name and a file.");
     }
-  }
 
-  // --- RESET STATE ---
-  setIsUploadModalOpen(false);
-  setKwsName("");
-  setDocUrl(null);
-  setMediaUrl(null);
-  setSelectedKWSId("new");
-  setEditingId(null);
-};
+    setIsUploading(true);
+    try {
+      const fileExt = selectedFile.name.split(".").pop();
+      // Path format: UUID/field/timestamp_name.ext
+      const filePath = `${id}/${uploadTargetField}/${Date.now()}_${newDocName.replace(/\s+/g, "_")}.${fileExt}`;
 
-const handleNewDocUpload = async () => {
-  if (!newDocName || !selectedFile) {
-    return toast.error("Please provide both a name and a file.");
-  }
+      // 1. Upload to Storage
+      const { error: uploadError } = await supabase.storage
+        .from("service-user-intake-docs")
+        .upload(filePath, selectedFile);
 
-  setIsUploading(true);
-  try {
-    const fileExt = selectedFile.name.split(".").pop();
-    // Path format: UUID/field/timestamp_name.ext
-    const filePath = `${id}/${uploadTargetField}/${Date.now()}_${newDocName.replace(/\s+/g, '_')}.${fileExt}`;
+      if (uploadError) throw uploadError;
 
-    // 1. Upload to Storage
-    const { error: uploadError } = await supabase.storage
-      .from("service-user-intake-docs")
-      .upload(filePath, selectedFile);
+      // 2. Get Public URL
+      const { data: urlData } = supabase.storage
+        .from("service-user-intake-docs")
+        .getPublicUrl(filePath);
 
-    if (uploadError) throw uploadError;
+      // 3. Update Database (Append to existing array)
+      const newEntry = {
+        name: newDocName,
+        url: urlData.publicUrl,
+        file_path: filePath,
+        uploaded_at: new Date().toISOString(),
+      };
 
-    // 2. Get Public URL
-    const { data: urlData } = supabase.storage
-      .from("service-user-intake-docs")
-      .getPublicUrl(filePath);
+      const updatedArray = [...(userData[uploadTargetField] || []), newEntry];
 
-    // 3. Update Database (Append to existing array)
-    const newEntry = {
-      name: newDocName,
-      url: urlData.publicUrl,
-      file_path: filePath,
-      uploaded_at: new Date().toISOString()
-    };
+      const { error: dbError } = await supabase
+        .from("service_user_intake")
+        .update({ [uploadTargetField]: updatedArray })
+        .eq("id", id);
 
-    const updatedArray = [...(userData[uploadTargetField] || []), newEntry];
+      if (dbError) throw dbError;
 
-    const { error: dbError } = await supabase
-      .from("service_user_intake")
-      .update({ [uploadTargetField]: updatedArray })
-      .eq("id", id);
+      toast.success(`${newDocName} uploaded successfully!`);
 
-    if (dbError) throw dbError;
+      // Refresh local state
+      setUserData({ ...userData, [uploadTargetField]: updatedArray });
 
-    toast.success(`${newDocName} uploaded successfully!`);
-    
-    // Refresh local state
-    setUserData({ ...userData, [uploadTargetField]: updatedArray });
-    
-    // Close and Reset
-    setIsUploadModalsOpen(false);
-    setNewDocName("");
-    setSelectedFile(null);
-  } catch (error) {
-    console.error(error);
-    toast.error("Upload failed");
-  } finally {
-    setIsUploading(false);
-  }
-};
+      // Close and Reset
+      setIsUploadModalsOpen(false);
+      setNewDocName("");
+      setSelectedFile(null);
+    } catch (error) {
+      console.error(error);
+      toast.error("Upload failed");
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
-
-  if (loading) return (
-    <div className="h-screen flex items-center justify-center ">
-      <Loader2 className="animate-spin text-blac" size={40} />
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="h-screen flex items-center justify-center ">
+        <Loader2 className="animate-spin text-blac" size={40} />
+      </div>
+    );
 
   return (
     <div className="min-h-screen py-10 px-4">
       <div className="max-w-6xl mx-auto space-y-8">
-        
         {/* TOP NAV */}
         <div className="flex justify-between items-center">
-          <Button variant="ghost" onClick={() => router.push("/service-users")} className="text-[#123d2b]">
+          <Button
+            variant="ghost"
+            onClick={() => router.push("/service-users")}
+            className="text-[#123d2b]"
+          >
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to List
           </Button>
           <Link href={`/service-users/${id}/edit`}>
@@ -1655,30 +1676,62 @@ const handleNewDocUpload = async () => {
               {userData.service_user_name?.[0]}
             </div> */}
             <div>
-              <h1 className="text-3xl font-bold uppercase">{userData.service_user_name}</h1>
+              <h1 className="text-3xl font-bold uppercase">
+                {userData.service_user_name}
+              </h1>
               {/* <p className="text-emerald-100/70 flex items-center gap-2 mt-1">
                 <Calendar size={14} /> Registered: {new Date(userData.created_at).toLocaleDateString()}
               </p> */}
             </div>
           </div>
-          <Badge className=" text-white px-4 py-2 text-lg">Active Resident</Badge>
+          <Badge className=" text-white px-4 py-2 text-lg">
+            Active Resident
+          </Badge>
         </div>
 
         <Tabs defaultValue="about" className="space-y-6">
           <TabsList className="bg-[#e8e1d6] p-1 border border-[#e1dbd2] overflow-x-auto justify-start h-auto">
-            <TabsTrigger value="about" className="data-[state=active]:bg-black data-[state=active]:text-white">About</TabsTrigger>
-            <TabsTrigger value="logs" className="data-[state=active]:bg-black data-[state=active]:text-white">Support Logs</TabsTrigger>
-            <TabsTrigger value="documents" className="data-[state=active]:bg-black data-[state=active]:text-white">Documents</TabsTrigger>
-            <TabsTrigger value="eet" className="data-[state=active]:bg-black data-[state=active]:text-white">EET</TabsTrigger>
-            <TabsTrigger value="onboarding" className="data-[state=active]:bg-black data-[state=active]:text-white">Onboarding</TabsTrigger>
-            <TabsTrigger value="kws" className="data-[state=active]:bg-black data-[state=active]:text-white">Key Working Session</TabsTrigger>
+            <TabsTrigger
+              value="about"
+              className="data-[state=active]:bg-black data-[state=active]:text-white"
+            >
+              About
+            </TabsTrigger>
+            <TabsTrigger
+              value="logs"
+              className="data-[state=active]:bg-black data-[state=active]:text-white"
+            >
+              Support Logs
+            </TabsTrigger>
+            <TabsTrigger
+              value="documents"
+              className="data-[state=active]:bg-black data-[state=active]:text-white"
+            >
+              Documents
+            </TabsTrigger>
+            <TabsTrigger
+              value="eet"
+              className="data-[state=active]:bg-black data-[state=active]:text-white"
+            >
+              EET
+            </TabsTrigger>
+            <TabsTrigger
+              value="onboarding"
+              className="data-[state=active]:bg-black data-[state=active]:text-white"
+            >
+              Onboarding
+            </TabsTrigger>
+            <TabsTrigger
+              value="kws"
+              className="data-[state=active]:bg-black data-[state=active]:text-white"
+            >
+              Key Working Session
+            </TabsTrigger>
           </TabsList>
 
           {/* ABOUT TAB */}
           <TabsContent value="about">
             <Card className="border-[#e1dbd2]">
-        
-
               <CardHeader>
                 {/* <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-bold text-[#123d2b] flex items-center gap-2">
@@ -1694,17 +1747,23 @@ const handleNewDocUpload = async () => {
                 </Button>
               </div> */}
                 {/* <CardTitle className="text-black flex items-center gap-2"><User size={20}/> About Resident </CardTitle> */}
-                </CardHeader>
+              </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  
-                    <div>
-                        {/* <h3 className="text-sm font-black text-gray-400 uppercase mb-4">Primary Information</h3> */}
-                        {userData.about_file_url ? (
-                            <DocCard title="About Document" url={userData.about_file_url} />
-                        ) : <p className="text-sm italic text-gray-400">No primary assessment uploaded.</p>}
-                    </div>
-                    {/* <div>
+                  <div>
+                    {/* <h3 className="text-sm font-black text-gray-400 uppercase mb-4">Primary Information</h3> */}
+                    {userData.about_file_url ? (
+                      <DocCard
+                        title="About Document"
+                        url={userData.about_file_url}
+                      />
+                    ) : (
+                      <p className="text-sm italic text-gray-400">
+                        No primary assessment uploaded.
+                      </p>
+                    )}
+                  </div>
+                  {/* <div>
                         <h3 className="text-sm font-black text-gray-400 uppercase mb-4">Initial Assessment</h3>
                         {userData.about_file_url ? (
                             <DocCard title="About Document" url={userData.about_file_url} />
@@ -1717,122 +1776,160 @@ const handleNewDocUpload = async () => {
 
           {/* SUPPORT LOGS TAB */}
 
-
-              {/* TAB: SUPPORT LOGS */}
-<TabsContent value="logs">
-  <Card className="border-[#e1dbd2]">
-    <CardHeader className="border-b border-[#e1dbd2]/50 flex flex-row items-center justify-between">
-      <CardTitle className="text-sm font-black flex items-center gap-2 text-[#123d2b] uppercase tracking-widest">
-        <ClipboardList className="w-4 h-4" /> Session History
-      </CardTitle>
-      <Link href={`/service-users/${id}/add`}>
-        <Button variant="outline" className="border-[#1f6b4a] text-[#1f6b4a] hover:bg-[#1f6b4a] hover:text-white">
-          <Plus className="mr-2 h-4 w-4" /> Add Support Log
-        </Button>
-      </Link>
-    </CardHeader>
-    <CardContent className="pt-6">
-      {logs.length > 0 ? (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm border-collapse">
-            <thead>
-              <tr className="border-b border-[#e1dbd2] text-[#123d2b]/60 uppercase text-[10px] font-black tracking-widest">
-                <th className="pb-3 px-2">Date & Time</th>
-                <th className="pb-3 px-2">Staff</th>
-                <th className="pb-3 px-2">Type</th>
-                <th className="pb-3 px-2">Duration</th>
-                <th className="pb-3 px-2">Notes</th>
-                <th className="pb-3 px-2">Attachment</th>
-                <th className="pb-3 px-2 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#e1dbd2]/30">
-              {logs.map((log) => (
-                <tr key={log.id} className="hover:bg-[#f1ede4]/20 transition-colors group">
-                  <td className="py-4 px-2 whitespace-nowrap">
-                    <div className="font-bold text-[#123d2b]">{new Date(log.session_date).toLocaleDateString()}</div>
-                    <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                      <Clock className="w-3 h-3" /> {log.session_time || "--:--"}
-                    </div>
-                  </td>
-                  <td className="py-4 px-2 text-[#123d2b] font-medium">{log.support_worker_name}</td>
-                  <td className="py-4 px-2">
-                    <Badge variant="outline" className="text-[10px] uppercase border-[#123d2b]/20">
-                      {log.session_type}
-                    </Badge>
-                  </td>
-                  <td className="py-4 px-2 font-mono text-xs text-[#123d2b]">{log.duration}</td>
-                  <td className="py-4 px-2 text-xs text-muted-foreground max-w-40 truncate" title={log.notes}>
-                    {log.notes}
-                  </td>
-                  <td className="py-4 px-2">
-                    {log.file_url ? (
-                      <button 
-                        onClick={() => openDocument(log.file_url)}
-                        className="flex items-center gap-1 text-[10px] font-bold text-[#1f6b4a] hover:underline"
-                      >
-                        <FileText className="w-3 h-3" /> VIEW
-                      </button>
-                    ) : (
-                      <span className="text-[10px] text-muted-foreground italic">None</span>
-                    )}
-                  </td>
-                  <td className="py-4 px-2 text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="sm" onClick={() => router.push(`/support-logs/edit/${log.id}`)}>
-                        <Edit3 className="h-4 w-4" />
-                      </Button>
-                      {/* DELETE BUTTON */}
-                      <Button 
-                        variant="destructive" 
-                        size="sm" 
-                        className="text-white hover:text-red-700 hover:bg-red-50"
-                        onClick={() => handleDeleteLog(log)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="text-center py-12 text-muted-foreground italic text-sm">
-          No support logs found for this resident.
-        </div>
-      )}
-    </CardContent>
-  </Card>
-</TabsContent>
-
+          {/* TAB: SUPPORT LOGS */}
+          <TabsContent value="logs">
+            <Card className="border-[#e1dbd2]">
+              <CardHeader className="border-b border-[#e1dbd2]/50 flex flex-row items-center justify-between">
+                <CardTitle className="text-sm font-black flex items-center gap-2 text-[#123d2b] uppercase tracking-widest">
+                  <ClipboardList className="w-4 h-4" /> Session History
+                </CardTitle>
+                <Link href={`/service-users/${id}/add`}>
+                  <Button
+                    variant="outline"
+                    className="border-[#1f6b4a] text-[#1f6b4a] hover:bg-[#1f6b4a] hover:text-white"
+                  >
+                    <Plus className="mr-2 h-4 w-4" /> Add Support Log
+                  </Button>
+                </Link>
+              </CardHeader>
+              <CardContent className="pt-6">
+                {logs.length > 0 ? (
+                  <div className="overflow-hidden border border-[#e1dbd2] rounded-xl bg-white shadow-sm">
+                    <table className="w-full text-left text-sm border-collapse">
+                      <thead>
+                        <tr className="bg-[#fcfcfc] border-b border-[#e1dbd2] text-[#123d2b]/60 uppercase text-[10px] font-black tracking-widest">
+                          <th className="py-4 px-4">Date & Time</th>
+                          <th className="py-4 px-4">Staff</th>
+                          <th className="py-4 px-4">Type</th>
+                          <th className="py-4 px-4">Duration</th>
+                          <th className="py-4 px-4">Notes</th>
+                          <th className="py-4 px-4">Attachment</th>
+                          <th className="py-4 px-4 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#f7f2e9]">
+                        {logs.map((log) => (
+                          <tr
+                            key={log.id}
+                            className="hover:bg-[#f1f8f5]/50 transition-colors group cursor-pointer"
+                            onClick={() => setSelectedLog(log)} // Trigger Popup on Row Click
+                          >
+                            <td className="py-4 px-4 whitespace-nowrap">
+                              <div className="font-bold text-[#123d2b]">
+                                {new Date(
+                                  log.session_date,
+                                ).toLocaleDateString()}
+                              </div>
+                              <div className="text-[10px] text-muted-foreground flex items-center gap-1">
+                                <Clock className="w-3 h-3" />{" "}
+                                {log.session_time || "--:--"}
+                              </div>
+                            </td>
+                            <td className="py-4 px-4 text-[#123d2b] font-bold">
+                              {log.support_worker_name}
+                            </td>
+                            <td className="py-4 px-4">
+                              <Badge
+                                variant="outline"
+                                className="text-[10px] uppercase border-[#123d2b]/20 text-[#123d2b]"
+                              >
+                                {log.session_type}
+                              </Badge>
+                            </td>
+                            <td className="py-4 px-4 font-mono text-xs text-[#123d2b]">
+                              {log.duration}
+                            </td>
+                            <td
+                              className="py-4 px-4 text-xs text-muted-foreground max-w-40 truncate"
+                              title={log.notes}
+                            >
+                              {log.notes}
+                            </td>
+                            <td className="py-4 px-4">
+                              {log.file_url ? (
+                                <div className="flex items-center gap-1 text-[10px] font-black text-[#1f6b4a] uppercase bg-[#f1f8f5] px-2 py-1 rounded w-fit">
+                                  <FileText className="w-3 h-3" /> Linked
+                                </div>
+                              ) : (
+                                <span className="text-[10px] text-gray-400 italic">
+                                  None
+                                </span>
+                              )}
+                            </td>
+                            <td
+                              className="py-4 px-4 text-right"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <div className="flex justify-end gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-blue-500"
+                                  onClick={() =>
+                                    router.push(`/support-logs/edit/${log.id}`)
+                                  }
+                                >
+                                  <Edit3 className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-red-500 hover:bg-red-50"
+                                  onClick={() => handleDeleteLog(log)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-muted-foreground italic text-sm">
+                    No support logs found for this resident.
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           {/* DOCUMENTS TAB */}
           <TabsContent value="documents">
             <Card className="border-[#e1dbd2]">
               <CardHeader>
                 {/* Example for EET Section */}
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold text-[#123d2b] flex items-center gap-2">
-                  <FileText size={20} /> Additional Documents
-                </h3>
-                <Button 
-                  onClick={() => { setUploadTargetField("additional_documents"); setIsUploadModalsOpen(true); }}
-                  variant="outline" 
-                  size="sm" 
-                  className="border-[#1f6b4a] text-[#1f6b4a] hover:bg-[#e6f2ec]"
-                >
-                  <Plus size={16} className="mr-1" /> Add Doc
-                </Button>
-              </div>
-
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-bold text-[#123d2b] flex items-center gap-2">
+                    <FileText size={20} /> Additional Documents
+                  </h3>
+                  <Button
+                    onClick={() => {
+                      setUploadTargetField("additional_documents");
+                      setIsUploadModalsOpen(true);
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="border-[#1f6b4a] text-[#1f6b4a] hover:bg-[#e6f2ec]"
+                  >
+                    <Plus size={16} className="mr-1" /> Add Document
+                  </Button>
+                </div>
               </CardHeader>
 
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {userData.additional_documents?.map((doc, i) => (
-                  <DocCard key={i} title={doc.name || `Document ${i+1}`} url={doc.url} />
-                )) || <p className="col-span-2 text-center py-6 italic text-gray-400">No documents found.</p>}
+                  <DocCard
+                    key={i}
+                    title={doc.name || `Document ${i + 1}`}
+                    url={doc.url}
+                  />
+                )) || (
+                  <p className="col-span-2 text-center py-6 italic text-gray-400">
+                    No documents found.
+                  </p>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -1840,29 +1937,38 @@ const handleNewDocUpload = async () => {
           {/* EET TAB */}
           <TabsContent value="eet">
             <Card className="border-[#e1dbd2]">
-              
               <CardHeader>
                 {/* Example for EET Section */}
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold text-[#123d2b] flex items-center gap-2">
-                  <FileText size={20} /> EET Documents
-                </h3>
-                <Button 
-                  onClick={() => { setUploadTargetField("eet_documents"); setIsUploadModalsOpen(true); }}
-                  variant="outline" 
-                  size="sm" 
-                  className="border-[#1f6b4a] text-[#1f6b4a] hover:bg-[#e6f2ec]"
-                >
-                  <Plus size={16} className="mr-1" /> Add Doc
-                </Button>
-              </div>
-
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-bold text-[#123d2b] flex items-center gap-2">
+                    <FileText size={20} /> EET Documents
+                  </h3>
+                  <Button
+                    onClick={() => {
+                      setUploadTargetField("eet_documents");
+                      setIsUploadModalsOpen(true);
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="border-[#1f6b4a] text-[#1f6b4a] hover:bg-[#e6f2ec]"
+                  >
+                    <Plus size={16} className="mr-1" /> Add Document
+                  </Button>
+                </div>
               </CardHeader>
-              
+
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {userData.eet_documents?.map((doc, i) => (
-                  <DocCard key={i} title={doc.name || `EET Doc ${i+1}`} url={doc.url} />
-                )) || <p className="col-span-2 text-center py-6 italic text-gray-400">No EET documents.</p>}
+                  <DocCard
+                    key={i}
+                    title={doc.name || `EET Doc ${i + 1}`}
+                    url={doc.url}
+                  />
+                )) || (
+                  <p className="col-span-2 text-center py-6 italic text-gray-400">
+                    No EET documents.
+                  </p>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -1872,25 +1978,35 @@ const handleNewDocUpload = async () => {
             <Card className="border-[#e1dbd2]">
               <CardHeader>
                 {/* Example for EET Section */}
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold text-[#123d2b] flex items-center gap-2">
-                  <FileText size={20} /> Onboarding Documents
-                </h3>
-                <Button 
-                  onClick={() => { setUploadTargetField("onboarding_documents"); setIsUploadModalsOpen(true); }}
-                  variant="outline" 
-                  size="sm" 
-                  className="border-[#1f6b4a] text-[#1f6b4a] hover:bg-[#e6f2ec]"
-                >
-                  <Plus size={16} className="mr-1" /> Add Doc
-                </Button>
-              </div>
-
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-bold text-[#123d2b] flex items-center gap-2">
+                    <FileText size={20} /> Onboarding Documents
+                  </h3>
+                  <Button
+                    onClick={() => {
+                      setUploadTargetField("onboarding_documents");
+                      setIsUploadModalsOpen(true);
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="border-[#1f6b4a] text-[#1f6b4a] hover:bg-[#e6f2ec]"
+                  >
+                    <Plus size={16} className="mr-1" /> Add Document
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {userData.onboarding_documents?.map((doc, i) => (
-                  <DocCard key={i} title={doc.name || `Onboarding Doc ${i+1}`} url={doc.url} />
-                )) || <p className="col-span-2 text-center py-6 italic text-gray-400">No onboarding documents.</p>}
+                  <DocCard
+                    key={i}
+                    title={doc.name || `Onboarding Doc ${i + 1}`}
+                    url={doc.url}
+                  />
+                )) || (
+                  <p className="col-span-2 text-center py-6 italic text-gray-400">
+                    No onboarding documents.
+                  </p>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -1900,11 +2016,18 @@ const handleNewDocUpload = async () => {
             <div className="bg-[#fbf8f2] p-8 rounded-2xl border border-[#e1dbd2]">
               <div className="flex justify-between items-center mb-8">
                 <div>
-                  <h2 className="text-2xl font-bold text-black">Key Working Sessions</h2>
-                  <p className="text-sm text-gray-500">Audit trail of session evidence and documents</p>
+                  <h2 className="text-2xl font-bold text-black">
+                    Key Working Sessions
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    Audit trail of session evidence and documents
+                  </p>
                 </div>
-                <Button onClick={() => setIsUploadModalOpen(true)} className="text-black text-white">
-                  <Plus size={20} className="mr-2"/> New Session Record
+                <Button
+                  onClick={() => setIsUploadModalOpen(true)}
+                  className="text-black text-white"
+                >
+                  <Plus size={20} className="mr-2" /> New Session Record
                 </Button>
               </div>
 
@@ -1942,284 +2065,507 @@ const handleNewDocUpload = async () => {
               {/* </div> */}
 
               <div className="border rounded-xl bg-white overflow-hidden shadow-sm">
-                 <div className="overflow-hidden border border-[#e1dbd2] rounded-xl bg-white shadow-sm">
-  <table className="w-full text-left border-collapse">
-    <thead className="bg-[#fcfcfc] border-b border-[#e1dbd2]">
-      <tr>
-        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60">
-          Date & Time
-        </th>
-        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60">
-          Title
-        </th>
-        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60">
-          Attachment
-        </th>
-        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60 text-right">
-          Media
-        </th>
-        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60 text-right">
-          Actions
-        </th>
-      </tr>
-    </thead>
-    <tbody className="divide-y divide-[#f7f2e9]">
-      {kwsDocs.map((doc) => (
-        <tr
-          key={doc.id}
-          className="hover:bg-[#f1f8f5]/50 transition-colors group"
-        >
-          {/* DATE COLUMN */}
-          <td className="p-4 text-sm font-bold text-gray-600">
-            {new Date(doc.session_date).toLocaleDateString("en-GB", {
-              day: "2-digit",
-              month: "short",
-              year: "numeric",
-            })}
-          </td>
+                <div className="overflow-hidden border border-[#e1dbd2] rounded-xl bg-white shadow-sm">
+                  <table className="w-full text-left border-collapse">
+                    <thead className="bg-[#fcfcfc] border-b border-[#e1dbd2]">
+                      <tr>
+                        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60">
+                          Date & Time
+                        </th>
+                        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60">
+                          Title
+                        </th>
+                        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60">
+                          Attachment
+                        </th>
+                        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60 text-right">
+                          Media
+                        </th>
+                        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60 text-right">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#f7f2e9]">
+                      {kwsDocs.map((doc) => (
+                        <tr
+                          key={doc.id}
+                          className="hover:bg-[#f1f8f5]/50 transition-colors group"
+                        >
+                          {/* DATE COLUMN */}
+                          <td className="p-4 text-sm font-bold text-gray-600">
+                            {new Date(doc.session_date).toLocaleDateString(
+                              "en-GB",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              },
+                            )}
+                          </td>
 
-          {/* TITLE COLUMN */}
-          <td className="p-4 text-sm font-bold text-[#123d2b]">
-            {doc.kws_name}
-          </td>
+                          {/* TITLE COLUMN */}
+                          <td className="p-4 text-sm font-bold text-[#123d2b]">
+                            {doc.kws_name}
+                          </td>
 
-          {/* DOCUMENT VIEW BUTTON */}
-          <td className="p-4">
-            {doc.doc_url && (
-              <Button
-                variant="ghost"
-                className="h-7 text-[10px] font-black gap-2 bg-[#f1f8f5] text-[#1f6b4a] border border-[#1f6b4a]/10 px-3 hover:bg-[#1f6b4a] hover:text-white transition-all rounded-md"
-                onClick={() => openDocument(doc.doc_url)}
-              >
-                <FileText className="w-3.5 h-3.5" /> VIEW DOC
-              </Button>
-            )}
-          </td>
+                          {/* DOCUMENT VIEW BUTTON */}
+                          <td className="p-4">
+                            {doc.doc_url && (
+                              <Button
+                                variant="ghost"
+                                className="h-7 text-[10px] font-black gap-2 bg-[#f1f8f5] text-[#1f6b4a] border border-[#1f6b4a]/10 px-3 hover:bg-[#1f6b4a] hover:text-white transition-all rounded-md"
+                                onClick={() => openDocument(doc.doc_url)}
+                              >
+                                <FileText className="w-3.5 h-3.5" /> VIEW DOC
+                              </Button>
+                            )}
+                          </td>
 
-          {/* VIDEO/MEDIA THUMBNAIL */}
-          <td className="p-4 text-right">
-            <div className="flex justify-end">
-              {doc.media_url && (
-                <div
-                  className="relative h-12 w-20 bg-black rounded-lg overflow-hidden cursor-pointer shadow-sm ring-1 ring-[#e1dbd2] group-hover:ring-[#1f6b4a] transition-all"
-                  onClick={() => setViewingMedia(doc.media_url)}
-                >
-                  {doc.media_url.match(/\.(mp4|webm|mov|ogg)/i) ? (
-                    <div className="relative h-full w-full">
-                      <video
-                        src={`${doc.media_url}#t=0.1`}
-                        className="object-cover w-full h-full opacity-70"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <Play className="text-white w-4 h-4 fill-white" />
-                      </div>
-                    </div>
-                  ) : (
-                    <img
-                      src={doc.media_url}
-                      className="object-cover w-full h-full"
-                      alt="thumbnail"
-                    />
-                  )}
+                          {/* VIDEO/MEDIA THUMBNAIL */}
+                          <td className="p-4 text-right">
+                            <div className="flex justify-end">
+                              {doc.media_url && (
+                                <div
+                                  className="relative h-12 w-20 bg-black rounded-lg overflow-hidden cursor-pointer shadow-sm ring-1 ring-[#e1dbd2] group-hover:ring-[#1f6b4a] transition-all"
+                                  onClick={() => setViewingMedia(doc.media_url)}
+                                >
+                                  {doc.media_url.match(
+                                    /\.(mp4|webm|mov|ogg)/i,
+                                  ) ? (
+                                    <div className="relative h-full w-full">
+                                      <video
+                                        src={`${doc.media_url}#t=0.1`}
+                                        className="object-cover w-full h-full opacity-70"
+                                      />
+                                      <div className="absolute inset-0 flex items-center justify-center">
+                                        <Play className="text-white w-4 h-4 fill-white" />
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <img
+                                      src={doc.media_url}
+                                      className="object-cover w-full h-full"
+                                      alt="thumbnail"
+                                    />
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </td>
+
+                          {/* ACTION BUTTONS */}
+                          <td className="p-4 text-right">
+                            <div className="flex justify-end gap-1">
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-blue-500 hover:bg-blue-50 hover:text-blue-700 rounded-full"
+                                onClick={() => {
+                                  setEditingId(doc.id);
+                                  setKwsName(doc.kws_name);
+                                  setDocUrl(doc.doc_url);
+                                  setMediaUrl(doc.media_url);
+                                  setIsUploadModalOpen(true);
+                                }}
+                              >
+                                <Edit3 size={15} />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-red-500 hover:bg-red-50 hover:text-red-700 rounded-full"
+                                onClick={() => setDocToDelete(doc)}
+                              >
+                                <Trash2 size={15} />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              )}
+              </div>
             </div>
-          </td>
-
-          {/* ACTION BUTTONS */}
-          <td className="p-4 text-right">
-            <div className="flex justify-end gap-1">
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8 text-blue-500 hover:bg-blue-50 hover:text-blue-700 rounded-full"
-                onClick={() => {
-                  setEditingId(doc.id);
-                  setKwsName(doc.kws_name);
-                  setDocUrl(doc.doc_url);
-                  setMediaUrl(doc.media_url);
-                  setIsUploadModalOpen(true);
-                }}
-              >
-                <Edit3 size={15} />
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8 text-red-500 hover:bg-red-50 hover:text-red-700 rounded-full"
-                onClick={() => setDocToDelete(doc)}
-              >
-                <Trash2 size={15} />
-              </Button>
-            </div>
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
-            </div>
-          </div>
           </TabsContent>
         </Tabs>
 
         {/* MODALS - EXACTLY AS IN COMMENTED PART */}
         {/* <Dialog open={isUploadModalOpen} onOpenChange={(open) => !open && handleCloseModal()}> */}
-        <Dialog 
-  open={isUploadModalOpen} 
-  onOpenChange={(open) => {
-    if (!open) handleCloseModal(); // This catches the 'X' and clicking outside
-  }}
->
+        <Dialog
+          open={isUploadModalOpen}
+          onOpenChange={(open) => {
+            if (!open) handleCloseModal(); // This catches the 'X' and clicking outside
+          }}
+        >
           <DialogContent className="sm:max-w-lg bg-[#fbf8f2]">
-            <DialogHeader><DialogTitle className="text-xl font-bold text-[#123d2b]">Finalize Session Record</DialogTitle></DialogHeader>
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-[#123d2b]">
+                Finalize Session Record
+              </DialogTitle>
+            </DialogHeader>
             <div className="space-y-4 py-4">
               <div>
-                <label className="text-[10px] font-black uppercase text-gray-400 mb-1 block">Link to Existing Session (Optional)</label>
-                <select value={selectedKWSId} onChange={handleKWSSelect} className="w-full p-2 border rounded-lg bg-white">
+                <label className="text-[10px] font-black uppercase text-gray-400 mb-1 block">
+                  Link to Existing Session (Optional)
+                </label>
+                <select
+                  value={selectedKWSId}
+                  onChange={handleKWSSelect}
+                  className="w-full p-2 border rounded-lg bg-white"
+                >
                   <option value="new">-- Manual Entry --</option>
-                  {existingKWSList.map(k => <option key={k.id} value={k.id}>{k.kws_name}</option>)}
+                  {existingKWSList.map((k) => (
+                    <option key={k.id} value={k.id}>
+                      {k.kws_name}
+                    </option>
+                  ))}
                 </select>
               </div>
               <Separator />
               <div>
-                <label className="text-[10px] font-black uppercase text-gray-400 mb-1 block">Session Title</label>
-                <Input value={kwsName} onChange={(e) => setKwsName(e.target.value)} placeholder="Title" />
+                <label className="text-[10px] font-black uppercase text-gray-400 mb-1 block">
+                  Session Title
+                </label>
+                <Input
+                  value={kwsName}
+                  onChange={(e) => setKwsName(e.target.value)}
+                  placeholder="Title"
+                />
               </div>
               <div>
-                <label className="text-[10px] font-black uppercase text-gray-400 mb-1 block">Date & Time</label>
-                <Input type="datetime-local" value={sessionDate} onChange={(e) => setSessionDate(e.target.value)} />
+                <label className="text-[10px] font-black uppercase text-gray-400 mb-1 block">
+                  Date & Time
+                </label>
+                <Input
+                  type="datetime-local"
+                  value={sessionDate}
+                  onChange={(e) => setSessionDate(e.target.value)}
+                />
               </div>
               <div className="grid grid-cols-1 gap-4">
-                <div onClick={() => document.getElementById('doc-up').click()} className="border-2 border-dashed p-4 text-center cursor-pointer rounded-xl">
-                  <input id="doc-up" type="file" className="hidden" accept=".pdf,.doc,.docx" onChange={(e) => handleFileUpload(e, 'doc')} />
-                  {isUploadingDoc ? <Loader2 className="animate-spin mx-auto"/> : <FileText className={`mx-auto ${docUrl ? 'text-green-500' : ''}`}/>}
-                  <span className="text-[10px] font-bold block mt-1 uppercase">{docUrl ? "Document Linked ✓" : "Click to Upload Doc"}</span>
+                <div
+                  onClick={() => document.getElementById("doc-up").click()}
+                  className="border-2 border-dashed p-4 text-center cursor-pointer rounded-xl"
+                >
+                  <input
+                    id="doc-up"
+                    type="file"
+                    className="hidden"
+                    accept=".pdf,.doc,.docx"
+                    onChange={(e) => handleFileUpload(e, "doc")}
+                  />
+                  {isUploadingDoc ? (
+                    <Loader2 className="animate-spin mx-auto" />
+                  ) : (
+                    <FileText
+                      className={`mx-auto ${docUrl ? "text-green-500" : ""}`}
+                    />
+                  )}
+                  <span className="text-[10px] font-bold block mt-1 uppercase">
+                    {docUrl ? "Document Linked ✓" : "Click to Upload Doc"}
+                  </span>
                 </div>
-                <div onClick={() => document.getElementById('med-up').click()} className="border-2 border-dashed p-4 text-center cursor-pointer rounded-xl">
-                  <input id="med-up" type="file" className="hidden" accept="video/*,image/*" onChange={(e) => handleFileUpload(e, 'media')} />
-                  {isUploadingMedia ? <Loader2 className="animate-spin mx-auto"/> : <Video className={`mx-auto ${mediaUrl ? 'text-green-500' : ''}`}/>}
-                  <span className="text-[10px] font-bold block mt-1 uppercase">{mediaUrl ? "Media Linked ✓" : "Click to Upload Media"}</span>
+                <div
+                  onClick={() => document.getElementById("med-up").click()}
+                  className="border-2 border-dashed p-4 text-center cursor-pointer rounded-xl"
+                >
+                  <input
+                    id="med-up"
+                    type="file"
+                    className="hidden"
+                    accept="video/*,image/*"
+                    onChange={(e) => handleFileUpload(e, "media")}
+                  />
+                  {isUploadingMedia ? (
+                    <Loader2 className="animate-spin mx-auto" />
+                  ) : (
+                    <Video
+                      className={`mx-auto ${mediaUrl ? "text-green-500" : ""}`}
+                    />
+                  )}
+                  <span className="text-[10px] font-bold block mt-1 uppercase">
+                    {mediaUrl ? "Media Linked ✓" : "Click to Upload Media"}
+                  </span>
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" className="flex-1" onClick={handleCloseModal}>Cancel</Button>
-                <Button className="flex-2 bg-[#123d2b]" onClick={finalizeKWS}>Save Final Record</Button>
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={handleCloseModal}
+                >
+                  Cancel
+                </Button>
+                <Button className="flex-2 bg-[#123d2b]" onClick={finalizeKWS}>
+                  Save Final Record
+                </Button>
               </div>
             </div>
           </DialogContent>
         </Dialog>
 
         {/* DELETE CONFIRMATION */}
-        <Dialog open={!!docToDelete} onOpenChange={(open) => !open && setDocToDelete(null)}>
+        <Dialog
+          open={!!docToDelete}
+          onOpenChange={(open) => !open && setDocToDelete(null)}
+        >
           <DialogContent>
-            <DialogHeader><DialogTitle className="text-red-600 flex items-center gap-2"><ShieldAlert /> Confirm Deletion</DialogTitle></DialogHeader>
+            <DialogHeader>
+              <DialogTitle className="text-red-600 flex items-center gap-2">
+                <ShieldAlert /> Confirm Deletion
+              </DialogTitle>
+            </DialogHeader>
             <div className="space-y-4 py-4">
-              <p className="text-sm">Type <span className="font-bold text-red-600">DELETE</span> to confirm.</p>
-              <Input value={deleteConfirmText} onChange={(e) => setDeleteConfirmText(e.target.value)} placeholder="DELETE" />
+              <p className="text-sm">
+                Type <span className="font-bold text-red-600">DELETE</span> to
+                confirm.
+              </p>
+              <Input
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder="DELETE"
+              />
               <div className="flex gap-2">
-                <Button variant="outline" className="flex-1" onClick={() => setDocToDelete(null)}>Cancel</Button>
-                <Button variant="destructive" className="flex-1" disabled={deleteConfirmText !== "DELETE"} onClick={confirmDelete}>Delete</Button>
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => setDocToDelete(null)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="destructive"
+                  className="flex-1"
+                  disabled={deleteConfirmText !== "DELETE"}
+                  onClick={confirmDelete}
+                >
+                  Delete
+                </Button>
               </div>
             </div>
           </DialogContent>
         </Dialog>
 
         {/* MEDIA VIEWER */}
-<Dialog open={!!viewingMedia} onOpenChange={() => setViewingMedia(null)}>
-  <DialogContent className="max-w-3xl">
-    {/* Add these two lines to fix the error */}
-    <DialogHeader>
-      <DialogTitle className="sr-only">Media Preview</DialogTitle>
-      <DialogDescription className="sr-only">
-        Viewing uploaded session evidence media.
-      </DialogDescription>
-    </DialogHeader>
+        <Dialog
+          open={!!viewingMedia}
+          onOpenChange={() => setViewingMedia(null)}
+        >
+          <DialogContent className="max-w-3xl">
+            {/* Add these two lines to fix the error */}
+            <DialogHeader>
+              <DialogTitle className="sr-only">Media Preview</DialogTitle>
+              <DialogDescription className="sr-only">
+                Viewing uploaded session evidence media.
+              </DialogDescription>
+            </DialogHeader>
 
-    {viewingMedia && (
-      <div className="pt-4">
-        {viewingMedia.match(/\.(mp4|webm|mov)$/i) ? (
-          <video src={viewingMedia} controls autoPlay className="w-full" />
-        ) : (
-          <img src={viewingMedia} alt="Evidence" className="w-full" />
-        )}
-      </div>
-    )}
-  </DialogContent>
-</Dialog>
+            {viewingMedia && (
+              <div className="pt-4">
+                {viewingMedia.match(/\.(mp4|webm|mov)$/i) ? (
+                  <video
+                    src={viewingMedia}
+                    controls
+                    autoPlay
+                    className="w-full"
+                  />
+                ) : (
+                  <img src={viewingMedia} alt="Evidence" className="w-full" />
+                )}
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
 
+        <Dialog open={isUploadModalsOpen} onOpenChange={setIsUploadModalsOpen}>
+          <DialogContent className="fixed left-[50%] top-[50%] z-[100] w-full max-w-lg translate-x-[-50%] translate-y-[-50%] border-[#e1dbd2] bg-[#fdfbf7] p-6 shadow-2xl duration-200">
+            <DialogHeader>
+              <DialogTitle className="text-[#123d2b]">
+                Upload New Document
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-[#123d2b]">
+                  Document Name
+                </label>
+                <Input
+                  placeholder="e.g. Health Certificate"
+                  value={newDocName}
+                  onChange={(e) => setNewDocName(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-[#123d2b]">
+                  Select File
+                </label>
+                <Input
+                  type="file"
+                  onChange={(e) => setSelectedFile(e.target.files[0])}
+                  className="cursor-pointer"
+                />
+              </div>
+              <Button
+                onClick={handleNewDocUpload}
+                disabled={isUploading}
+                className="w-full bg-[#123d2b] hover:bg-[#1f6b4a]"
+              >
+                {isUploading ? (
+                  <Loader2 className="animate-spin mr-2" />
+                ) : (
+                  "Start Upload"
+                )}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
-  <Dialog open={isUploadModalsOpen} onOpenChange={setIsUploadModalsOpen}>
-  <DialogContent className="fixed left-[50%] top-[50%] z-[100] w-full max-w-lg translate-x-[-50%] translate-y-[-50%] border-[#e1dbd2] bg-[#fdfbf7] p-6 shadow-2xl duration-200">
-    <DialogHeader>
-      <DialogTitle className="text-[#123d2b]">Upload New Document</DialogTitle>
-    </DialogHeader>
-    <div className="space-y-4 py-4">
-      <div className="space-y-2">
-        <label className="text-sm font-bold text-[#123d2b]">Document Name</label>
-        <Input 
-          placeholder="e.g. Health Certificate" 
-          value={newDocName}
-          onChange={(e) => setNewDocName(e.target.value)}
-        />
-      </div>
-      <div className="space-y-2">
-        <label className="text-sm font-bold text-[#123d2b]">Select File</label>
-        <Input 
-          type="file" 
-          onChange={(e) => setSelectedFile(e.target.files[0])}
-          className="cursor-pointer"
-        />
-      </div>
-      <Button 
-        onClick={handleNewDocUpload} 
-        disabled={isUploading}
-        className="w-full bg-[#123d2b] hover:bg-[#1f6b4a]"
-      >
-        {isUploading ? <Loader2 className="animate-spin mr-2" /> : "Start Upload"}
-      </Button>
-    </div>
-  </DialogContent>
-</Dialog>
+        {/* Delete Support */}
+        <Dialog open={!!logToDelete} onOpenChange={() => setLogToDelete(null)}>
+          <DialogContent className="bg-[#fdfbf7] border-[#e1dbd2]">
+            <DialogHeader>
+              <DialogTitle className="text-[#123d2b] flex items-center gap-2">
+                <ShieldAlert className="w-5 h-5 text-red-600" /> Confirm
+                Deletion
+              </DialogTitle>
+            </DialogHeader>
 
-    {/* Delete Support */}
-<Dialog open={!!logToDelete} onOpenChange={() => setLogToDelete(null)}>
-  <DialogContent className="bg-[#fdfbf7] border-[#e1dbd2]">
-    <DialogHeader>
-      <DialogTitle className="text-[#123d2b] flex items-center gap-2">
-        <ShieldAlert className="w-5 h-5 text-red-600" /> Confirm Deletion
-      </DialogTitle>
-    </DialogHeader>
-    
-    <div className="space-y-4 py-4">
-      <p className="text-sm text-gray-600">
-        This will permanently delete the support log and its associated file. 
-        To confirm, please type <span className="font-bold text-red-600">DELETE</span> below:
-      </p>
-      <Input
-        placeholder="Type DELETE to confirm"
-        value={deleteConfirmText}
-        onChange={(e) => setDeleteConfirmText(e.target.value)}
-        className="border-[#e1dbd2] focus:ring-red-500"
-      />
-    </div>
+            <div className="space-y-4 py-4">
+              <p className="text-sm text-gray-600">
+                This will permanently delete the support log and its associated
+                file. To confirm, please type{" "}
+                <span className="font-bold text-red-600">DELETE</span> below:
+              </p>
+              <Input
+                placeholder="Type DELETE to confirm"
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                className="border-[#e1dbd2] focus:ring-red-500"
+              />
+            </div>
 
-    <div className="flex justify-end gap-3">
-      <Button variant="outline" onClick={() => setLogToDelete(null)}>
-        Cancel
-      </Button>
-      <Button 
-        variant="destructive" 
-        onClick={confirmDeleteLog}
-        disabled={isDeleting || deleteConfirmText !== "DELETE"}
-      >
-        {isDeleting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-        Delete Record
-      </Button>
-    </div>
-  </DialogContent>
-</Dialog>
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setLogToDelete(null)}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={confirmDeleteLog}
+                disabled={isDeleting || deleteConfirmText !== "DELETE"}
+              >
+                {isDeleting ? (
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                ) : null}
+                Delete Record
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
+        {/* SUPPORT LOG DETAIL POPUP */}
+        <Dialog open={!!selectedLog} onOpenChange={() => setSelectedLog(null)}>
+          <DialogContent className="sm:max-w-[500px] border-[#e1dbd2] rounded-xl">
+            <DialogHeader className="border-b border-[#f7f2e9] pb-4">
+              <DialogTitle className="text-[#123d2b] flex items-center gap-2">
+                <ClipboardList className="h-5 w-5" /> Support Log Details
+              </DialogTitle>
+            </DialogHeader>
+
+            {selectedLog && (
+              <div className="py-6 space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-[10px] font-black uppercase text-gray-400">
+                      Date & Time
+                    </Label>
+                    <p className="text-sm font-bold text-[#123d2b]">
+                      {new Date(selectedLog.session_date).toLocaleDateString()}{" "}
+                      at {selectedLog.session_time}
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-[10px] font-black uppercase text-gray-400">
+                      Duration
+                    </Label>
+                    <p className="text-sm font-bold text-[#123d2b]">
+                      {selectedLog.duration}
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-[10px] font-black uppercase text-gray-400">
+                      Support Worker
+                    </Label>
+                    <p className="text-sm font-bold text-[#123d2b]">
+                      {selectedLog.support_worker_name}
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-[10px] font-black uppercase text-gray-400">
+                      Session Type
+                    </Label>
+                    <div>
+                      <Badge className="bg-[#1f6b4a] text-white text-[10px] uppercase">
+                        {selectedLog.session_type}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-[#fcfcfc] border border-[#e1dbd2] p-4 rounded-lg">
+                  <Label className="text-[10px] font-black uppercase text-gray-400 block mb-2">
+                    Detailed Notes
+                  </Label>
+                  <button
+                    onClick={() => {
+                      if (selectedLog?.notes) {
+                        navigator.clipboard.writeText(selectedLog.notes);
+                        toast.success("Notes copied to clipboard");
+                      }
+                    }}
+                    className="flex items-center gap-1 text-[10px] font-black text-[#1f6b4a] hover:text-[#123d2b] transition-colors uppercase"
+                  >
+                    <Copy className="h-3 w-3" /> Copy
+                  </button>
+                  <p className="text-sm text-gray-700 leading-relaxed italic whitespace-pre-wrap">
+                    "
+                    {selectedLog.notes || "No notes provided for this session."}
+                    "
+                  </p>
+                </div>
+
+                {selectedLog.file_url && (
+                  <div className="flex items-center justify-between p-3 border border-[#1f6b4a]/20 bg-[#f1f8f5] rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-5 w-5 text-[#1f6b4a]" />
+                      <span className="text-xs font-bold text-[#123d2b]">
+                        Attached Record
+                      </span>
+                    </div>
+                    <Button
+                      size="sm"
+                      className="bg-[#1f6b4a] hover:bg-[#123d2b] h-8 text-[10px] font-black"
+                      onClick={() => openDocument(selectedLog.file_url)}
+                    >
+                      VIEW ATTACHMENT
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setSelectedLog(null)}
+                className="w-full"
+              >
+                Close Record
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

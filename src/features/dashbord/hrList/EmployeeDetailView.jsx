@@ -370,7 +370,7 @@ const EmployeeDetailView = () => {
   );
 
   const DocumentList = ({ title, fieldName, icon: Icon }) => (
-    <Card className="border-[#e1dbd2] shadow-sm bg-white">
+    <Card className="border-[#e1dbd2] shadow-sm">
       <CardHeader className="border-b border-[#f7f2e9] flex flex-row items-center justify-between py-4">
         <CardTitle className="text-md flex items-center gap-2 text-[#123d2b]">
           <Icon className="h-5 w-5" /> {title}
@@ -442,7 +442,7 @@ const EmployeeDetailView = () => {
                 </div>
 
         {/* HEADER */}
-        <div className="bg-[#FFFDD0] text-black p-8 rounded-3xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="bg-[#f5f0e6] text-black p-8 rounded-3xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-6">
                   <div className="flex items-center gap-6">
                     <div>
                       <h1 className="text-3xl font-bold text-black">{employee.full_name}</h1>
