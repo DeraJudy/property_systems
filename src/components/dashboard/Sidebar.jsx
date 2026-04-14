@@ -157,38 +157,16 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="hidden lg:flex w-64 flex-col bg-black border-r border-[(#FFFDD0]">
-      {/* Logo */}
-      <div className="flex h-16 items-center gap-2 px-5 border-b border-[(#FFFDD0] shrink-0">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[(#FFFDD0]">
-          <Building2 className="h-4 w-4 text-white" />
+    <aside className="hidden lg:flex w-64 flex-col bg-black border-r border-[#FFFDD0] h-screen sticky top-0 overflow-hidden">
+      {/* Logo - Fixed at top */}
+      <div className="flex h-16 items-center gap-2 px-5 border-b border-[#FFFDD0] shrink-0">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#FFFDD0]">
+          <Building2 className="h-4 w-4 text-black" />
         </div>
-        <Link href="/" className="text-sm font-bold text-[(#FFFDD0]">
-          <span className="text-sm font-bold text-[#FFFDD0]">Kenley Property</span>
+        <Link href="/" className="text-sm font-bold text-[#FFFDD0]">
+          Kenley Property
         </Link>
       </div>
-
-      {/* Navigation */}
-      {/* <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-        {navItems.map((item) => {
-          const isActive = pathname === item.url;
-
-          return (
-            <Link
-              key={item.title}
-              href={item.url}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-                isActive
-                  ? "bg-[#206c3c] text-white"
-                  : "text-[#E8E1D6]/70 hover:bg-[#184F38] hover:text-white"
-              }`}
-            >
-              <item.icon className="h-4 w-4 shrink-0" />
-              {item.title}
-            </Link>
-          );
-        })}
-      </nav> */}
 
       <nav className="flex-1 px-3 py-3">
         {navSections.map((section) => (
@@ -206,8 +184,8 @@ export default function Sidebar() {
                     onClick={() => setSidebarOpen(false)}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
                       isActive
-                        ? "bg-[#206c3c] text-white"
-                        : "text-[#E8E1D6]/70 hover:bg-[#184F38] hover:text-white"
+                        ? "bg-gray-100/20 text-white"
+                        : "text-[#E8E1D6]/70 hover:bg-gray-100/50 hover:text-white"
                     }`}
                   >
                     <item.icon className="h-3.5 w-3.5 shrink-0" />
@@ -221,7 +199,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-[#184F38] p-3 space-y-1 shrink-0">
+      {/* <div className="border-t border-[#FFFDD0] p-3 space-y-1 shrink-0">
         <Link
           href="/settings"
           className="flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg font-medium text-[#E8E1D6]/70 hover:bg-[#184F38] hover:text-white transition"
@@ -237,7 +215,7 @@ export default function Sidebar() {
           <LogOut className="h-4 w-4" />
           Sign out
         </Link>
-      </div>
+      </div> */}
     </aside>
   );
 }
