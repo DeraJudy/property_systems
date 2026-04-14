@@ -49,7 +49,8 @@ const EditSupportLogPage = () => {
     "Adnan",
     "Abdul",
     "Jamie",
-    "Jermaine"
+    "Jermaine",
+    "Zivile"
   ];
 
   const [formData, setFormData] = useState({
