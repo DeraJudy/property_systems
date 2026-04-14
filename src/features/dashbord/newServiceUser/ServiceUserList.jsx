@@ -469,7 +469,7 @@ const confirmDelete = async () => {
            <p className="text-gray-500">Manage resident profiles and documents</p>
          </div>
          <Link href="/addServiceUser">
-           <Button className="bg-[#123d2b] hover:bg-[#1f6b4a]">
+           <Button className="bg-black">
              <UserPlus className="mr-2 h-4 w-4" /> Add New User
            </Button>
          </Link>
@@ -492,16 +492,16 @@ const confirmDelete = async () => {
         </Link> */}
       </div>
 
-      <Card className="border-black/10 bg-white shadow-sm overflow-hidden rounded-2xl">
-        <CardHeader className="bg-black/5 border-b border-black/5">
+      <Card className="border-black/10 bg-[#FFFDD0]  shadow-sm overflow-hidden rounded-2xl">
+        <CardHeader className=" border-b border-black/5">
           <CardTitle className="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-2">
             <UserCircle size={18} /> Service Directory
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
-            <TableHeader className="bg-[#fdfbf7]">
-              <TableRow className="border-black/5 hover:bg-transparent">
+            <TableHeader className="">
+              <TableRow className="border-black/5 ">
                 <TableHead className="text-black font-black uppercase text-[10px] tracking-tighter">Name</TableHead>
                 <TableHead className="text-black font-black uppercase">Total Documents</TableHead>
                 <TableHead className="text-black font-black uppercase text-[10px] tracking-tighter">Status</TableHead>

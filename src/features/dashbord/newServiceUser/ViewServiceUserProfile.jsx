@@ -1670,13 +1670,13 @@ export default function ViewServiceUserProfile() {
         </div>
 
         {/* HERO HEADER */}
-        <div className="bg-black text-white p-8 rounded-3xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="bg-[#FFFDD0]  text-white p-8 rounded-3xl shadow-xl flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-6">
             {/* <div className="w-20 h-20 bg-[#1f6b4a] rounded-2xl flex items-center justify-center text-3xl font-bold uppercase">
               {userData.service_user_name?.[0]}
             </div> */}
             <div>
-              <h1 className="text-3xl font-bold uppercase">
+              <h1 className="text-3xl text-black font-bold uppercase">
                 {userData.service_user_name}
               </h1>
               {/* <p className="text-emerald-100/70 flex items-center gap-2 mt-1">
@@ -1684,7 +1684,7 @@ export default function ViewServiceUserProfile() {
               </p> */}
             </div>
           </div>
-          <Badge className=" text-white px-4 py-2 text-lg">
+          <Badge className="bg-[#FFFDD0] text-black px-4 py-2 text-lg">
             Active Resident
           </Badge>
         </div>
@@ -1693,19 +1693,19 @@ export default function ViewServiceUserProfile() {
           <TabsList className="bg-[#e8e1d6] p-1 border border-[#e1dbd2] overflow-x-auto justify-start h-auto">
             <TabsTrigger
               value="about"
-              className="data-[state=active]:bg-black data-[state=active]:text-white"
+              className="data-[state=active]:bg-[#FFFDD0] data-[state=active]:text=black"
             >
               About
             </TabsTrigger>
             <TabsTrigger
               value="logs"
-              className="data-[state=active]:bg-black data-[state=active]:text-white"
+              className="data-[state=active]:bg-[#FFFDD0] data-[state=active]:text=black"
             >
               Support Logs
             </TabsTrigger>
             <TabsTrigger
               value="documents"
-              className="data-[state=active]:bg-black data-[state=active]:text-white"
+              className="data-[state=active]:bg-[#FFFDD0] data-[state=active]:text=black"
             >
               Documents
             </TabsTrigger>
@@ -1786,7 +1786,7 @@ export default function ViewServiceUserProfile() {
                 <Link href={`/service-users/${id}/add`}>
                   <Button
                     variant="outline"
-                    className="border-[#1f6b4a] text-[#1f6b4a] hover:bg-[#1f6b4a] hover:text-white"
+                    className="border-[#1f6b4a] text-black hover:bg-[#1f6b4a] hover:text-white"
                   >
                     <Plus className="mr-2 h-4 w-4" /> Add Support Log
                   </Button>
@@ -1861,16 +1861,16 @@ export default function ViewServiceUserProfile() {
                               onClick={(e) => e.stopPropagation()}
                             >
                               <div className="flex justify-end gap-1">
-                                <Button
+                                {/* <Button
                                   variant="ghost"
                                   size="icon"
                                   className="h-8 w-8 text-blue-500"
                                   onClick={() =>
-                                    router.push(`/support-logs/edit/${log.id}`)
+                                    router.push(`/support-logs/${log.id}/edit`)
                                   }
                                 >
                                   <Edit3 className="h-4 w-4" />
-                                </Button>
+                                </Button> */}
                                 <Button
                                   variant="ghost"
                                   size="icon"
@@ -2524,7 +2524,7 @@ export default function ViewServiceUserProfile() {
                         toast.success("Notes copied to clipboard");
                       }
                     }}
-                    className="flex items-center gap-1 text-[10px] font-black text-[#1f6b4a] hover:text-[#123d2b] transition-colors uppercase"
+                    className="flex items-center gap-1 text-[10px] font-black text-black hover:text-[#123d2b] transition-colors uppercase"
                   >
                     <Copy className="h-3 w-3" /> Copy
                   </button>

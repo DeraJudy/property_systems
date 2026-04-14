@@ -1419,16 +1419,16 @@ const AddEmployeeForm = () => {
   const stats = getCompletionStatus();
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6 bg-[#f7f2e9] min-h-screen">
+    <div className="max-w-5xl mx-auto p-6 space-y-6 min-h-screen">
       <div className="flex items-center justify-between">
         <Button
           variant="ghost"
           onClick={() => router.back()}
-          className="text-[#1f6b4a]"
+          className="text-black"
         >
           <ArrowLeft className="mr-2 h-4 w-4" /> Back
         </Button>
-        <h1 className="text-2xl font-bold text-[#123d2b]">
+        <h1 className="text-2xl font-bold text-black">
           New Employee Enrollment
         </h1>
       </div>
@@ -1440,7 +1440,7 @@ const AddEmployeeForm = () => {
             <h3 className="text-sm font-semibold text-gray-600">
               Form Completion
             </h3>
-            <span className="text-xs font-bold text-[#1f6b4a]">
+            <span className="text-xs font-bold text-black">
               {stats.completedCount} / {stats.total} complete
             </span>
           </div>
@@ -1448,7 +1448,7 @@ const AddEmployeeForm = () => {
             {stats.sections.map((s, i) => (
               <div
                 key={i}
-                className={`h-2 flex-1 rounded-full transition-colors ${s.filled ? "bg-[#1f6b4a]" : "bg-gray-200"}`}
+                className={`h-2 flex-1 rounded-full transition-colors ${s.filled ? "bg-black" : "bg-gray-200"}`}
                 title={s.name}
               />
             ))}
@@ -1457,7 +1457,7 @@ const AddEmployeeForm = () => {
             {stats.sections.map((s, i) => (
               <span
                 key={i}
-                className={`text-[10px] flex items-center gap-1 ${s.filled ? "text-[#1f6b4a] font-medium" : "text-gray-400"}`}
+                className={`text-[10px] flex items-center gap-1 ${s.filled ? "text-black font-medium" : "text-gray-400"}`}
               >
                 {s.filled ? (
                   <CheckCircle2 className="w-3 h-3" />
@@ -1521,7 +1521,7 @@ const AddEmployeeForm = () => {
               variant="outline"
               size="sm"
               onClick={() => addListEntry(section.id, { name: "", url: "" })}
-              className="border-[#1f6b4a] text-[#1f6b4a] bg-white"
+              className="border-[#1f6b4a] text-black bg-white"
             >
               <Plus className="h-4 w-4 mr-1" /> Add
             </Button>
@@ -1583,7 +1583,7 @@ const AddEmployeeForm = () => {
         <Button
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className="bg-[#1f6b4a] hover:bg-[#123d2b] px-10 text-white"
+          className="bg-black hover:bg-[#123d2b] px-10 text-white"
         >
           {isSubmitting ? (
             <Loader2 className="animate-spin" />
@@ -1612,7 +1612,7 @@ const AddEmployeeForm = () => {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={processSave}
-              className="bg-[#1f6b4a] text-white"
+              className="bg-black text-white"
             >
               Save Anyway
             </AlertDialogAction>
