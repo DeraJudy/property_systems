@@ -6,11 +6,11 @@ export default function DashboardPage() {
       
       <h1 className="text-2xl font-semibold">Dashboard</h1>
 
-      <div className="bg-white rounded-xl shadow-sm border p-6">
+      {/* <div className="bg-white rounded-xl shadow-sm border p-6">
         <p className="text-gray-600">
           Dashboard Overview
         </p>
-      </div>
+      </div> */}
 
     </div>
   );

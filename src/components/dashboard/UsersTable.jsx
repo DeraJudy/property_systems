@@ -427,7 +427,7 @@ const roleColor = (r) => {
 };
 
 const statusDot = (s) => {
-  if (s === "active") return "bg-green-500";
+  if (s === "active") return "bg-black";
   if (s === "pending") return "bg-[#F59E0B]";
   return "bg-[#6b7d74]";
 };
@@ -527,7 +527,7 @@ export default function UsersTable() {
       {/* HEADER */}
       <motion.div variants={item} className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#123d2b]">Users</h1>
+          <h1 className="text-2xl font-bold text-black">Users</h1>
           <p className="text-sm text-muted-foreground">Manage system users and permissions</p>
         </div>
       </motion.div>
@@ -598,11 +598,11 @@ export default function UsersTable() {
                         {user.avatar_url ? (
                           <img src={user.avatar_url} className="h-8 w-8 rounded-full object-cover" alt="" />
                         ) : (
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#1f6b4a] text-xs font-semibold text-white">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black text-xs font-semibold text-[#FFFDD0]">
                             {initials(user.full_name)}
                           </div>
                         )}
-                        <span className="font-medium text-[#123d2b]">{user.full_name}</span>
+                        <span className="font-medium text-black">{user.full_name}</span>
                       </div>
                     </TableCell>
 
