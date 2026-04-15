@@ -394,7 +394,8 @@ const  SupportLogNewPage = () => {
     "Abdul",
     "Jamie",
     "Jermaine",
-    "Zivile"
+    "Zivile",
+    "Lukhmann Ali"
   ];
 
   const [formData, setFormData] = useState({
