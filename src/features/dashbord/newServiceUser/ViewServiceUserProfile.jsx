@@ -40,6 +40,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import SignatureCanvas from 'react-signature-canvas';
 import Link from "next/link";
 
 const supabase = createClient();
@@ -137,6 +138,16 @@ export default function ViewServiceUserProfile() {
   const [isUploading, setIsUploading] = useState(false);
   const [selectedLog, setSelectedLog] = useState(null);
 
+  const [logToDelete, setLogToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const sigCanvas = React.useRef(null); // Ref for the signature canvas
+const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
+const [signingContext, setSigningContext] = useState(null);
+
+  // Helper to clear canvas
+const clearSignature = () => sigCanvas.current?.clear();
+
   const [sessionDate, setSessionDate] = useState(() => {
     const now = new Date();
     return new Date(now.getTime() - now.getTimezoneOffset() * 60000)
@@ -144,17 +155,43 @@ export default function ViewServiceUserProfile() {
       .slice(0, 16);
   });
 
-  const [logToDelete, setLogToDelete] = useState(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  // Save signature logic
+const saveSignature = async () => {
+  if (sigCanvas.current.isEmpty()) {
+    return toast.error("Please provide a signature first");
+  }
+
+  const signatureData = sigCanvas.current.getTrimmedCanvas().toDataURL("image/png");
+  
+  try {
+    // Determine which column to update based on type
+    const column = signingContext.type === 'user' ? 'service_user_signature' : 'support_worker_signature';
+    
+    const { error } = await supabase
+      .from("support_logs")
+      .update({ [column]: signatureData })
+      .eq("id", signingContext.logId);
+
+    if (error) throw error;
+
+    toast.success("Signature saved successfully");
+    setIsSignatureModalOpen(false);
+    fetchAllData(); // Refresh table
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to save signature");
+  }
+};
 
   const [sortOrder, setSortOrder] = useState("desc"); // 'desc' = youngest first, 'asc' = oldest first
   const [sortConfig, setSortConfig] = useState({ key: "session_date", direction: "desc" });
 
-  // const sortedLogs = [...logs].sort((a, b) => {
-  //   const dateA = new Date(a.session_date);
-  //   const dateB = new Date(b.session_date);
-  //   return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
-  // });
+  const toggleSortOrder = () => {
+    setSortConfig((prev) => ({
+      key: "session_date",
+      direction: prev.key === "session_date" && prev.direction === "asc" ? "desc" : "asc",
+    }));
+  };
 
   const sortedLogs = [...logs].sort((a, b) => {
     let aValue = a[sortConfig.key] || "";
@@ -177,10 +214,6 @@ export default function ViewServiceUserProfile() {
       return bValue.localeCompare(aValue);
     }
   });
-
-  const toggleSortOrder = () => {
-    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
-  };
 
   const fetchAllData = async () => {
     try {
@@ -295,46 +328,123 @@ export default function ViewServiceUserProfile() {
   };
 
   const handleFileUpload = async (e, type) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const file = e.target.files[0];
+  if (!file) return;
 
-    const isDoc = type === "doc";
-    const loadingSetter = isDoc ? setIsUploadingDoc : setIsUploadingMedia;
-    const setter = isDoc ? setDocUrl : setMediaUrl;
+  const isDoc = type === "about_file";
+  const isProfile = type === "profile_image";
 
-    try {
-      loadingSetter(true);
+  // Loading states
+  if (isDoc) setIsUploadingDoc(true);
+  if (isProfile) setLoading(true); // Or use a specific profile loading state
 
-      // Sanitize the name: replace spaces with underscores and make lowercase
-      const folderName = userData.service_user_name
-        .replace(/\s+/g, "_")
-        .toLowerCase();
-      const fileExt = file.name.split(".").pop();
-      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-      const fileName = `${uniqueSuffix}.${fileExt}`;
+  try {
+    // 1. Generate Path: UUID / category / timestamp_filename
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${Date.now()}_${type}.${fileExt}`;
+    const filePath = `${id}/${type}/${fileName}`;
 
-      // NEW PATH: kws-attachments/john_doe/123456789.pdf
-      const filePath = `${folderName}/${fileName}`;
+    // 2. Upload to Storage (Using the correct bucket)
+    const { error: uploadError } = await supabase.storage
+      .from("service-user-intake-docs")
+      .upload(filePath, file);
 
-      const { error: uploadError } = await supabase.storage
-        .from("kws-attachments")
-        .upload(filePath, file);
+    if (uploadError) throw uploadError;
 
-      if (uploadError) throw uploadError;
+    // 3. Get Public URL
+    const { data: urlData } = supabase.storage
+      .from("service-user-intake-docs")
+      .getPublicUrl(filePath);
 
-      const { data } = supabase.storage
-        .from("kws-attachments")
-        .getPublicUrl(filePath);
+    // 4. Update Database
+    // map the 'type' to the actual database column name
+    const dbField = isProfile ? "profile_image_url" : "about_file_url";
+    
+    const { error: dbError } = await supabase
+      .from("service_user_intake")
+      .update({ [dbField]: urlData.publicUrl })
+      .eq("id", id);
 
-      setter(data.publicUrl);
-      toast.success(`${isDoc ? "Document" : "Media"} uploaded`);
-    } catch (error) {
-      console.error("Upload Error:", error);
-      toast.error("Upload failed");
-    } finally {
-      loadingSetter(false);
+    if (dbError) throw dbError;
+
+    // 5. Update Local State
+    setUserData({ ...userData, [dbField]: urlData.publicUrl });
+    toast.success(`${isProfile ? "Profile photo" : "About document"} updated!`);
+    
+  } catch (error) {
+    console.error("Upload Error:", error);
+    toast.error("Upload failed: " + error.message);
+  } finally {
+    setIsUploadingDoc(false);
+    setLoading(false);
+  }
+};
+
+  const handleKWSFileUpload = async (e, type) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  // Determine if this is a KWS upload or a Profile upload
+  const isKWS = type === "doc" || type === "media";
+  const isProfile = type === "profile_image";
+  const isAbout = type === "about_file";
+
+  // 1. Set Loading States
+  if (type === "doc") setIsUploadingDoc(true);
+  if (type === "media") setIsUploadingMedia(true);
+  if (isProfile || isAbout) setLoading(true);
+
+  try {
+    // 2. Select the correct bucket and path
+    // KWS files go to 'kws-attachments', others go to 'service-user-intake-docs'
+    const bucket = isKWS ? "kws-attachments" : "service-user-intake-docs";
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${Date.now()}_${type}.${fileExt}`;
+    const filePath = `${id}/${type}/${fileName}`;
+
+    // 3. Upload to Supabase Storage
+    const { error: uploadError } = await supabase.storage
+      .from(bucket)
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    // 4. Get Public URL
+    const { data: urlData } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(filePath);
+
+    // 5. Route the result based on the type
+    if (isKWS) {
+      // For KWS, we just update the local URL state
+      // This URL is saved to the DB later when finalizeKWS() is called
+      if (type === "doc") setDocUrl(urlData.publicUrl);
+      if (type === "media") setMediaUrl(urlData.publicUrl);
+      toast.success(`${type === "doc" ? "Document" : "Media"} uploaded!`);
+    } else {
+      // For Profile/About, update the 'service_user_intake' table immediately
+      const dbField = isProfile ? "profile_image_url" : "about_file_url";
+      
+      const { error: dbError } = await supabase
+        .from("service_user_intake")
+        .update({ [dbField]: urlData.publicUrl })
+        .eq("id", id);
+
+      if (dbError) throw dbError;
+
+      setUserData({ ...userData, [dbField]: urlData.publicUrl });
+      toast.success("Profile updated successfully!");
     }
-  };
+    
+  } catch (error) {
+    console.error("Upload Error:", error);
+    toast.error("Upload failed: " + error.message);
+  } finally {
+    setIsUploadingDoc(false);
+    setIsUploadingMedia(false);
+    setLoading(false);
+  }
+};
 
   const finalizeKWS = async () => {
     if (!kwsName) return toast.error("Please provide a session title");
@@ -534,6 +644,86 @@ export default function ViewServiceUserProfile() {
     }
   };
 
+  // This function now handles both single URL fields (like about_file_url) and array fields 
+  // (like additional_documents)
+  const handleDeleteItem = async (field, itemToDelete = null) => {
+  // itemToDelete is only needed for arrays (additional_documents, etc.)
+  const isArray = Array.isArray(userData[field]);
+  
+  try {
+    // 1. Determine the storage path
+    let storagePath = "";
+    if (isArray && itemToDelete) {
+      storagePath = itemToDelete.file_path;
+    } else {
+      // For single fields like about_file_url, we need to extract path from URL 
+      // or ensure you're storing about_file_path in your DB
+      const url = userData[field];
+      storagePath = url.split("/service-user-intake-docs/")[1];
+    }
+
+    // 2. Remove from Supabase Storage
+    if (storagePath) {
+      await supabase.storage.from("service-user-intake-docs").remove([storagePath]);
+    }
+
+    // 3. Update Database
+    let newValue;
+    if (isArray) {
+      newValue = userData[field].filter(doc => doc.url !== itemToDelete.url);
+    } else {
+      newValue = null; // Clear the single field
+    }
+
+    const { error } = await supabase
+      .from("service_user_intake")
+      .update({ [field]: newValue })
+      .eq("id", id);
+
+    if (error) throw error;
+
+    setUserData({ ...userData, [field]: newValue });
+    toast.success("Item deleted successfully");
+  } catch (error) {
+    console.error(error);
+    toast.error("Failed to delete item");
+  }
+};
+
+  // --- Helper: Document Link Card ---
+const DocCard = ({ title, url, onDelete }) => {
+  if (!url) return null;
+
+  return (
+    <div className="flex items-center justify-between p-4 bg-white border border-black rounded-xl shadow-sm">
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-[#e6f2ec] rounded-lg text-black">
+          <FileText size={18} />
+        </div>
+        <span className="text-sm font-bold text-[#123d2b] truncate max-w-40">
+          {title}
+        </span>
+      </div>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => openDocument(url)}
+          className="p-2 text-black hover:bg-[#e6f2ec] rounded-lg border border-transparent hover:border-black/10"
+        >
+          <ExternalLink size={16} />
+        </button>
+        {onDelete && (
+          <button
+            onClick={onDelete}
+            className="p-2 text-red-500 hover:bg-red-50 rounded-lg border border-red-100"
+          >
+            <Trash2 size={16} />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
   if (loading)
     return (
       <div className="h-screen flex items-center justify-center ">
@@ -604,6 +794,15 @@ export default function ViewServiceUserProfile() {
                   />
                 </div>
               )}
+
+              {userData?.profile_image_url && (
+                <button 
+                  onClick={() => handleDeleteItem('profile_image_url')}
+                  className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full shadow-lg z-10"
+                >
+                  <Trash2 size={12} />
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -636,13 +835,13 @@ export default function ViewServiceUserProfile() {
             </TabsTrigger> */}
             <TabsTrigger
               value="onboarding"
-              className="data-[state=active]:bg-black data-[state=active]:text-white"
+              className="data-[state=active]:bg-[#FFFDD0] data-[state=active]:text-black"
             >
               Onboarding
             </TabsTrigger>
             <TabsTrigger
               value="kws"
-              className="data-[state=active]:bg-black data-[state=active]:text-white"
+              className="data-[state=active]:bg-[#FFFDD0] data-[state=active]:text-black"
             >
               Key Working Session
             </TabsTrigger>
@@ -650,10 +849,10 @@ export default function ViewServiceUserProfile() {
 
           {/* ABOUT TAB */}
           <TabsContent value="about">
-            <Card className="border-none shadow-sm bg-[#fdfbf7]">
+            <Card className="border border-black shadow-sm bg-[#FFFDD0]">
               <CardHeader className="pb-2">
                 <CardTitle className="text-xs font-black uppercase tracking-widest flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-[#1f6b4a]" /> About Me
+                  <FileText className="h-4 w-4 text-black" /> About Me
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -662,13 +861,22 @@ export default function ViewServiceUserProfile() {
                     <p className="text-[11px] text-slate-500 font-medium italic">
                       "Primary record for service user intake and background."
                     </p>
-                    <Button
-                      className="w-full bg-black hover:bg-[#1f6b4a] font-bold text-xs py-5"
-                      onClick={() => openDocument(userData.about_file_url)}
-                    >
-                      <ExternalLink className="mr-2 h-4 w-4" /> VIEW ABOUT
-                      DOCUMENT
-                    </Button>
+                    <div className="flex gap-2 w-full">
+  <Button
+    className="flex-1 bg-black hover:bg-[#1f6b4a] font-bold text-xs py-5"
+    onClick={() => openDocument(userData.about_file_url)}
+  >
+    <ExternalLink className="mr-2 h-4 w-4" /> VIEW ABOUT
+  </Button>
+  <Button
+    variant="destructive"
+    className="px-4"
+    onClick={() => handleDeleteItem('about_file_url')}
+  >
+    <Trash2 size={16} />
+  </Button>
+</div>
+                    
                   </div>
                 ) : (
                   <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 flex flex-col items-center bg-white">
@@ -694,9 +902,9 @@ export default function ViewServiceUserProfile() {
 
           {/* TAB: SUPPORT LOGS */}
           <TabsContent value="logs">
-            <Card className="border-[#e1dbd2]">
+            <Card className="border border-black shadow-sm bg-[#FFFDD0]">
               <CardHeader className="border-b border-[#e1dbd2]/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
-  <CardTitle className="text-sm font-black flex items-center gap-2 text-[#123d2b] uppercase tracking-widest">
+  <CardTitle className="text-sm font-black flex items-center gap-2 text-black uppercase tracking-widest">
     <ClipboardList className="w-4 h-4" /> Session History
   </CardTitle>
   
@@ -756,33 +964,35 @@ export default function ViewServiceUserProfile() {
                           <th className="py-4 px-4">Duration</th>
                           <th className="py-4 px-4">Notes</th>
                           <th className="py-4 px-4">Attachment</th>
+                          <th className="py-4 px-4">Service User Signature</th>
+                          <th className="py-4 px-4">Support Plan Signature</th>
                           <th className="py-4 px-4 text-right">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#f7f2e9]">
                         {sortedLogs.map((log) => (
-    <tr
-      key={log.id}
-      className="hover:bg-[#f1f8f5]/50 transition-colors group cursor-pointer"
-      onClick={() => setSelectedLog(log)}
-    >
-      <td className="py-4 px-4 whitespace-nowrap">
-        <div className="font-bold text-[#123d2b]">
-          {new Date(log.session_date).toLocaleDateString()}
-        </div>
-      </td>
-                            <td className="py-4 px-4 text-[#123d2b] font-bold">
+                          <tr
+                            key={log.id}
+                            className="hover:bg-[#f1f8f5]/50 transition-colors group cursor-pointer"
+                            onClick={() => setSelectedLog(log)}
+                          >
+                            <td className="py-4 px-4 whitespace-nowrap">
+                              <div className="font-bold  text-black">
+                                {new Date(log.session_date).toLocaleDateString()}
+                              </div>
+                            </td>
+                            <td className="py-4 px-4 text-black font-bold">
                               {log.support_worker_name}
                             </td>
                             <td className="py-4 px-4">
                               <Badge
                                 variant="outline"
-                                className="text-[10px] uppercase border-[#123d2b]/20 text-[#123d2b]"
+                                className="text-[10px] uppercase border-[#123d2b]/20 text-black"
                               >
                                 {log.session_type}
                               </Badge>
                             </td>
-                            <td className="py-4 px-4 font-mono text-xs text-[#123d2b]">
+                            <td className="py-4 px-4 font-mono text-xs  text-black">
                               {log.duration}
                             </td>
                             <td
@@ -793,7 +1003,7 @@ export default function ViewServiceUserProfile() {
                             </td>
                             <td className="py-4 px-4">
                               {log.file_url ? (
-                                <div className="flex items-center gap-1 text-[10px] font-black text-[#1f6b4a] uppercase bg-[#f1f8f5] px-2 py-1 rounded w-fit">
+                                <div className="flex items-center gap-1 text-[10px] font-black  text-black uppercase bg-[#f1f8f5] px-2 py-1 rounded w-fit">
                                   <FileText className="w-3 h-3" /> Linked
                                 </div>
                               ) : (
@@ -802,6 +1012,48 @@ export default function ViewServiceUserProfile() {
                                 </span>
                               )}
                             </td>
+
+                            {/* Service User Signature Column */}
+<td className="py-4 px-4">
+  {log.service_user_signature ? (
+    <img src={log.service_user_signature} alt="User Sign" className="h-8 border bg-white rounded" />
+  ) : (
+    <Button 
+      variant="outline" 
+      size="sm" 
+      className="text-[10px] h-7 border-dashed border-black/30"
+      onClick={(e) => {
+        e.stopPropagation();
+        setSigningContext({ logId: log.id, type: 'user' });
+        setIsSignatureModalOpen(true);
+      }}
+    >
+      <Fingerprint className="w-3 h-3 mr-1" /> Sign
+    </Button>
+  )}
+</td>
+
+{/* Support Worker Signature Column */}
+<td className="py-4 px-4">
+  {log.support_worker_signature ? (
+    <img src={log.support_worker_signature} alt="Worker Sign" className="h-8 border bg-white rounded" />
+  ) : (
+    <Button 
+      variant="outline" 
+      size="sm" 
+      className="text-[10px] h-7 border-dashed border-black/30"
+      onClick={(e) => {
+        e.stopPropagation();
+        setSigningContext({ logId: log.id, type: 'worker' });
+        setIsSignatureModalOpen(true);
+      }}
+    >
+      <Fingerprint className="w-3 h-3 mr-1" /> Sign
+    </Button>
+  )}
+</td>
+      
+
                             <td
                               className="py-4 px-4 text-right"
                               onClick={(e) => e.stopPropagation()}
@@ -845,11 +1097,11 @@ export default function ViewServiceUserProfile() {
 
           {/* DOCUMENTS TAB */}
           <TabsContent value="documents">
-            <Card className="border-[#e1dbd2]">
+            <Card className="border border-black shadow-sm bg-[#FFFDD0]">
               <CardHeader>
                 {/* Example for EET Section */}
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-bold text-[#123d2b] flex items-center gap-2">
+                  <h3 className="text-lg font-bold text-black flex items-center gap-2">
                     <FileText size={20} /> Additional Documents
                   </h3>
                   <Button
@@ -859,7 +1111,7 @@ export default function ViewServiceUserProfile() {
                     }}
                     variant="outline"
                     size="sm"
-                    className="border-[#1f6b4a] text-[#1f6b4a] hover:bg-[#e6f2ec]"
+                    className="border-[#1f6b4a] text-black hover:bg-[#e6f2ec]"
                   >
                     <Plus size={16} className="mr-1" /> Add Document
                   </Button>
@@ -872,6 +1124,7 @@ export default function ViewServiceUserProfile() {
                     key={i}
                     title={doc.name || `Document ${i + 1}`}
                     url={doc.url}
+                    onDelete={() => handleDeleteItem('additional_documents', doc)}
                   />
                 )) || (
                   <p className="col-span-2 text-center py-6 italic text-gray-400">
@@ -884,11 +1137,11 @@ export default function ViewServiceUserProfile() {
 
           {/* EET TAB */}
           <TabsContent value="eet">
-            <Card className="border-[#e1dbd2]">
+            <Card className="border border-black shadow-sm bg-[#FFFDD0]">
               <CardHeader>
                 {/* Example for EET Section */}
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-bold text-[#123d2b] flex items-center gap-2">
+                  <h3 className="text-lg font-bold text-black flex items-center gap-2">
                     <FileText size={20} /> EET Documents
                   </h3>
                   <Button
@@ -898,7 +1151,7 @@ export default function ViewServiceUserProfile() {
                     }}
                     variant="outline"
                     size="sm"
-                    className="border-[#1f6b4a] text-[#1f6b4a] hover:bg-[#e6f2ec]"
+                    className="border-[#1f6b4a] text-black hover:bg-[#e6f2ec]"
                   >
                     <Plus size={16} className="mr-1" /> Add Document
                   </Button>
@@ -923,11 +1176,11 @@ export default function ViewServiceUserProfile() {
 
           {/* ONBOARDING TAB */}
           <TabsContent value="onboarding">
-            <Card className="border-[#e1dbd2]">
+            <Card className="border border-black shadow-sm bg-[#FFFDD0]">
               <CardHeader>
                 {/* Example for EET Section */}
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-bold text-[#123d2b] flex items-center gap-2">
+                  <h3 className="text-lg font-bold text-black flex items-center gap-2">
                     <FileText size={20} /> Onboarding Documents
                   </h3>
                   <Button
@@ -937,7 +1190,7 @@ export default function ViewServiceUserProfile() {
                     }}
                     variant="outline"
                     size="sm"
-                    className="border-[#1f6b4a] text-[#1f6b4a] hover:bg-[#e6f2ec]"
+                    className="border-[#1f6b4a] text-black hover:bg-[#e6f2ec]"
                   >
                     <Plus size={16} className="mr-1" /> Add Document
                   </Button>
@@ -961,7 +1214,7 @@ export default function ViewServiceUserProfile() {
 
           {/* KWS TAB (Integrated logic) */}
           <TabsContent value="kws">
-            <div className="bg-[#fbf8f2] p-8 rounded-2xl border border-[#e1dbd2]">
+            <div className="border border-black shadow-sm bg-[#FFFDD0] p-8 rounded-2xl">
               <div className="flex justify-between items-center mb-8">
                 <div>
                   <h2 className="text-2xl font-bold text-black">
@@ -1017,9 +1270,9 @@ export default function ViewServiceUserProfile() {
                   <table className="w-full text-left border-collapse">
                     <thead className="bg-[#fcfcfc] border-b border-[#e1dbd2]">
                       <tr>
-                        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60">
+                        {/* <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60">
                           Date & Time
-                        </th>
+                        </th> */}
                         <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60">
                           Title
                         </th>
@@ -1041,7 +1294,7 @@ export default function ViewServiceUserProfile() {
                           className="hover:bg-[#f1f8f5]/50 transition-colors group"
                         >
                           {/* DATE COLUMN */}
-                          <td className="p-4 text-sm font-bold text-gray-600">
+                          {/* <td className="p-4 text-sm font-bold text-gray-600">
                             {new Date(doc.session_date).toLocaleDateString(
                               "en-GB",
                               {
@@ -1050,7 +1303,7 @@ export default function ViewServiceUserProfile() {
                                 year: "numeric",
                               },
                             )}
-                          </td>
+                          </td> */}
 
                           {/* TITLE COLUMN */}
                           <td className="p-4 text-sm font-bold text-[#123d2b]">
@@ -1182,7 +1435,7 @@ export default function ViewServiceUserProfile() {
                   placeholder="Title"
                 />
               </div>
-              <div>
+              {/* <div>
                 <label className="text-[10px] font-black uppercase text-gray-400 mb-1 block">
                   Date & Time
                 </label>
@@ -1191,7 +1444,7 @@ export default function ViewServiceUserProfile() {
                   value={sessionDate}
                   onChange={(e) => setSessionDate(e.target.value)}
                 />
-              </div>
+              </div> */}
               <div className="grid grid-cols-1 gap-4">
                 <div
                   onClick={() => document.getElementById("doc-up").click()}
@@ -1202,7 +1455,7 @@ export default function ViewServiceUserProfile() {
                     type="file"
                     className="hidden"
                     accept=".pdf,.doc,.docx"
-                    onChange={(e) => handleFileUpload(e, "doc")}
+                    onChange={(e) => handleKWSFileUpload(e, "doc")}
                   />
                   {isUploadingDoc ? (
                     <Loader2 className="animate-spin mx-auto" />
@@ -1224,7 +1477,7 @@ export default function ViewServiceUserProfile() {
                     type="file"
                     className="hidden"
                     accept="video/*,image/*"
-                    onChange={(e) => handleFileUpload(e, "media")}
+                    onChange={(e) => handleKWSFileUpload(e, "media")}
                   />
                   {isUploadingMedia ? (
                     <Loader2 className="animate-spin mx-auto" />
@@ -1490,6 +1743,29 @@ export default function ViewServiceUserProfile() {
                     </p>
                   </div>
 
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#f7f2e9]">
+            <div>
+              <Label className="text-[10px] text-gray-400 uppercase font-bold">User Sign</Label>
+              <div className="h-20 border rounded bg-white flex items-center justify-center mt-1">
+                {selectedLog.service_user_signature ? (
+                  <img src={selectedLog.service_user_signature} className="h-full object-contain" alt="User Sign" />
+                ) : (
+                  <span className="text-xs text-gray-300 italic">Pending</span>
+                )}
+              </div>
+            </div>
+            <div>
+              <Label className="text-[10px] text-gray-400 uppercase font-bold">Worker Sign</Label>
+              <div className="h-20 border rounded bg-white flex items-center justify-center mt-1">
+                {selectedLog.support_worker_signature ? (
+                  <img src={selectedLog.support_worker_signature} className="h-full object-contain" alt="Worker Sign" />
+                ) : (
+                  <span className="text-xs text-gray-300 italic">Pending</span>
+                )}
+              </div>
+            </div>
+          </div>
+
                   {selectedLog.file_url && (
                     <div className="flex items-center justify-between p-3 border border-[#1f6b4a]/20 bg-[#f1f8f5] rounded-lg">
                       <div className="flex items-center gap-2">
@@ -1508,9 +1784,11 @@ export default function ViewServiceUserProfile() {
                     </div>
                   )}
                 </>
+                
               )}
             </div>
             {/* SCROLLABLE AREA END */}
+            
 
             <DialogFooter className="border-t border-[#f7f2e9] pt-4 flex-shrink-0">
               <Button
@@ -1523,6 +1801,50 @@ export default function ViewServiceUserProfile() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+
+        {/* SIGNATURE DRAWING MODAL */}
+<Dialog open={isSignatureModalOpen} onOpenChange={setIsSignatureModalOpen}>
+  <DialogContent className="sm:max-w-md bg-[#fdfbf7]">
+    <DialogHeader>
+      <DialogTitle className="text-[#123d2b] flex items-center gap-2">
+        <Edit3 className="w-5 h-5" /> 
+        {signingContext?.type === 'user' ? "Service User Signature" : "Support Worker Signature"}
+      </DialogTitle>
+      <DialogDescription>
+        Please draw your signature in the box below.
+      </DialogDescription>
+    </DialogHeader>
+
+    <div className="bg-white border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
+      <SignatureCanvas
+        ref={sigCanvas}
+        penColor="black"
+        canvasProps={{
+          width: 445,
+          height: 200,
+          className: "signature-canvas cursor-crosshair"
+        }}
+      />
+    </div>
+
+    <div className="flex justify-between items-center gap-3">
+      <Button variant="ghost" onClick={clearSignature} className="text-gray-500 text-xs">
+        Clear Canvas
+      </Button>
+      <div className="flex gap-2">
+        <Button variant="outline" onClick={() => setIsSignatureModalOpen(false)}>
+          Cancel
+        </Button>
+        <Button className="bg-[#123d2b] hover:bg-[#1f6b4a]" onClick={saveSignature}>
+          Confirm & Save
+        </Button>
+      </div>
+    </div>
+  </DialogContent>
+</Dialog>
+
+
       </div>
     </div>
   );
