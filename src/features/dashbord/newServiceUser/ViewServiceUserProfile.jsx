@@ -148,11 +148,34 @@ export default function ViewServiceUserProfile() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const [sortOrder, setSortOrder] = useState("desc"); // 'desc' = youngest first, 'asc' = oldest first
+  const [sortConfig, setSortConfig] = useState({ key: "session_date", direction: "desc" });
+
+  // const sortedLogs = [...logs].sort((a, b) => {
+  //   const dateA = new Date(a.session_date);
+  //   const dateB = new Date(b.session_date);
+  //   return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+  // });
 
   const sortedLogs = [...logs].sort((a, b) => {
-    const dateA = new Date(a.session_date);
-    const dateB = new Date(b.session_date);
-    return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+    let aValue = a[sortConfig.key] || "";
+    let bValue = b[sortConfig.key] || "";
+
+    // Date sorting logic
+    if (sortConfig.key === "session_date") {
+      const dateA = new Date(aValue);
+      const dateB = new Date(bValue);
+      return sortConfig.direction === "asc" ? dateA - dateB : dateB - dateA;
+    }
+
+    // Alphabetical sorting logic (Staff & Type)
+    aValue = aValue.toString().toLowerCase();
+    bValue = bValue.toString().toLowerCase();
+
+    if (sortConfig.direction === "asc") {
+      return aValue.localeCompare(bValue);
+    } else {
+      return bValue.localeCompare(aValue);
+    }
   });
 
   const toggleSortOrder = () => {
@@ -672,19 +695,42 @@ export default function ViewServiceUserProfile() {
           {/* TAB: SUPPORT LOGS */}
           <TabsContent value="logs">
             <Card className="border-[#e1dbd2]">
-              <CardHeader className="border-b border-[#e1dbd2]/50 flex flex-row items-center justify-between">
-                <CardTitle className="text-sm font-black flex items-center gap-2 text-[#123d2b] uppercase tracking-widest">
-                  <ClipboardList className="w-4 h-4" /> Session History
-                </CardTitle>
-                <Link href={`/service-users/${id}/add`}>
-                  <Button
-                    variant="outline"
-                    className="border-[#1f6b4a] text-black hover:bg-[#1f6b4a] hover:text-white"
-                  >
-                    <Plus className="mr-2 h-4 w-4" /> Add Support Log
-                  </Button>
-                </Link>
-              </CardHeader>
+              <CardHeader className="border-b border-[#e1dbd2]/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
+  <CardTitle className="text-sm font-black flex items-center gap-2 text-[#123d2b] uppercase tracking-widest">
+    <ClipboardList className="w-4 h-4" /> Session History
+  </CardTitle>
+  
+  <div className="flex flex-wrap items-center gap-3">
+    {/* DEDICATED SORTING SELECT */}
+    <div className="flex items-center gap-2 bg-[#fcfcfc] border border-[#e1dbd2] rounded-lg px-3 py-1 shadow-sm">
+      <Label className="text-[10px] font-black text-gray-400 uppercase whitespace-nowrap">Sort By</Label>
+      <select 
+        className="bg-transparent text-xs font-bold text-[#123d2b] outline-none cursor-pointer py-1"
+        value={`${sortConfig.key}-${sortConfig.direction}`}
+        onChange={(e) => {
+          const [key, direction] = e.target.value.split("-");
+          setSortConfig({ key, direction });
+        }}
+      >
+        <option value="session_date-desc">Date: Newest to Oldest</option>
+        <option value="session_date-asc">Date: Oldest to Newest</option>
+        <option value="support_worker_name-asc">Staff: A to Z</option>
+        <option value="support_worker_name-desc">Staff: Z to A</option>
+        <option value="session_type-asc">Type: A to Z</option>
+        <option value="session_type-desc">Type: Z to A</option>
+      </select>
+    </div>
+
+    <Link href={`/service-users/${id}/add`}>
+      <Button
+        variant="outline"
+        className="border-[#1f6b4a] text-black hover:bg-[#1f6b4a] hover:text-white h-9"
+      >
+        <Plus className="mr-2 h-4 w-4" /> Add Support Log
+      </Button>
+    </Link>
+  </div>
+</CardHeader>
               <CardContent className="pt-6">
                 {logs.length > 0 ? (
                   <div className="overflow-hidden border border-[#e1dbd2] rounded-xl bg-white shadow-sm">
@@ -715,22 +761,16 @@ export default function ViewServiceUserProfile() {
                       </thead>
                       <tbody className="divide-y divide-[#f7f2e9]">
                         {sortedLogs.map((log) => (
-                          <tr
-                            key={log.id}
-                            className="hover:bg-[#f1f8f5]/50 transition-colors group cursor-pointer"
-                            onClick={() => setSelectedLog(log)}
-                          >
-                            <td className="py-4 px-4 whitespace-nowrap">
-                              <div className="font-bold text-[#123d2b]">
-                                {new Date(
-                                  log.session_date,
-                                ).toLocaleDateString()}
-                              </div>
-                              {/* <div className="text-[10px] text-muted-foreground flex items-center gap-1">
-                                <Clock className="w-3 h-3" />{" "}
-                                {log.session_time || "--:--"}
-                              </div> */}
-                            </td>
+    <tr
+      key={log.id}
+      className="hover:bg-[#f1f8f5]/50 transition-colors group cursor-pointer"
+      onClick={() => setSelectedLog(log)}
+    >
+      <td className="py-4 px-4 whitespace-nowrap">
+        <div className="font-bold text-[#123d2b]">
+          {new Date(log.session_date).toLocaleDateString()}
+        </div>
+      </td>
                             <td className="py-4 px-4 text-[#123d2b] font-bold">
                               {log.support_worker_name}
                             </td>
