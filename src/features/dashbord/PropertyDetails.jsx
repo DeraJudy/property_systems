@@ -77,7 +77,7 @@ export default function PropertyDetails() {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#fbf8f2]">
+      <div className="flex h-screen items-center justify-center ">
         <Loader2 className="h-8 w-8 animate-spin text-[#1f6b4a]" />
       </div>
     );
@@ -102,13 +102,13 @@ export default function PropertyDetails() {
       <Button 
         variant="ghost" 
         onClick={() => router.push("/properties")} 
-        className="text-[#123d2b] hover:bg-[#e1dbd2] mb-2"
+        className="text-black  hover:bg-[#e1dbd2] mb-2"
       >
         <ArrowLeft className="mr-2 h-4 w-4" /> Back to List
       </Button>
 
       {/* Header Card */}
-      <Card className="overflow-hidden flex flex-col md:flex-row border-[#e1dbd2] bg-white shadow-sm">
+      <Card className="overflow-hidden flex flex-col md:flex-row border-[#e1dbd2] bg-[#FFFDD0] shadow-sm">
         <div className="w-full md:w-80 h-64 md:h-auto bg-[#e8e1d6] shrink-0 relative">
           {property.image_url ? (
             <img 

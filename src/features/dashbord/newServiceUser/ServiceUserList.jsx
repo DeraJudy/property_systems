@@ -903,6 +903,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import PageBanner from "@/components/dashboard/PageBanner";
 
 const supabase = createClient();
 
@@ -1043,8 +1044,11 @@ export default function ServiceUserList() {
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto py-10 px-4">
+
+      <PageBanner title="Service Users" subtitle="Manage resident profiles and documents" category="people" />
+      
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+      {/* <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-bold text-black">Service Users</h1>
           <p className="text-gray-500">
@@ -1056,7 +1060,7 @@ export default function ServiceUserList() {
             <UserPlus className="mr-2 h-4 w-4" /> Add New User
           </Button>
         </Link>
-      </div>
+      </div> */}
 
       {/* Search */}
       <div className="flex justify-between items-center">
@@ -1069,6 +1073,12 @@ export default function ServiceUserList() {
             className="pl-10 border-black/10 bg-white focus:ring-black"
           />
         </div>
+
+        <Link href="/addServiceUser">
+          <Button className="bg-black">
+            <UserPlus className="mr-2 h-4 w-4" /> Add New User
+          </Button>
+        </Link>
       </div>
 
       {/* Table Card */}

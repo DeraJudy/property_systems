@@ -494,8 +494,10 @@ import {
   User,
   CheckCircle2,
   Youtube,
-  Instagram, ArrowLeft,
-  Music2, Home
+  Instagram,
+  ArrowLeft,
+  Music2,
+  Home,
 } from "lucide-react";
 import { createClient } from "@/lib/superbase/clientUtils";
 import { toast } from "sonner";
@@ -793,11 +795,13 @@ export default function ServiceUserIntakeForm() {
 
   return (
     <div className="max-w-4xl mx-auto py-10 px-4">
-
-      <Button variant="ghost" onClick={() => router.back()} className="mb-4 -ml-4 hover:bg-black/5">
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Back
-                  </Button>
-
+      <Button
+        variant="ghost"
+        onClick={() => router.back()}
+        className="mb-4 -ml-4 hover:bg-black/5"
+      >
+        <ArrowLeft className="mr-2 h-4 w-4" /> Back
+      </Button>
 
       <div className="mb-8 flex justify-between items-center">
         <div>
@@ -870,24 +874,29 @@ export default function ServiceUserIntakeForm() {
                 </p>
               </div>
 
-                {/* Add Property name */}
+              {/* Add Property name */}
               <div className="space-y-2">
-              <Label className="font-bold">Assigned Property</Label>
-              <Select 
-                onValueChange={(val) => setFormData({...formData, property_name: val})}
-                value={formData.property_name}
-              >
-                <SelectTrigger className="border-2 focus:ring-[#123d2b] bg-white">
-                  <SelectValue placeholder="Select Property" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Malborne House">Malborne House</SelectItem>
-                  <SelectItem value="215 St Pauls">215 St Pauls</SelectItem>
-                  <SelectItem value="217-219 St Pauls">217-219 St Pauls</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
+                <Label className="font-bold">Assigned Property</Label>
+                <Select
+                  onValueChange={(val) =>
+                    setFormData({ ...formData, property_name: val })
+                  }
+                  value={formData.property_name}
+                >
+                  <SelectTrigger className="border-2 focus:ring-[#123d2b] bg-white">
+                    <SelectValue placeholder="Select Property" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Malborne House">
+                      Malborne House
+                    </SelectItem>
+                    <SelectItem value="215 St Pauls">215 St Pauls</SelectItem>
+                    <SelectItem value="217-219 St Pauls">
+                      217-219 St Pauls
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </CardContent>
