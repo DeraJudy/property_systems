@@ -78,7 +78,7 @@ export default function PropertyDetails() {
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center ">
-        <Loader2 className="h-8 w-8 animate-spin text-[#1f6b4a]" />
+        <Loader2 className="h-8 w-8 animate-spin text-black" />
       </div>
     );
   }
@@ -118,7 +118,7 @@ export default function PropertyDetails() {
             />
           ) : (
             <div className="flex items-center justify-center h-full">
-              <Home className="h-12 w-12 text-[#1f6b4a] opacity-20" />
+              <Home className="h-12 w-12 text-black opacity-20" />
             </div>
           )}
         </div>
@@ -129,7 +129,7 @@ export default function PropertyDetails() {
               <h1 className="text-3xl font-bold text-black">{property.property_name}</h1>
               <p className="text-muted-foreground">{property.address}, {property.postcode}</p>
             </div>
-            <Badge className="bg-[#1f6b4a] text-white capitalize px-3 py-1">
+            <Badge className="bg-black text-white capitalize px-3 py-1">
               {property.status}
             </Badge>
           </div>
@@ -146,22 +146,31 @@ export default function PropertyDetails() {
       {/* Detailed Content Tabs */}
       <Tabs defaultValue="overview" className="w-full">
         <TabsList className="bg-[#e1dbd2]/40 p-1">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="certificates">Compliance</TabsTrigger>
-          <TabsTrigger value="documents">General Files</TabsTrigger>
+          <TabsTrigger value="overview" 
+          className='data-[state=active]:bg-[#FFFDD0] data-[state=active]:text=black'>
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="certificates" className='data-[state=active]:bg-[#FFFDD0] 
+          data-[state=active]:text=black'>
+            Compliance
+          </TabsTrigger>
+          <TabsTrigger value="documents" className='data-[state=active]:bg-[#FFFDD0] 
+          data-[state=active]:text=black'>
+            General Files
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-4">
-          <Card className="p-6 border-[#e1dbd2] bg-white">
+          <Card className="p-6 border-[#e1dbd2] bg-[#FFFDD0]">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-4">
-                <h3 className="font-bold text-[#1f6b4a] uppercase text-xs tracking-wider">Location Details</h3>
+                <h3 className="font-bold text-black uppercase text-xs tracking-wider">Location Details</h3>
                 <DetailItem label="City" value={property.city} />
                 <DetailItem label="Postcode" value={property.postcode} />
                 <DetailItem label="Full Address" value={property.address} />
               </div>
               <div className="space-y-4">
-                <h3 className="font-bold text-[#1f6b4a] uppercase text-xs tracking-wider">Management</h3>
+                <h3 className="font-bold text-black uppercase text-xs tracking-wider">Management</h3>
                 <DetailItem label="Property Manager" value={property.manager?.full_name} />
                 <DetailItem label="Organisation" value={property.organisation} />
                 <DetailItem label="Current Status" value={property.status} />
@@ -170,9 +179,9 @@ export default function PropertyDetails() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="certificates" className="mt-4">
-          <Card className="p-6 space-y-4 border-[#e1dbd2] bg-white">
-            <h3 className="font-bold text-[#1f6b4a] flex items-center gap-2 mb-2">
+        <TabsContent value="certificates" className="mt-4 text-black">
+          <Card className="p-6 space-y-4 border-[#e1dbd2] bg-[#FFFDD0]">
+            <h3 className="font-bold text-black flex items-center gap-2 mb-2">
               <ShieldCheck className="h-5 w-5" /> Safety & Compliance
             </h3>
             {certificates.length > 0 ? (
@@ -183,7 +192,7 @@ export default function PropertyDetails() {
                     label={cert.certificate_type} 
                     subtext={`Expiry: ${cert.expiry_date || 'No date'}`} 
                     path={cert.document_url} 
-                    icon={<ShieldCheck className="text-emerald-600" />} 
+                    icon={<ShieldCheck className="text-black" />} 
                   />
                 ))}
               </div>
@@ -194,11 +203,11 @@ export default function PropertyDetails() {
         </TabsContent>
 
         <TabsContent value="documents" className="mt-4">
-          <Card className="p-6 space-y-4 border-[#e1dbd2] bg-white">
-            <h3 className="font-bold text-[#1f6b4a] flex items-center gap-2 mb-2">
+          <Card className="p-6 space-y-4 border-[#e1dbd2] bg-[#FFFDD0]">
+            <h3 className="font-bold text-black flex items-center gap-2 mb-2">
               <FileText className="h-5 w-5" /> Property Documents
             </h3>
-            <div className="grid gap-3">
+            <div className="grid gap-3 text-black">
               {property.lease_url ? (
                 <FileRow label="Lease Agreement" path={property.lease_url} />
               ) : null}
@@ -240,13 +249,14 @@ function DetailItem({ label, value }) {
   );
 }
 
-function FileRow({ label, subtext, path, icon = <FileText className="text-[#1f6b4a]" /> }) {
+function FileRow({ label, subtext, path, icon = <FileText className="text-black" /> }) {
   const url = getFileUrl(path);
 
   if (!path) return null;
 
   return (
-    <div className="flex items-center justify-between p-4 border rounded-xl border-[#e1dbd2] bg-white hover:border-[#1f6b4a] hover:shadow-md transition-all group">
+    <div className="flex items-center justify-between p-4 border rounded-xl border-[#e1dbd2] 
+    bg-white  hover:shadow-md transition-all group">
       <div className="flex items-center gap-4">
         <div className="p-2 bg-[#f4f1ea] rounded-lg group-hover:bg-[#e6f2ec] transition-colors">
           {icon}
@@ -257,12 +267,14 @@ function FileRow({ label, subtext, path, icon = <FileText className="text-[#1f6b
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="sm" asChild className="text-[#1f6b4a] hover:text-[#123d2b] hover:bg-[#e6f2ec]">
+        <Button variant="ghost" size="sm" asChild className="text-black hover:text-[#123d2b] 
+        hover:bg-[#e6f2ec]">
           <a href={url} target="_blank" rel="noreferrer">
             <ExternalLink size={16} className="mr-2" /> View
           </a>
         </Button>
-        <Button variant="ghost" size="sm" asChild className="text-[#1f6b4a] hover:text-[#123d2b] hover:bg-[#e6f2ec]">
+        <Button variant="ghost" size="sm" asChild className="text-black hover:text-[#123d2b] 
+        hover:bg-[#e6f2ec]">
           <a href={url} download>
             <Download size={16} className="mr-2" /> Get
           </a>
@@ -275,7 +287,7 @@ function FileRow({ label, subtext, path, icon = <FileText className="text-[#1f6b
 function EmptyState({ message }) {
   return (
     <div className="text-center py-12 border-2 border-dashed border-[#e1dbd2] rounded-2xl bg-[#fbf8f2]/50">
-      <AlertCircle className="mx-auto h-10 w-10 text-[#1f6b4a] opacity-20 mb-3" />
+      <AlertCircle className="mx-auto h-10 w-10 text-black opacity-20 mb-3" />
       <p className="text-sm font-medium text-muted-foreground">{message}</p>
     </div>
   );
