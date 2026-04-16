@@ -164,11 +164,16 @@ const saveSignature = async () => {
   const signatureData = sigCanvas.current.getTrimmedCanvas().toDataURL("image/png");
   
   try {
-    // Determine which column to update based on type
-    const column = signingContext.type === 'user' ? 'service_user_signature' : 'support_worker_signature';
+    const targetTable = signingContext.table === 'support' 
+      ? "support_logs" 
+      : "kws_finalized_records";
+
+    const column = signingContext.type === 'user' 
+      ? 'service_user_signature' 
+      : 'support_worker_signature';
     
     const { error } = await supabase
-      .from("support_logs")
+      .from(targetTable)
       .update({ [column]: signatureData })
       .eq("id", signingContext.logId);
 
@@ -176,12 +181,18 @@ const saveSignature = async () => {
 
     toast.success("Signature saved successfully");
     setIsSignatureModalOpen(false);
-    fetchAllData(); // Refresh table
+    
+    // Clear the canvas for next time
+    clearSignature();
+    
+    // Refresh the table data
+    fetchAllData(); 
   } catch (err) {
     console.error(err);
     toast.error("Failed to save signature");
   }
 };
+
 
   const [sortOrder, setSortOrder] = useState("desc"); // 'desc' = youngest first, 'asc' = oldest first
   const [sortConfig, setSortConfig] = useState({ key: "session_date", direction: "desc" });
@@ -964,8 +975,6 @@ const DocCard = ({ title, url, onDelete }) => {
                           <th className="py-4 px-4">Duration</th>
                           <th className="py-4 px-4">Notes</th>
                           <th className="py-4 px-4">Attachment</th>
-                          <th className="py-4 px-4">Service User Signature</th>
-                          <th className="py-4 px-4">Support Plan Signature</th>
                           <th className="py-4 px-4 text-right">Actions</th>
                         </tr>
                       </thead>
@@ -1012,46 +1021,6 @@ const DocCard = ({ title, url, onDelete }) => {
                                 </span>
                               )}
                             </td>
-
-                            {/* Service User Signature Column */}
-<td className="py-4 px-4">
-  {log.service_user_signature ? (
-    <img src={log.service_user_signature} alt="User Sign" className="h-8 border bg-white rounded" />
-  ) : (
-    <Button 
-      variant="outline" 
-      size="sm" 
-      className="text-[10px] h-7 border-dashed border-black/30"
-      onClick={(e) => {
-        e.stopPropagation();
-        setSigningContext({ logId: log.id, type: 'user' });
-        setIsSignatureModalOpen(true);
-      }}
-    >
-      <Fingerprint className="w-3 h-3 mr-1" /> Sign
-    </Button>
-  )}
-</td>
-
-{/* Support Worker Signature Column */}
-<td className="py-4 px-4">
-  {log.support_worker_signature ? (
-    <img src={log.support_worker_signature} alt="Worker Sign" className="h-8 border bg-white rounded" />
-  ) : (
-    <Button 
-      variant="outline" 
-      size="sm" 
-      className="text-[10px] h-7 border-dashed border-black/30"
-      onClick={(e) => {
-        e.stopPropagation();
-        setSigningContext({ logId: log.id, type: 'worker' });
-        setIsSignatureModalOpen(true);
-      }}
-    >
-      <Fingerprint className="w-3 h-3 mr-1" /> Sign
-    </Button>
-  )}
-</td>
       
 
                             <td
@@ -1232,161 +1201,151 @@ const DocCard = ({ title, url, onDelete }) => {
                 </Button>
               </div>
 
-              {/* <div className="border rounded-xl bg-white overflow-hidden shadow-sm">
-                <table className="w-full text-left">
-                  <thead className="bg-slate-50 border-b">
-                    <tr>
-                      <th className="p-4 text-[10px] uppercase font-black text-slate-400">Date & Time</th>
-                      <th className="p-4 text-[10px] uppercase font-black text-slate-400">Title</th>
-                      <th className="p-4 text-[10px] uppercase font-black text-slate-400">Evidence</th>
-                      <th className="p-4 text-[10px] uppercase font-black text-slate-400 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {kwsDocs.map((doc) => (
-                      <tr key={doc.id} className="hover:bg-slate-50/30">
-                        <td className="p-4 text-sm font-bold text-slate-600">{new Date(doc.session_date).toLocaleDateString("en-GB")}</td>
-                        <td className="p-4 text-sm font-bold text-[#123d2b]">{doc.kws_name}</td>
-                        <td className="p-4">
-                          <div className="flex gap-2">
-                            {doc.doc_url && <a href={doc.doc_url} target="_blank" className="p-1.5 bg-blue-50 text-blue-600 rounded"><FileText size={14} /></a>}
-                            {doc.media_url && <button onClick={() => setViewingMedia(doc.media_url)} className="p-1.5 bg-purple-50 text-purple-600 rounded"><Video size={14} /></button>}
-                          </div>
-                        </td>
-                        <td className="p-4 text-right">
-                           <Button variant="ghost" size="sm" onClick={() => {
-                             setEditingId(doc.id); setKwsName(doc.kws_name); setDocUrl(doc.doc_url); setMediaUrl(doc.media_url); setIsUploadModalOpen(true);
-                           }}><Edit3 size={14}/></Button>
-                           <Button variant="ghost" size="sm" onClick={() => setDocToDelete(doc)} className="text-red-500"><Trash2 size={14}/></Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table> */}
-              {/* </div> */}
 
               <div className="border rounded-xl bg-white overflow-hidden shadow-sm">
-                <div className="overflow-hidden border border-[#e1dbd2] rounded-xl bg-white shadow-sm">
-                  <table className="w-full text-left border-collapse">
-                    <thead className="bg-[#fcfcfc] border-b border-[#e1dbd2]">
-                      <tr>
-                        {/* <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60">
-                          Date & Time
-                        </th> */}
-                        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60">
-                          Title
-                        </th>
-                        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60">
-                          Attachment
-                        </th>
-                        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60 text-right">
-                          Media
-                        </th>
-                        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60 text-right">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#f7f2e9]">
-                      {kwsDocs.map((doc) => (
-                        <tr
-                          key={doc.id}
-                          className="hover:bg-[#f1f8f5]/50 transition-colors group"
-                        >
-                          {/* DATE COLUMN */}
-                          {/* <td className="p-4 text-sm font-bold text-gray-600">
-                            {new Date(doc.session_date).toLocaleDateString(
-                              "en-GB",
-                              {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                              },
-                            )}
-                          </td> */}
+                {/* --- KWS Table Layout (Around Line 750) --- */}
+<div className="border rounded-xl bg-white overflow-hidden shadow-sm">
+  <table className="w-full text-left border-collapse">
+    <thead className="bg-[#fcfcfc] border-b border-[#e1dbd2]">
+      <tr>
+        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60">Title</th>
+        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60">Attachment</th>
+        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60 text-center">Media</th>
+        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60 text-center">Service User Sign</th>
+        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60 text-center">Support Worker Sign</th>
+        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60 text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-[#f7f2e9]">
+      {kwsDocs.map((doc) => (
+        <tr key={doc.id} className="hover:bg-[#f1f8f5]/50 transition-colors group">
+          <td className="p-4 text-sm font-bold text-[#123d2b]">{doc.kws_name}</td>
+          
+          <td className="p-4">
+            {doc.doc_url && (
+              <Button 
+                variant="ghost" 
+                className="h-7 text-[10px] font-black bg-[#f1f8f5] text-[#1f6b4a]" 
+                onClick={() => openDocument(doc.doc_url)}
+              >
+                <FileText className="w-3.5 h-3.5 mr-1" /> VIEW DOC
+              </Button>
+            )}
+          </td>
 
-                          {/* TITLE COLUMN */}
-                          <td className="p-4 text-sm font-bold text-[#123d2b]">
-                            {doc.kws_name}
-                          </td>
+          <td className="p-4 text-center">
+            {doc.media_url && (
+              <div 
+                className="relative h-10 w-16 mx-auto bg-black rounded cursor-pointer overflow-hidden group/media"
+                onClick={() => setViewingMedia(doc.media_url)}
+              >
+                <Play className="absolute inset-0 m-auto text-white w-3 h-3 fill-white z-10" />
+                <video src={doc.media_url} className="object-cover w-full h-full opacity-60" />
+              </div>
+            )}
+          </td>
 
-                          {/* DOCUMENT VIEW BUTTON */}
-                          <td className="p-4">
-                            {doc.doc_url && (
-                              <Button
-                                variant="ghost"
-                                className="h-7 text-[10px] font-black gap-2 bg-[#f1f8f5] text-[#1f6b4a] border border-[#1f6b4a]/10 px-3 hover:bg-[#1f6b4a] hover:text-white transition-all rounded-md"
-                                onClick={() => openDocument(doc.doc_url)}
-                              >
-                                <FileText className="w-3.5 h-3.5" /> VIEW DOC
-                              </Button>
-                            )}
-                          </td>
+          {/* Service User Signature Column */}
+          <td className="p-4 text-center">
+            {doc.service_user_signature ? (
+              <div className="relative inline-block group/sig">
+                <img 
+                  src={doc.service_user_signature} 
+                  alt="Sign" 
+                  className="h-8 border bg-white rounded mx-auto cursor-pointer hover:border-blue-400 transition-all" 
+                />
+                <button 
+                  onClick={() => {
+                    setSigningContext({ logId: doc.id, type: 'user', table: 'kws' });
+                    setIsSignatureModalOpen(true);
+                  }}
+                  className="absolute -top-2 -right-2 bg-blue-600 text-white p-1 rounded-full opacity-0 group-hover/sig:opacity-100 transition-opacity shadow-lg"
+                  title="Edit Signature"
+                >
+                  <Edit3 size={10} />
+                </button>
+              </div>
+            ) : (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="text-[10px] h-7 border-dashed border-black/30"
+                onClick={() => {
+                  setSigningContext({ logId: doc.id, type: 'user', table: 'kws' });
+                  setIsSignatureModalOpen(true);
+                }}
+              >
+                Sign
+              </Button>
+            )}
+          </td>
 
-                          {/* VIDEO/MEDIA THUMBNAIL */}
-                          <td className="p-4 text-right">
-                            <div className="flex justify-end">
-                              {doc.media_url && (
-                                <div
-                                  className="relative h-12 w-20 bg-black rounded-lg overflow-hidden cursor-pointer shadow-sm ring-1 ring-[#e1dbd2] group-hover:ring-[#1f6b4a] transition-all"
-                                  onClick={() => setViewingMedia(doc.media_url)}
-                                >
-                                  {doc.media_url.match(
-                                    /\.(mp4|webm|mov|ogg)/i,
-                                  ) ? (
-                                    <div className="relative h-full w-full">
-                                      <video
-                                        src={`${doc.media_url}#t=0.1`}
-                                        className="object-cover w-full h-full opacity-70"
-                                      />
-                                      <div className="absolute inset-0 flex items-center justify-center">
-                                        <Play className="text-white w-4 h-4 fill-white" />
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <img
-                                      src={doc.media_url}
-                                      className="object-cover w-full h-full"
-                                      alt="thumbnail"
-                                    />
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          </td>
+          {/* Support Worker Signature Column */}
+          <td className="p-4 text-center">
+            {doc.support_worker_signature ? (
+              <div className="relative inline-block group/sig">
+                <img 
+                  src={doc.support_worker_signature} 
+                  alt="Sign" 
+                  className="h-8 border bg-white rounded mx-auto cursor-pointer hover:border-blue-400 transition-all" 
+                />
+                <button 
+                  onClick={() => {
+                    setSigningContext({ logId: doc.id, type: 'worker', table: 'kws' });
+                    setIsSignatureModalOpen(true);
+                  }}
+                  className="absolute -top-2 -right-2 bg-blue-600 text-white p-1 rounded-full opacity-0 group-hover/sig:opacity-100 transition-opacity shadow-lg"
+                  title="Edit Signature"
+                >
+                  <Edit3 size={10} />
+                </button>
+              </div>
+            ) : (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="text-[10px] h-7 border-dashed border-black/30"
+                onClick={() => {
+                  setSigningContext({ logId: doc.id, type: 'worker', table: 'kws' });
+                  setIsSignatureModalOpen(true);
+                }}
+              >
+                Sign
+              </Button>
+            )}
+          </td>
 
-                          {/* ACTION BUTTONS */}
-                          <td className="p-4 text-right">
-                            <div className="flex justify-end gap-1">
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="h-8 w-8 text-blue-500 hover:bg-blue-50 hover:text-blue-700 rounded-full"
-                                onClick={() => {
-                                  setEditingId(doc.id);
-                                  setKwsName(doc.kws_name);
-                                  setDocUrl(doc.doc_url);
-                                  setMediaUrl(doc.media_url);
-                                  setIsUploadModalOpen(true);
-                                }}
-                              >
-                                <Edit3 size={15} />
-                              </Button>
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="h-8 w-8 text-red-500 hover:bg-red-50 hover:text-red-700 rounded-full"
-                                onClick={() => setDocToDelete(doc)}
-                              >
-                                <Trash2 size={15} />
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+          <td className="p-4 text-right">
+            <div className="flex justify-end gap-1">
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                className="h-8 w-8 text-blue-500" 
+                onClick={() => {
+                  setEditingId(doc.id);
+                  setKwsName(doc.kws_name);
+                  setDocUrl(doc.doc_url);
+                  setMediaUrl(doc.media_url);
+                  setIsUploadModalOpen(true);
+                }}
+              >
+                <Edit3 size={15} />
+              </Button>
+              <Button 
+                size="icon" 
+                variant="ghost" 
+                className="h-8 w-8 text-red-500" 
+                onClick={() => setDocToDelete(doc)}
+              >
+                <Trash2 size={15} />
+              </Button>
+            </div>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
               </div>
             </div>
           </TabsContent>
@@ -1743,7 +1702,7 @@ const DocCard = ({ title, url, onDelete }) => {
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#f7f2e9]">
+                  {/* <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#f7f2e9]">
             <div>
               <Label className="text-[10px] text-gray-400 uppercase font-bold">User Sign</Label>
               <div className="h-20 border rounded bg-white flex items-center justify-center mt-1">
@@ -1764,7 +1723,7 @@ const DocCard = ({ title, url, onDelete }) => {
                 )}
               </div>
             </div>
-          </div>
+          </div> */}
 
                   {selectedLog.file_url && (
                     <div className="flex items-center justify-between p-3 border border-[#1f6b4a]/20 bg-[#f1f8f5] rounded-lg">
