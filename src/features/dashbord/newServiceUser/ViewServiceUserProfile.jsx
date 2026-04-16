@@ -12,7 +12,7 @@ import {
   Plus,
   Trash2,
   ClipboardList,
-  Edit3,
+  Edit,
   Upload,
   ShieldAlert,
   Home,
@@ -40,7 +40,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import SignatureCanvas from 'react-signature-canvas';
+import SignatureCanvas from "react-signature-canvas";
 import Link from "next/link";
 
 const supabase = createClient();
@@ -142,11 +142,15 @@ export default function ViewServiceUserProfile() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const sigCanvas = React.useRef(null); // Ref for the signature canvas
-const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
-const [signingContext, setSigningContext] = useState(null);
+  const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
+  const [signingContext, setSigningContext] = useState(null);
+
+  // -For Deleting All from Support Logs and KWS Tables-
+  const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
+  const [deleteAllTarget, setDeleteAllTarget] = useState(""); // "logs" or "kws"
 
   // Helper to clear canvas
-const clearSignature = () => sigCanvas.current?.clear();
+  const clearSignature = () => sigCanvas.current?.clear();
 
   const [sessionDate, setSessionDate] = useState(() => {
     const now = new Date();
@@ -156,51 +160,60 @@ const clearSignature = () => sigCanvas.current?.clear();
   });
 
   // Save signature logic
-const saveSignature = async () => {
-  if (sigCanvas.current.isEmpty()) {
-    return toast.error("Please provide a signature first");
-  }
+  const saveSignature = async () => {
+    if (sigCanvas.current.isEmpty()) {
+      return toast.error("Please provide a signature first");
+    }
 
-  const signatureData = sigCanvas.current.getTrimmedCanvas().toDataURL("image/png");
-  
-  try {
-    const targetTable = signingContext.table === 'support' 
-      ? "support_logs" 
-      : "kws_finalized_records";
+    const signatureData = sigCanvas.current
+      .getTrimmedCanvas()
+      .toDataURL("image/png");
 
-    const column = signingContext.type === 'user' 
-      ? 'service_user_signature' 
-      : 'support_worker_signature';
-    
-    const { error } = await supabase
-      .from(targetTable)
-      .update({ [column]: signatureData })
-      .eq("id", signingContext.logId);
+    try {
+      const targetTable =
+        signingContext.table === "support"
+          ? "support_logs"
+          : "kws_finalized_records";
 
-    if (error) throw error;
+      const column =
+        signingContext.type === "user"
+          ? "service_user_signature"
+          : "support_worker_signature";
 
-    toast.success("Signature saved successfully");
-    setIsSignatureModalOpen(false);
-    
-    // Clear the canvas for next time
-    clearSignature();
-    
-    // Refresh the table data
-    fetchAllData(); 
-  } catch (err) {
-    console.error(err);
-    toast.error("Failed to save signature");
-  }
-};
+      const { error } = await supabase
+        .from(targetTable)
+        .update({ [column]: signatureData })
+        .eq("id", signingContext.logId);
 
+      if (error) throw error;
+
+      toast.success("Signature saved successfully");
+      setIsSignatureModalOpen(false);
+
+      // Clear the canvas for next time
+      clearSignature();
+
+      // Refresh the table data
+      fetchAllData();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to save signature");
+    }
+  };
 
   const [sortOrder, setSortOrder] = useState("desc"); // 'desc' = youngest first, 'asc' = oldest first
-  const [sortConfig, setSortConfig] = useState({ key: "session_date", direction: "desc" });
+  const [sortConfig, setSortConfig] = useState({
+    key: "session_date",
+    direction: "desc",
+  });
 
   const toggleSortOrder = () => {
     setSortConfig((prev) => ({
       key: "session_date",
-      direction: prev.key === "session_date" && prev.direction === "asc" ? "desc" : "asc",
+      direction:
+        prev.key === "session_date" && prev.direction === "asc"
+          ? "desc"
+          : "asc",
     }));
   };
 
@@ -339,103 +352,38 @@ const saveSignature = async () => {
   };
 
   const handleFileUpload = async (e, type) => {
-  const file = e.target.files[0];
-  if (!file) return;
+    const file = e.target.files[0];
+    if (!file) return;
 
-  const isDoc = type === "about_file";
-  const isProfile = type === "profile_image";
+    const isDoc = type === "about_file";
+    const isProfile = type === "profile_image";
 
-  // Loading states
-  if (isDoc) setIsUploadingDoc(true);
-  if (isProfile) setLoading(true); // Or use a specific profile loading state
+    // Loading states
+    if (isDoc) setIsUploadingDoc(true);
+    if (isProfile) setLoading(true); // Or use a specific profile loading state
 
-  try {
-    // 1. Generate Path: UUID / category / timestamp_filename
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${Date.now()}_${type}.${fileExt}`;
-    const filePath = `${id}/${type}/${fileName}`;
+    try {
+      // 1. Generate Path: UUID / category / timestamp_filename
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}_${type}.${fileExt}`;
+      const filePath = `${id}/${type}/${fileName}`;
 
-    // 2. Upload to Storage (Using the correct bucket)
-    const { error: uploadError } = await supabase.storage
-      .from("service-user-intake-docs")
-      .upload(filePath, file);
+      // 2. Upload to Storage (Using the correct bucket)
+      const { error: uploadError } = await supabase.storage
+        .from("service-user-intake-docs")
+        .upload(filePath, file);
 
-    if (uploadError) throw uploadError;
+      if (uploadError) throw uploadError;
 
-    // 3. Get Public URL
-    const { data: urlData } = supabase.storage
-      .from("service-user-intake-docs")
-      .getPublicUrl(filePath);
+      // 3. Get Public URL
+      const { data: urlData } = supabase.storage
+        .from("service-user-intake-docs")
+        .getPublicUrl(filePath);
 
-    // 4. Update Database
-    // map the 'type' to the actual database column name
-    const dbField = isProfile ? "profile_image_url" : "about_file_url";
-    
-    const { error: dbError } = await supabase
-      .from("service_user_intake")
-      .update({ [dbField]: urlData.publicUrl })
-      .eq("id", id);
-
-    if (dbError) throw dbError;
-
-    // 5. Update Local State
-    setUserData({ ...userData, [dbField]: urlData.publicUrl });
-    toast.success(`${isProfile ? "Profile photo" : "About document"} updated!`);
-    
-  } catch (error) {
-    console.error("Upload Error:", error);
-    toast.error("Upload failed: " + error.message);
-  } finally {
-    setIsUploadingDoc(false);
-    setLoading(false);
-  }
-};
-
-  const handleKWSFileUpload = async (e, type) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  // Determine if this is a KWS upload or a Profile upload
-  const isKWS = type === "doc" || type === "media";
-  const isProfile = type === "profile_image";
-  const isAbout = type === "about_file";
-
-  // 1. Set Loading States
-  if (type === "doc") setIsUploadingDoc(true);
-  if (type === "media") setIsUploadingMedia(true);
-  if (isProfile || isAbout) setLoading(true);
-
-  try {
-    // 2. Select the correct bucket and path
-    // KWS files go to 'kws-attachments', others go to 'service-user-intake-docs'
-    const bucket = isKWS ? "kws-attachments" : "service-user-intake-docs";
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${Date.now()}_${type}.${fileExt}`;
-    const filePath = `${id}/${type}/${fileName}`;
-
-    // 3. Upload to Supabase Storage
-    const { error: uploadError } = await supabase.storage
-      .from(bucket)
-      .upload(filePath, file);
-
-    if (uploadError) throw uploadError;
-
-    // 4. Get Public URL
-    const { data: urlData } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(filePath);
-
-    // 5. Route the result based on the type
-    if (isKWS) {
-      // For KWS, we just update the local URL state
-      // This URL is saved to the DB later when finalizeKWS() is called
-      if (type === "doc") setDocUrl(urlData.publicUrl);
-      if (type === "media") setMediaUrl(urlData.publicUrl);
-      toast.success(`${type === "doc" ? "Document" : "Media"} uploaded!`);
-    } else {
-      // For Profile/About, update the 'service_user_intake' table immediately
+      // 4. Update Database
+      // map the 'type' to the actual database column name
       const dbField = isProfile ? "profile_image_url" : "about_file_url";
-      
+
       const { error: dbError } = await supabase
         .from("service_user_intake")
         .update({ [dbField]: urlData.publicUrl })
@@ -443,19 +391,84 @@ const saveSignature = async () => {
 
       if (dbError) throw dbError;
 
+      // 5. Update Local State
       setUserData({ ...userData, [dbField]: urlData.publicUrl });
-      toast.success("Profile updated successfully!");
+      toast.success(
+        `${isProfile ? "Profile photo" : "About document"} updated!`,
+      );
+    } catch (error) {
+      console.error("Upload Error:", error);
+      toast.error("Upload failed: " + error.message);
+    } finally {
+      setIsUploadingDoc(false);
+      setLoading(false);
     }
-    
-  } catch (error) {
-    console.error("Upload Error:", error);
-    toast.error("Upload failed: " + error.message);
-  } finally {
-    setIsUploadingDoc(false);
-    setIsUploadingMedia(false);
-    setLoading(false);
-  }
-};
+  };
+
+  const handleKWSFileUpload = async (e, type) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Determine if this is a KWS upload or a Profile upload
+    const isKWS = type === "doc" || type === "media";
+    const isProfile = type === "profile_image";
+    const isAbout = type === "about_file";
+
+    // 1. Set Loading States
+    if (type === "doc") setIsUploadingDoc(true);
+    if (type === "media") setIsUploadingMedia(true);
+    if (isProfile || isAbout) setLoading(true);
+
+    try {
+      // 2. Select the correct bucket and path
+      // KWS files go to 'kws-attachments', others go to 'service-user-intake-docs'
+      const bucket = isKWS ? "kws-attachments" : "service-user-intake-docs";
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${Date.now()}_${type}.${fileExt}`;
+      const filePath = `${id}/${type}/${fileName}`;
+
+      // 3. Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from(bucket)
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // 4. Get Public URL
+      const { data: urlData } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(filePath);
+
+      // 5. Route the result based on the type
+      if (isKWS) {
+        // For KWS, we just update the local URL state
+        // This URL is saved to the DB later when finalizeKWS() is called
+        if (type === "doc") setDocUrl(urlData.publicUrl);
+        if (type === "media") setMediaUrl(urlData.publicUrl);
+        toast.success(`${type === "doc" ? "Document" : "Media"} uploaded!`);
+      } else {
+        // For Profile/About, update the 'service_user_intake' table immediately
+        const dbField = isProfile ? "profile_image_url" : "about_file_url";
+
+        const { error: dbError } = await supabase
+          .from("service_user_intake")
+          .update({ [dbField]: urlData.publicUrl })
+          .eq("id", id);
+
+        if (dbError) throw dbError;
+
+        setUserData({ ...userData, [dbField]: urlData.publicUrl });
+        toast.success("Profile updated successfully!");
+      }
+    } catch (error) {
+      console.error("Upload Error:", error);
+      toast.error("Upload failed: " + error.message);
+    } finally {
+      setIsUploadingDoc(false);
+      setIsUploadingMedia(false);
+      setLoading(false);
+    }
+  };
 
   const finalizeKWS = async () => {
     if (!kwsName) return toast.error("Please provide a session title");
@@ -655,85 +668,138 @@ const saveSignature = async () => {
     }
   };
 
-  // This function now handles both single URL fields (like about_file_url) and array fields 
+  // This function now handles both single URL fields (like about_file_url) and array fields
   // (like additional_documents)
   const handleDeleteItem = async (field, itemToDelete = null) => {
-  // itemToDelete is only needed for arrays (additional_documents, etc.)
-  const isArray = Array.isArray(userData[field]);
-  
-  try {
-    // 1. Determine the storage path
-    let storagePath = "";
-    if (isArray && itemToDelete) {
-      storagePath = itemToDelete.file_path;
-    } else {
-      // For single fields like about_file_url, we need to extract path from URL 
-      // or ensure you're storing about_file_path in your DB
-      const url = userData[field];
-      storagePath = url.split("/service-user-intake-docs/")[1];
+    // itemToDelete is only needed for arrays (additional_documents, etc.)
+    const isArray = Array.isArray(userData[field]);
+
+    try {
+      // 1. Determine the storage path
+      let storagePath = "";
+      if (isArray && itemToDelete) {
+        storagePath = itemToDelete.file_path;
+      } else {
+        // For single fields like about_file_url, we need to extract path from URL
+        // or ensure you're storing about_file_path in your DB
+        const url = userData[field];
+        storagePath = url.split("/service-user-intake-docs/")[1];
+      }
+
+      // 2. Remove from Supabase Storage
+      if (storagePath) {
+        await supabase.storage
+          .from("service-user-intake-docs")
+          .remove([storagePath]);
+      }
+
+      // 3. Update Database
+      let newValue;
+      if (isArray) {
+        newValue = userData[field].filter(
+          (doc) => doc.url !== itemToDelete.url,
+        );
+      } else {
+        newValue = null; // Clear the single field
+      }
+
+      const { error } = await supabase
+        .from("service_user_intake")
+        .update({ [field]: newValue })
+        .eq("id", id);
+
+      if (error) throw error;
+
+      setUserData({ ...userData, [field]: newValue });
+      toast.success("Item deleted successfully");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete item");
+    }
+  };
+
+  // --- Add this near your other delete functions (approx. line 270) ---
+  const handleConfirmDeleteAll = async () => {
+    if (deleteConfirmText !== "DELETE ALL") {
+      return toast.error("Please type DELETE ALL to confirm");
     }
 
-    // 2. Remove from Supabase Storage
-    if (storagePath) {
-      await supabase.storage.from("service-user-intake-docs").remove([storagePath]);
+    setIsDeleting(true);
+    try {
+      if (deleteAllTarget === "logs") {
+        // 1. Clear Support Log Storage
+        const logPaths = logs.map((l) => l.file_path).filter(Boolean);
+        if (logPaths.length > 0) {
+          await supabase.storage.from("support_documents").remove(logPaths);
+        }
+        // 2. Clear Database
+        const { error } = await supabase
+          .from("support_logs")
+          .delete()
+          .eq("service_user_id", id);
+        if (error) throw error;
+        toast.success("All support logs deleted");
+      } else {
+        // 3. Clear KWS Storage
+        const kwsPaths = kwsDocs
+          .flatMap((d) => [d.doc_storage_path, d.media_storage_path])
+          .filter(Boolean);
+        if (kwsPaths.length > 0) {
+          await supabase.storage.from("kws-attachments").remove(kwsPaths);
+        }
+        // 4. Clear Database
+        const { error } = await supabase
+          .from("kws_finalized_records")
+          .delete()
+          .eq("service_user_id", id);
+        if (error) throw error;
+        toast.success("All KWS records deleted");
+      }
+
+      setIsDeleteAllModalOpen(false);
+      setDeleteConfirmText("");
+      fetchAllData(); // Refresh UI
+    } catch (err) {
+      console.error(err);
+      toast.error("Bulk deletion failed");
+    } finally {
+      setIsDeleting(false);
     }
-
-    // 3. Update Database
-    let newValue;
-    if (isArray) {
-      newValue = userData[field].filter(doc => doc.url !== itemToDelete.url);
-    } else {
-      newValue = null; // Clear the single field
-    }
-
-    const { error } = await supabase
-      .from("service_user_intake")
-      .update({ [field]: newValue })
-      .eq("id", id);
-
-    if (error) throw error;
-
-    setUserData({ ...userData, [field]: newValue });
-    toast.success("Item deleted successfully");
-  } catch (error) {
-    console.error(error);
-    toast.error("Failed to delete item");
-  }
-};
+  };
 
   // --- Helper: Document Link Card ---
-const DocCard = ({ title, url, onDelete }) => {
-  if (!url) return null;
+  const DocCard = ({ title, url, onDelete }) => {
+    if (!url) return null;
 
-  return (
-    <div className="flex items-center justify-between p-4 bg-white border border-black rounded-xl shadow-sm">
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-[#e6f2ec] rounded-lg text-black">
-          <FileText size={18} />
+    return (
+      <div className="flex items-center justify-between p-4 bg-white border border-black rounded-xl shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-[#e6f2ec] rounded-lg text-black">
+            <FileText size={18} />
+          </div>
+          <span className="text-sm font-bold text-[#123d2b] truncate max-w-40">
+            {title}
+          </span>
         </div>
-        <span className="text-sm font-bold text-[#123d2b] truncate max-w-40">
-          {title}
-        </span>
-      </div>
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => openDocument(url)}
-          className="p-2 text-black hover:bg-[#e6f2ec] rounded-lg border border-transparent hover:border-black/10"
-        >
-          <ExternalLink size={16} />
-        </button>
-        {onDelete && (
+        <div className="flex items-center gap-2">
           <button
-            onClick={onDelete}
-            className="p-2 text-red-500 hover:bg-red-50 rounded-lg border border-red-100"
+            onClick={() => openDocument(url)}
+            className="p-2 text-black hover:bg-[#e6f2ec] rounded-lg border border-transparent hover:border-black/10"
           >
-            <Trash2 size={16} />
+            <ExternalLink size={16} />
           </button>
-        )}
+          {onDelete && (
+            <button
+              onClick={onDelete}
+              className="p-2 text-red-500 hover:bg-red-50 rounded-lg border border-red-100"
+            >
+              <Trash2 size={16} />
+            </button>
+          )}
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
   if (loading)
     return (
@@ -755,8 +821,8 @@ const DocCard = ({ title, url, onDelete }) => {
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to List
           </Button>
           <Link href={`/service-users/${id}/edit`}>
-            <Button variant="outline" className="border-black text-[#123d2b]">
-              <Edit3 className="mr-2 h-4 w-4" /> Edit Profile
+            <Button variant="outline" className="border-black text-black">
+              <Edit className="mr-2 h-4 w-4" /> Edit Profile
             </Button>
           </Link>
         </div>
@@ -807,8 +873,8 @@ const DocCard = ({ title, url, onDelete }) => {
               )}
 
               {userData?.profile_image_url && (
-                <button 
-                  onClick={() => handleDeleteItem('profile_image_url')}
+                <button
+                  onClick={() => handleDeleteItem("profile_image_url")}
                   className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full shadow-lg z-10"
                 >
                   <Trash2 size={12} />
@@ -873,21 +939,20 @@ const DocCard = ({ title, url, onDelete }) => {
                       "Primary record for service user intake and background."
                     </p>
                     <div className="flex gap-2 w-full">
-  <Button
-    className="flex-1 bg-black hover:bg-[#1f6b4a] font-bold text-xs py-5"
-    onClick={() => openDocument(userData.about_file_url)}
-  >
-    <ExternalLink className="mr-2 h-4 w-4" /> VIEW ABOUT
-  </Button>
-  <Button
-    variant="destructive"
-    className="px-4"
-    onClick={() => handleDeleteItem('about_file_url')}
-  >
-    <Trash2 size={16} />
-  </Button>
-</div>
-                    
+                      <Button
+                        className="flex-1 bg-black hover:bg-[#1f6b4a] font-bold text-xs py-5"
+                        onClick={() => openDocument(userData.about_file_url)}
+                      >
+                        <ExternalLink className="mr-2 h-4 w-4" /> VIEW ABOUT
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        className="px-4"
+                        onClick={() => handleDeleteItem("about_file_url")}
+                      >
+                        <Trash2 size={16} />
+                      </Button>
+                    </div>
                   </div>
                 ) : (
                   <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 flex flex-col items-center bg-white">
@@ -915,41 +980,68 @@ const DocCard = ({ title, url, onDelete }) => {
           <TabsContent value="logs">
             <Card className="border border-black shadow-sm bg-[#FFFDD0]">
               <CardHeader className="border-b border-[#e1dbd2]/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
-  <CardTitle className="text-sm font-black flex items-center gap-2 text-black uppercase tracking-widest">
-    <ClipboardList className="w-4 h-4" /> Session History
-  </CardTitle>
-  
-  <div className="flex flex-wrap items-center gap-3">
-    {/* DEDICATED SORTING SELECT */}
-    <div className="flex items-center gap-2 bg-[#fcfcfc] border border-[#e1dbd2] rounded-lg px-3 py-1 shadow-sm">
-      <Label className="text-[10px] font-black text-gray-400 uppercase whitespace-nowrap">Sort By</Label>
-      <select 
-        className="bg-transparent text-xs font-bold text-[#123d2b] outline-none cursor-pointer py-1"
-        value={`${sortConfig.key}-${sortConfig.direction}`}
-        onChange={(e) => {
-          const [key, direction] = e.target.value.split("-");
-          setSortConfig({ key, direction });
-        }}
-      >
-        <option value="session_date-desc">Date: Newest to Oldest</option>
-        <option value="session_date-asc">Date: Oldest to Newest</option>
-        <option value="support_worker_name-asc">Staff: A to Z</option>
-        <option value="support_worker_name-desc">Staff: Z to A</option>
-        <option value="session_type-asc">Type: A to Z</option>
-        <option value="session_type-desc">Type: Z to A</option>
-      </select>
-    </div>
+                <CardTitle className="text-sm font-black flex items-center gap-2 text-black uppercase tracking-widest">
+                  <ClipboardList className="w-4 h-4" /> Session History
+                </CardTitle>
 
-    <Link href={`/service-users/${id}/add`}>
-      <Button
-        variant="outline"
-        className="border-[#1f6b4a] text-black hover:bg-[#1f6b4a] hover:text-white h-9"
-      >
-        <Plus className="mr-2 h-4 w-4" /> Add Support Log
-      </Button>
-    </Link>
-  </div>
-</CardHeader>
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-3">
+                    {logs.length > 0 && (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="h-9"
+                        onClick={() => {
+                          setDeleteAllTarget("logs");
+                          setIsDeleteAllModalOpen(true);
+                        }}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" /> Delete All Logs
+                      </Button>
+                    )}
+                    {/* Existing Add Support Log Button... */}
+                  </div>
+
+                  {/* DEDICATED SORTING SELECT */}
+                  <div className="flex items-center gap-2 bg-[#fcfcfc] border border-[#e1dbd2] rounded-lg px-3 py-1 shadow-sm">
+                    <Label className="text-[10px] font-black text-gray-400 uppercase whitespace-nowrap">
+                      Sort By
+                    </Label>
+                    <select
+                      className="bg-transparent text-xs font-bold text-[#123d2b] outline-none cursor-pointer py-1"
+                      value={`${sortConfig.key}-${sortConfig.direction}`}
+                      onChange={(e) => {
+                        const [key, direction] = e.target.value.split("-");
+                        setSortConfig({ key, direction });
+                      }}
+                    >
+                      <option value="session_date-desc">
+                        Date: Newest to Oldest
+                      </option>
+                      <option value="session_date-asc">
+                        Date: Oldest to Newest
+                      </option>
+                      <option value="support_worker_name-asc">
+                        Staff: A to Z
+                      </option>
+                      <option value="support_worker_name-desc">
+                        Staff: Z to A
+                      </option>
+                      <option value="session_type-asc">Type: A to Z</option>
+                      <option value="session_type-desc">Type: Z to A</option>
+                    </select>
+                  </div>
+
+                  <Link href={`/service-users/${id}/add`}>
+                    <Button
+                      variant="outline"
+                      className="border-[#1f6b4a] text-black hover:bg-[#1f6b4a] hover:text-white h-9"
+                    >
+                      <Plus className="mr-2 h-4 w-4" /> Add Support Log
+                    </Button>
+                  </Link>
+                </div>
+              </CardHeader>
               <CardContent className="pt-6">
                 {logs.length > 0 ? (
                   <div className="overflow-hidden border border-[#e1dbd2] rounded-xl bg-white shadow-sm">
@@ -987,7 +1079,9 @@ const DocCard = ({ title, url, onDelete }) => {
                           >
                             <td className="py-4 px-4 whitespace-nowrap">
                               <div className="font-bold  text-black">
-                                {new Date(log.session_date).toLocaleDateString()}
+                                {new Date(
+                                  log.session_date,
+                                ).toLocaleDateString()}
                               </div>
                             </td>
                             <td className="py-4 px-4 text-black font-bold">
@@ -1021,7 +1115,6 @@ const DocCard = ({ title, url, onDelete }) => {
                                 </span>
                               )}
                             </td>
-      
 
                             <td
                               className="py-4 px-4 text-right"
@@ -1031,14 +1124,14 @@ const DocCard = ({ title, url, onDelete }) => {
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="h-8 w-8 text-blue-500"
+                                  className="h-8 w-8 text-black"
                                   onClick={() =>
                                     router.push(
                                       `/service-users/${log.id}/editSupport`,
                                     )
                                   }
                                 >
-                                  <Edit3 className="h-4 w-4" />
+                                  <Edit className="h-4 w-4" />
                                 </Button>
                                 <Button
                                   variant="ghost"
@@ -1093,7 +1186,9 @@ const DocCard = ({ title, url, onDelete }) => {
                     key={i}
                     title={doc.name || `Document ${i + 1}`}
                     url={doc.url}
-                    onDelete={() => handleDeleteItem('additional_documents', doc)}
+                    onDelete={() =>
+                      handleDeleteItem("additional_documents", doc)
+                    }
                   />
                 )) || (
                   <p className="col-span-2 text-center py-6 italic text-gray-400">
@@ -1171,6 +1266,9 @@ const DocCard = ({ title, url, onDelete }) => {
                     key={i}
                     title={doc.name || `Onboarding Doc ${i + 1}`}
                     url={doc.url}
+                    onDelete={() =>
+                      handleDeleteItem("onboarding_documents", doc)
+                    }
                   />
                 )) || (
                   <p className="col-span-2 text-center py-6 italic text-gray-400">
@@ -1193,159 +1291,210 @@ const DocCard = ({ title, url, onDelete }) => {
                     Audit trail of session evidence and documents
                   </p>
                 </div>
-                <Button
-                  onClick={() => setIsUploadModalOpen(true)}
-                  className=" text-white"
-                >
-                  <Plus size={20} className="mr-2" /> New Session Record
-                </Button>
-              </div>
+                <div className="flex gap-2">
+                  {kwsDocs.length > 0 && (
+                    <Button
+                      variant="destructive"
+                      onClick={() => {
+                        setDeleteAllTarget("kws");
+                        setIsDeleteAllModalOpen(true);
+                      }}
+                    >
+                      <Trash2 size={20} className="mr-2" /> Delete All Sessions
+                    </Button>
+                  )}
+                  {/* Existing New Session Record Button... */}
 
+                  <Button
+                    onClick={() => setIsUploadModalOpen(true)}
+                    className=" text-white"
+                  >
+                    <Plus size={20} className="mr-2" /> New Session Record
+                  </Button>
+                </div>
+              </div>
 
               <div className="border rounded-xl bg-white overflow-hidden shadow-sm">
                 {/* --- KWS Table Layout (Around Line 750) --- */}
-<div className="border rounded-xl bg-white overflow-hidden shadow-sm">
-  <table className="w-full text-left border-collapse">
-    <thead className="bg-[#fcfcfc] border-b border-[#e1dbd2]">
-      <tr>
-        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60">Title</th>
-        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60">Attachment</th>
-        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60 text-center">Media</th>
-        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60 text-center">Service User Sign</th>
-        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60 text-center">Support Worker Sign</th>
-        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-[#123d2b]/60 text-right">Actions</th>
-      </tr>
-    </thead>
-    <tbody className="divide-y divide-[#f7f2e9]">
-      {kwsDocs.map((doc) => (
-        <tr key={doc.id} className="hover:bg-[#f1f8f5]/50 transition-colors group">
-          <td className="p-4 text-sm font-bold text-[#123d2b]">{doc.kws_name}</td>
-          
-          <td className="p-4">
-            {doc.doc_url && (
-              <Button 
-                variant="ghost" 
-                className="h-7 text-[10px] font-black bg-[#f1f8f5] text-[#1f6b4a]" 
-                onClick={() => openDocument(doc.doc_url)}
-              >
-                <FileText className="w-3.5 h-3.5 mr-1" /> VIEW DOC
-              </Button>
-            )}
-          </td>
+                <div className="border rounded-xl bg-white overflow-hidden shadow-sm">
+                  <table className="w-full text-left border-collapse">
+                    <thead className="bg-[#fcfcfc] border-b border-[#e1dbd2]">
+                      <tr>
+                        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-black">
+                          Title
+                        </th>
+                        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-black">
+                          Attachment
+                        </th>
+                        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-black text-center">
+                          Media
+                        </th>
+                        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-black text-center">
+                          Service User Sign
+                        </th>
+                        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-black text-center">
+                          Support Worker Sign
+                        </th>
+                        <th className="p-4 text-[10px] uppercase font-black tracking-widest text-black text-right">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#f7f2e9]">
+                      {kwsDocs.map((doc) => (
+                        <tr
+                          key={doc.id}
+                          className="hover:bg-[#f1f8f5]/50 transition-colors group"
+                        >
+                          <td className="p-4 text-sm font-bold text-black">
+                            {doc.kws_name}
+                          </td>
 
-          <td className="p-4 text-center">
-            {doc.media_url && (
-              <div 
-                className="relative h-10 w-16 mx-auto bg-black rounded cursor-pointer overflow-hidden group/media"
-                onClick={() => setViewingMedia(doc.media_url)}
-              >
-                <Play className="absolute inset-0 m-auto text-white w-3 h-3 fill-white z-10" />
-                <video src={doc.media_url} className="object-cover w-full h-full opacity-60" />
-              </div>
-            )}
-          </td>
+                          <td className="p-4">
+                            {doc.doc_url && (
+                              <Button
+                                variant="ghost"
+                                className="h-7 text-[10px] font-black bg-[#f1f8f5] text-black"
+                                onClick={() => openDocument(doc.doc_url)}
+                              >
+                                <FileText className="w-3.5 h-3.5 mr-1" /> VIEW
+                                DOC
+                              </Button>
+                            )}
+                          </td>
 
-          {/* Service User Signature Column */}
-          <td className="p-4 text-center">
-            {doc.service_user_signature ? (
-              <div className="relative inline-block group/sig">
-                <img 
-                  src={doc.service_user_signature} 
-                  alt="Sign" 
-                  className="h-8 border bg-white rounded mx-auto cursor-pointer hover:border-blue-400 transition-all" 
-                />
-                <button 
-                  onClick={() => {
-                    setSigningContext({ logId: doc.id, type: 'user', table: 'kws' });
-                    setIsSignatureModalOpen(true);
-                  }}
-                  className="absolute -top-2 -right-2 bg-blue-600 text-white p-1 rounded-full opacity-0 group-hover/sig:opacity-100 transition-opacity shadow-lg"
-                  title="Edit Signature"
-                >
-                  <Edit3 size={10} />
-                </button>
-              </div>
-            ) : (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="text-[10px] h-7 border-dashed border-black/30"
-                onClick={() => {
-                  setSigningContext({ logId: doc.id, type: 'user', table: 'kws' });
-                  setIsSignatureModalOpen(true);
-                }}
-              >
-                Sign
-              </Button>
-            )}
-          </td>
+                          <td className="p-4 text-center">
+                            {doc.media_url && (
+                              <div
+                                className="relative h-10 w-16 mx-auto bg-black rounded cursor-pointer overflow-hidden group/media"
+                                onClick={() => setViewingMedia(doc.media_url)}
+                              >
+                                <Play className="absolute inset-0 m-auto text-white w-3 h-3 fill-white z-10" />
+                                <video
+                                  src={doc.media_url}
+                                  className="object-cover w-full h-full opacity-60"
+                                />
+                              </div>
+                            )}
+                          </td>
 
-          {/* Support Worker Signature Column */}
-          <td className="p-4 text-center">
-            {doc.support_worker_signature ? (
-              <div className="relative inline-block group/sig">
-                <img 
-                  src={doc.support_worker_signature} 
-                  alt="Sign" 
-                  className="h-8 border bg-white rounded mx-auto cursor-pointer hover:border-blue-400 transition-all" 
-                />
-                <button 
-                  onClick={() => {
-                    setSigningContext({ logId: doc.id, type: 'worker', table: 'kws' });
-                    setIsSignatureModalOpen(true);
-                  }}
-                  className="absolute -top-2 -right-2 bg-blue-600 text-white p-1 rounded-full opacity-0 group-hover/sig:opacity-100 transition-opacity shadow-lg"
-                  title="Edit Signature"
-                >
-                  <Edit3 size={10} />
-                </button>
-              </div>
-            ) : (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="text-[10px] h-7 border-dashed border-black/30"
-                onClick={() => {
-                  setSigningContext({ logId: doc.id, type: 'worker', table: 'kws' });
-                  setIsSignatureModalOpen(true);
-                }}
-              >
-                Sign
-              </Button>
-            )}
-          </td>
+                          {/* Service User Signature Column */}
+                          <td className="p-4 text-center">
+                            {doc.service_user_signature ? (
+                              <div className="relative inline-block group/sig">
+                                <img
+                                  src={doc.service_user_signature}
+                                  alt="Sign"
+                                  className="h-8 border bg-white rounded mx-auto cursor-pointer hover:border-blue-400 transition-all"
+                                />
+                                <button
+                                  onClick={() => {
+                                    setSigningContext({
+                                      logId: doc.id,
+                                      type: "user",
+                                      table: "kws",
+                                    });
+                                    setIsSignatureModalOpen(true);
+                                  }}
+                                  className="absolute -top-2 -right-2 bg-blue-600 text-white p-1 rounded-full opacity-0 group-hover/sig:opacity-100 transition-opacity shadow-lg"
+                                  title="Edit Signature"
+                                >
+                                  <Edit size={10} />
+                                </button>
+                              </div>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-[10px] h-7 border-dashed border-black/30"
+                                onClick={() => {
+                                  setSigningContext({
+                                    logId: doc.id,
+                                    type: "user",
+                                    table: "kws",
+                                  });
+                                  setIsSignatureModalOpen(true);
+                                }}
+                              >
+                                Sign
+                              </Button>
+                            )}
+                          </td>
 
-          <td className="p-4 text-right">
-            <div className="flex justify-end gap-1">
-              <Button 
-                size="icon" 
-                variant="ghost" 
-                className="h-8 w-8 text-blue-500" 
-                onClick={() => {
-                  setEditingId(doc.id);
-                  setKwsName(doc.kws_name);
-                  setDocUrl(doc.doc_url);
-                  setMediaUrl(doc.media_url);
-                  setIsUploadModalOpen(true);
-                }}
-              >
-                <Edit3 size={15} />
-              </Button>
-              <Button 
-                size="icon" 
-                variant="ghost" 
-                className="h-8 w-8 text-red-500" 
-                onClick={() => setDocToDelete(doc)}
-              >
-                <Trash2 size={15} />
-              </Button>
-            </div>
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
+                          {/* Support Worker Signature Column */}
+                          <td className="p-4 text-center">
+                            {doc.support_worker_signature ? (
+                              <div className="relative inline-block group/sig">
+                                <img
+                                  src={doc.support_worker_signature}
+                                  alt="Sign"
+                                  className="h-8 border bg-white rounded mx-auto cursor-pointer hover:border-blue-400 transition-all"
+                                />
+                                <button
+                                  onClick={() => {
+                                    setSigningContext({
+                                      logId: doc.id,
+                                      type: "worker",
+                                      table: "kws",
+                                    });
+                                    setIsSignatureModalOpen(true);
+                                  }}
+                                  className="absolute -top-2 -right-2 bg-blue-600 text-white p-1 rounded-full opacity-0 group-hover/sig:opacity-100 transition-opacity shadow-lg"
+                                  title="Edit Signature"
+                                >
+                                  <Edit size={10} />
+                                </button>
+                              </div>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-[10px] h-7 border-dashed border-black/30"
+                                onClick={() => {
+                                  setSigningContext({
+                                    logId: doc.id,
+                                    type: "worker",
+                                    table: "kws",
+                                  });
+                                  setIsSignatureModalOpen(true);
+                                }}
+                              >
+                                Sign
+                              </Button>
+                            )}
+                          </td>
+
+                          <td className="p-4 text-right">
+                            <div className="flex justify-end gap-1">
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-black"
+                                onClick={() => {
+                                  setEditingId(doc.id);
+                                  setKwsName(doc.kws_name);
+                                  setDocUrl(doc.doc_url);
+                                  setMediaUrl(doc.media_url);
+                                  setIsUploadModalOpen(true);
+                                }}
+                              >
+                                <Edit size={15} />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="h-8 w-8 text-red-500"
+                                onClick={() => setDocToDelete(doc)}
+                              >
+                                <Trash2 size={15} />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </TabsContent>
@@ -1361,7 +1510,7 @@ const DocCard = ({ title, url, onDelete }) => {
         >
           <DialogContent className="sm:max-w-lg bg-[#fbf8f2]">
             <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-[#123d2b]">
+              <DialogTitle className="text-xl font-bold text-blCK">
                 Finalize Session Record
               </DialogTitle>
             </DialogHeader>
@@ -1540,7 +1689,7 @@ const DocCard = ({ title, url, onDelete }) => {
         </Dialog>
 
         <Dialog open={isUploadModalsOpen} onOpenChange={setIsUploadModalsOpen}>
-          <DialogContent className="fixed left-[50%] top-[50%] z-[100] w-full max-w-lg translate-x-[-50%] translate-y-[-50%] border-[#e1dbd2] bg-[#fdfbf7] p-6 shadow-2xl duration-200">
+          <DialogContent className="fixed left-[50%] top-[50%] z-100 w-full max-w-lg translate-x-[-50%] translate-y-[-50%] border-[#e1dbd2] bg-[#fdfbf7] p-6 shadow-2xl duration-200">
             <DialogHeader>
               <DialogTitle className="text-[#123d2b]">
                 Upload New Document
@@ -1626,8 +1775,8 @@ const DocCard = ({ title, url, onDelete }) => {
 
         {/* SUPPORT LOG DETAIL POPUP */}
         <Dialog open={!!selectedLog} onOpenChange={() => setSelectedLog(null)}>
-          <DialogContent className="sm:max-w-[500px] border-[#e1dbd2] rounded-xl flex flex-col max-h-[90vh]">
-            <DialogHeader className="border-b border-[#f7f2e9] pb-4 flex-shrink-0">
+          <DialogContent className="sm:max-w-125 border-[#e1dbd2] rounded-xl flex flex-col max-h-[90vh]">
+            <DialogHeader className="border-b border-[#f7f2e9] pb-4 shrink-0">
               <DialogTitle className="text-[#123d2b] flex items-center gap-2">
                 <ClipboardList className="h-5 w-5" /> Support Log Details
               </DialogTitle>
@@ -1743,13 +1892,11 @@ const DocCard = ({ title, url, onDelete }) => {
                     </div>
                   )}
                 </>
-                
               )}
             </div>
             {/* SCROLLABLE AREA END */}
-            
 
-            <DialogFooter className="border-t border-[#f7f2e9] pt-4 flex-shrink-0">
+            <DialogFooter className="border-t border-[#f7f2e9] pt-4 shrink-0">
               <Button
                 variant="outline"
                 onClick={() => setSelectedLog(null)}
@@ -1761,49 +1908,108 @@ const DocCard = ({ title, url, onDelete }) => {
           </DialogContent>
         </Dialog>
 
-
         {/* SIGNATURE DRAWING MODAL */}
-<Dialog open={isSignatureModalOpen} onOpenChange={setIsSignatureModalOpen}>
-  <DialogContent className="sm:max-w-md bg-[#fdfbf7]">
-    <DialogHeader>
-      <DialogTitle className="text-[#123d2b] flex items-center gap-2">
-        <Edit3 className="w-5 h-5" /> 
-        {signingContext?.type === 'user' ? "Service User Signature" : "Support Worker Signature"}
-      </DialogTitle>
-      <DialogDescription>
-        Please draw your signature in the box below.
-      </DialogDescription>
-    </DialogHeader>
+        <Dialog
+          open={isSignatureModalOpen}
+          onOpenChange={setIsSignatureModalOpen}
+        >
+          <DialogContent className="sm:max-w-md bg-[#fdfbf7]">
+            <DialogHeader>
+              <DialogTitle className="text-black flex items-center gap-2">
+                <Edit className="w-5 h-5" />
+                {signingContext?.type === "user"
+                  ? "Service User Signature"
+                  : "Support Worker Signature"}
+              </DialogTitle>
+              <DialogDescription>
+                Please draw your signature in the box below.
+              </DialogDescription>
+            </DialogHeader>
 
-    <div className="bg-white border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
-      <SignatureCanvas
-        ref={sigCanvas}
-        penColor="black"
-        canvasProps={{
-          width: 445,
-          height: 200,
-          className: "signature-canvas cursor-crosshair"
-        }}
-      />
-    </div>
+            <div className="bg-white border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
+              <SignatureCanvas
+                ref={sigCanvas}
+                penColor="black"
+                canvasProps={{
+                  width: 445,
+                  height: 200,
+                  className: "signature-canvas cursor-crosshair",
+                }}
+              />
+            </div>
 
-    <div className="flex justify-between items-center gap-3">
-      <Button variant="ghost" onClick={clearSignature} className="text-gray-500 text-xs">
-        Clear Canvas
-      </Button>
-      <div className="flex gap-2">
-        <Button variant="outline" onClick={() => setIsSignatureModalOpen(false)}>
-          Cancel
-        </Button>
-        <Button className="bg-[#123d2b] hover:bg-[#1f6b4a]" onClick={saveSignature}>
-          Confirm & Save
-        </Button>
-      </div>
-    </div>
-  </DialogContent>
-</Dialog>
+            <div className="flex justify-between items-center gap-3">
+              <Button
+                variant="ghost"
+                onClick={clearSignature}
+                className="text-gray-500 text-xs"
+              >
+                Clear Canvas
+              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsSignatureModalOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-[#123d2b] hover:bg-[#1f6b4a]"
+                  onClick={saveSignature}
+                >
+                  Confirm & Save
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
 
+        {/* Delete All Modal - from Support Logs and KWS Records */}
+        <Dialog
+          open={isDeleteAllModalOpen}
+          onOpenChange={setIsDeleteAllModalOpen}
+        >
+          <DialogContent className="sm:max-w-md bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-red-600 flex items-center gap-2 font-black">
+                <ShieldAlert className="w-5 h-5" /> DANGER: DELETE ALL RECORDS
+              </DialogTitle>
+              <DialogDescription className="font-bold text-black/80">
+                This will permanently delete ALL{" "}
+                {deleteAllTarget === "logs" ? "Support Logs" : "KWS Records"}{" "}
+                and their attached files for this resident.
+              </DialogDescription>
+            </DialogHeader>
 
+            <div className="p-4 bg-red-50 rounded-lg border border-red-100">
+              <Label className="text-[10px] uppercase font-black text-red-600 mb-2 block">
+                Type "DELETE ALL" to confirm
+              </Label>
+              <Input
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder="DELETE ALL"
+                className="border-red-200 focus:ring-red-500"
+              />
+            </div>
+
+            <DialogFooter className="gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setIsDeleteAllModalOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleConfirmDeleteAll}
+                disabled={deleteConfirmText !== "DELETE ALL" || isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Permanently Delete Everything"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

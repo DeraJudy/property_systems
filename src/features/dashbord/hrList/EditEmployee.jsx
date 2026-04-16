@@ -1196,9 +1196,9 @@ const EditEmployee = () => {
       </Card>
 
       {/* Full Name */}
-      <Card className="bg-[#fbf8f2] border-[#e1dbd2]">
+      <Card className="bg-[#FFFDD0] border-[#e1dbd2]">
         <CardContent className="pt-6">
-          <Label className="text-[#123d2b] font-bold">Full Name *</Label>
+          <Label className="text-black font-bold">Full Name *</Label>
           <Input 
             value={formData.full_name} 
             onChange={(e) => setFormData({...formData, full_name: e.target.value})} 
@@ -1217,9 +1217,9 @@ const EditEmployee = () => {
         { id: "supervisions", title: "Supervisions", icon: History },
         { id: "other_documents", title: "Other Relevant Documents", icon: FileText }
       ].map((section) => (
-        <Card key={section.id} className="bg-[#fbf8f2] border-[#e1dbd2]">
+        <Card key={section.id} className="bg-[#FFFDD0] border-[#e1dbd2]">
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-[#123d2b] text-lg flex items-center gap-2">
+            <CardTitle className="text-black text-lg flex items-center gap-2">
               <section.icon className="h-5 w-5" /> {section.title}
             </CardTitle>
             <Button variant="outline" size="sm" onClick={() => addListEntry(section.id, { name: "", url: "" })} className="border-[#1f6b4a] text-black  bg-text">

@@ -432,7 +432,7 @@ const EmployeeDetailView = () => {
                     href={doc.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-[11px] font-bold text-[#1f6b4a] hover:underline bg-[#f1f8f5] px-2 py-1 rounded"
+                    className="flex items-center gap-1 text-[11px] font-bold text-black hover:underline bg-[#f1f8f5] px-2 py-1 rounded"
                   >
                     VIEW <ExternalLink className="h-3 w-3" />
                   </a>

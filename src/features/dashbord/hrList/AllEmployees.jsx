@@ -421,7 +421,7 @@ const handleDeleteEmployee = async () => {
                     <Download className="h-4 w-4" />
                   </Button>
                   <Button variant="ghost" size="sm" onClick={() => router.push(`/hrList/${e.id}/edit`)}>
-                    <Edit className="h-4 w-4 text-blue-600" />
+                    <Edit className="h-4 w-4 text-black " />
                   </Button>
                   <Button variant="ghost" size="sm" onClick={() => { setEmployeeToDelete(e); setIsDeleteDialogOpen(true); }}>
                     <Trash2 className="h-4 w-4 text-red-500" />
@@ -452,12 +452,6 @@ const handleDeleteEmployee = async () => {
         </div>
       </div>
 
-      {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <StatCard icon={<ShieldCheck />} value={`${dbsPercent}%`} label="DBS Compliant" />
-        <StatCard icon={<AlertCircle />} value={complianceIssuesList.length} label="Compliance Issues" isWarning />
-        <StatCard icon={<CalendarClock />} value={expiringContractsList.length} label="Expiring Docs" />
-        <StatCard icon={<Users />} value={totalEmployees} label="Total Staff" isPrimary />
-      </div> */}
 
       <Tabs defaultValue="all">
         <TabsList className="bg-[#ece7df]">
