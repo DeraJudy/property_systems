@@ -36,6 +36,7 @@ import {
   Paperclip,
 } from "lucide-react";
 import { toast } from "sonner";
+import PageBanner from "@/components/dashboard/PageBanner";
 
 // 1. Helper: Sanitize file names
 const sanitizeFileName = (file) => {
@@ -302,6 +303,10 @@ export default function AddPropertyForm() {
 
   return (
     <div className="min-h-screen p-4 md:p-8 bg-transparent">
+
+      
+
+
       {/* Navigation Header */}
       <div className="max-w-5xl mx-auto mb-6 flex items-center justify-between">
         <Button
@@ -316,6 +321,12 @@ export default function AddPropertyForm() {
           <ShieldCheck className="w-3.5 h-3.5" /> Secure Data Entry
         </div>
       </div>
+
+      <PageBanner
+        title="Properties"
+        subtitle="Manage housing properties and performance"
+        category="addProperty"
+      />
 
       <Card className="max-w-5xl mx-auto border-[#e1dbd2] shadow-2xl 
       bg-[#FFFDD0] backdrop-blur-sm overflow-hidden">
@@ -981,3 +992,5 @@ export default function AddPropertyForm() {
     </div>
   );
 }
+
+

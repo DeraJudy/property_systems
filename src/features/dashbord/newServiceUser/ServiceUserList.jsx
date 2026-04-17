@@ -1093,19 +1093,19 @@ export default function ServiceUserList() {
             <TableHeader>
               <TableRow className="border-black/5 text-lg">
                 {/* <TableHead>P</TableHead> */}
-                <TableHead className="text-black font-black uppercase ">
+                <TableHead className="text-black font-black  ">
                   Name
                 </TableHead>
-                <TableHead className="text-black font-black uppercase ">
+                <TableHead className="text-black font-black ">
                   Total Documents
                 </TableHead>
-                <TableHead className="text-black font-black uppercase">
+                <TableHead className="text-black font-black ">
                   Property
                 </TableHead>
-                <TableHead className="text-black font-black uppercase ">
+                <TableHead className="text-black font-black  ">
                   Status
                 </TableHead>
-                <TableHead className="text-right text-black font-black uppercase">
+                <TableHead className="text-right text-black font-black ">
                   Actions
                 </TableHead>
               </TableRow>
@@ -1157,7 +1157,8 @@ export default function ServiceUserList() {
 
                           {/* Fallback Initials (Visible if no image or if image fails) */}
                           <div
-                            className={`${user.profile_image_url ? "hidden" : "flex"} h-full w-full items-center justify-center bg-[#123d2b] text-[#fbf8f2] text-xs font-bold`}
+                            className={`${user.profile_image_url ? "hidden" : "flex"} h-full w-full items-center 
+                            justify-center bg-black text-[#FFFDD0] text-xs font-bold`}
                           >
                             {getInitials(user.service_user_name)}
                           </div>

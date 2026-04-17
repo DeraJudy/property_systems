@@ -18,15 +18,15 @@ export default function MobileSidebar({ open, setOpen, navItems, navSections, se
       />
 
       {/* Drawer */}
-      <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r flex flex-col lg:hidden">
+      <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-black border-r flex flex-col lg:hidden">
 
         {/* Header */}
         <div className="flex h-16 items-center justify-between px-5 border-b shrink-0">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#206c3c]">
-              <Building2 className="h-4 w-4 text-white" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#FFFDD0]">
+              <Building2 className="h-4 w-4 text-black" />
             </div>
-            <Link href="/" className="text-sm font-bold text-white">
+            <Link href="/" className="text-sm font-bold text-[#FFFDD0]">
               <span className="text-sm font-bold text-white">Kenley Property</span>
             </Link>
           </div>
@@ -62,7 +62,7 @@ export default function MobileSidebar({ open, setOpen, navItems, navSections, se
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
         {navSections.map((section) => (
           <div key={section.label} className="mb-4">
-            <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-wider text-[#123d2b]/40">
+            <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-wider text-[#E8E1D6]">
               {section.label}
             </p>
             <div className="space-y-0.5">
@@ -75,8 +75,8 @@ export default function MobileSidebar({ open, setOpen, navItems, navSections, se
                     onClick={() => setSidebarOpen(false)}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
                       isActive
-                        ? "bg-[#206c3c] text-white"
-                        : "text-gray-600 hover:bg-gray-100  hover:text-sidebar-foreground"
+                        ? "bg-gray-100/20 text-white"
+                        : "text-[#E8E1D6]/70 hover:bg-gray-100/50 hover:text-white"
                     }`}
                   >
                     <item.icon className="h-3.5 w-3.5 shrink-0" />
@@ -90,25 +90,23 @@ export default function MobileSidebar({ open, setOpen, navItems, navSections, se
       </nav>
 
         {/* Footer */}
-        <div className="border-t p-3 space-y-1 shrink-0">
+      {/* <div className="border-t border-[#FFFDD0] p-3 space-y-1 shrink-0">
+        <Link
+          href="/settings"
+          className="flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg font-medium text-[#E8E1D6]/70 hover:bg-[#184F38] hover:text-white transition"
+        >
+          <Settings className="h-4 w-4" />
+          Settings
+        </Link>
 
-          <Link
-            href="/settings"
-            className="flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg font-medium text-gray-600 hover:bg-gray-100 transition"
-          >
-            <Settings className="h-4 w-4" />
-            Settings
-          </Link>
-
-          <Link
-            href="/logout"
-            className="flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg font-medium text-gray-600 hover:bg-gray-100 transition"
-          >
-            <LogOut className="h-4 w-4" />
-            Sign out
-          </Link>
-
-        </div>
+        <Link
+          href="/logout"
+          className="flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg font-medium text-[#E8E1D6]/70 hover:bg-[#184F38] hover:text-white transition"
+        >
+          <LogOut className="h-4 w-4" />
+          Sign out
+        </Link>
+      </div> */}
 
       </aside>
     </>

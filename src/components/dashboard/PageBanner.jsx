@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 const bannerMap = {
   dashboard: "https://res.cloudinary.com/dcfl8iot4/image/upload/v1776349338/banner-dashboard_aunga7.jpg",
   properties: "https://res.cloudinary.com/dcfl8iot4/image/upload/v1776349743/banner-properties_klu3vt.jpg",
+  addProperty: "https://res.cloudinary.com/dcfl8iot4/image/upload/v1776416864/Gemini_Generated_Image_4j8t7i4j8t7i4j8t_zggwk9.png",
+  editProperty: "https://res.cloudinary.com/dcfl8iot4/image/upload/v1776427734/Gemini_Generated_Image_cmamnbcmamnbcmam_wfrkg9.png",
   people: "https://res.cloudinary.com/dcfl8iot4/image/upload/v1776349460/Gemini_Generated_Image_4orrbk4orrbk4orr_jdxldx.png",
   finance: "https://res.cloudinary.com/dcfl8iot4/image/upload/v1776349340/banner-finance_tsrtyd.jpg",
   compliance: "https://res.cloudinary.com/dcfl8iot4/image/upload/v1776349360/banner-operations_cv4msh.jpg",

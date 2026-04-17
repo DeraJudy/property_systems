@@ -529,14 +529,14 @@ const DocumentSection = ({
 }) => (
   <Card className="bg-[#fbf8f2] border-[#e1dbd2] shadow-sm mb-6">
     <CardHeader className="border-b border-[#e1dbd2] flex flex-row items-center justify-between">
-      <CardTitle className="text-[#123d2b] text-lg flex items-center gap-2">
+      <CardTitle className="text-black text-lg flex items-center gap-2">
         <Icon className="h-5 w-5" /> {title}
       </CardTitle>
       <Button
         variant="outline"
         size="sm"
         onClick={() => addListEntry(field)}
-        className="border-[#1f6b4a] text-[#1f6b4a]"
+        className="border-[#1f6b4a] text-black"
       >
         <Plus className="h-4 w-4 mr-1" /> Add
       </Button>
@@ -805,7 +805,7 @@ export default function ServiceUserIntakeForm() {
 
       <div className="mb-8 flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-[#123d2b]">
+          <h1 className="text-3xl font-bold text-black">
             Service User Intake
           </h1>
           <p className="text-gray-500">Documentation Management</p>
@@ -817,7 +817,7 @@ export default function ServiceUserIntakeForm() {
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 rounded-full border border-[#e1dbd2] text-[#123d2b] hover:bg-[#123d2b] hover:text-white transition-colors"
+              className="p-2 rounded-full border border-[#e1dbd2] text-black hover:bg-yellow-200 transition-colors"
             >
               {link.icon}
             </a>
@@ -837,7 +837,7 @@ export default function ServiceUserIntakeForm() {
               onChange={(e) =>
                 setFormData({ ...formData, service_user_name: e.target.value })
               }
-              className="border-2 focus:ring-[#123d2b]"
+              className="border-2 focus:ring-black"
             />
           </div>
           <div className="space-y-2">
@@ -883,7 +883,7 @@ export default function ServiceUserIntakeForm() {
                   }
                   value={formData.property_name}
                 >
-                  <SelectTrigger className="border-2 focus:ring-[#123d2b] bg-white">
+                  <SelectTrigger className="border-2 focus:ring-black bg-white">
                     <SelectValue placeholder="Select Property" />
                   </SelectTrigger>
                   <SelectContent>
@@ -934,7 +934,7 @@ export default function ServiceUserIntakeForm() {
         <Button
           onClick={handleSave}
           disabled={loading}
-          className="bg-[#123d2b] hover:bg-[#1f6b4a] px-12 py-6 text-lg rounded-full shadow-lg"
+          className="bg-black hover:bg-yellow-200 hover:text-black px-12 py-6 text-lg rounded-full shadow-lg"
         >
           {loading ? (
             <Loader2 className="animate-spin mr-2" />

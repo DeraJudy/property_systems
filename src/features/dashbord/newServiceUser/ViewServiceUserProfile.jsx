@@ -816,7 +816,7 @@ export default function ViewServiceUserProfile() {
           <Button
             variant="ghost"
             onClick={() => router.push("/service-users")}
-            className="text-[#123d2b]"
+            className="text-black"
           >
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to List
           </Button>
@@ -966,7 +966,7 @@ export default function ViewServiceUserProfile() {
                         className="hidden"
                         onChange={(e) => handleFileUpload(e, "about_file")}
                       />
-                      <div className="bg-[#1f6b4a] text-white text-[10px] font-black py-3 rounded-lg text-center cursor-pointer hover:bg-[#123d2b] transition-colors">
+                      <div className="bg-black text-white text-[10px] font-black py-3 rounded-lg text-center cursor-pointer hover:bg-[#123d2b] transition-colors">
                         UPLOAD NOW
                       </div>
                     </label>

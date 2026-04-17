@@ -228,7 +228,7 @@ export default function PropertiesTable() {
           ].map((kpi) => (
             <Card
               key={kpi.label}
-              className="p-4 shadow-sm border-[#e1dbd2] bg-white"
+              className="p-4 shadow-sm border-[#e1dbd2] bg-[#FFFDD0]"
             >
               <div className="flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-black">
@@ -277,13 +277,13 @@ export default function PropertiesTable() {
                 </Select>
 
                 <Link href="/addProperties">
-      <Button className="bg-black text-white w-full sm:w-auto">
-        <Plus className="mr-2 h-4 w-4" /> Add Property
-      </Button>
-    </Link>
+                <Button className="bg-black text-white w-full sm:w-auto">
+                  <Plus className="mr-2 h-4 w-4" /> Add Property
+                </Button>
+              </Link>
               </div>
 
-              <Card className="shadow-sm border-[#e1dbd2] overflow-hidden bg-white">
+              <Card className="shadow-sm border-[#e1dbd2] overflow-hidden bg-[#FFFDD0]">
                 <Table>
                   <TableHeader className="text-lg ">
                     <TableRow>
@@ -329,8 +329,8 @@ export default function PropertiesTable() {
                         >
                           <TableCell>
                             <div className="flex items-center gap-3">
-                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#FFFDD0]">
-                                <Home className="h-4 w-4 text-black" />
+                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-black">
+                                <Home className="h-4 w-4 text-[#FFFDD0]" />
                               </div>
                               <span className="font-medium text-black">
                                 {p.property_name}
