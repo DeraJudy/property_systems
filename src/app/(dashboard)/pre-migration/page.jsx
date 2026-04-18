@@ -829,6 +829,8 @@ const PreMigrationPage = () => {
   
   const currentFolderId = pathStack[pathStack.length - 1].id;
 
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+
   // --- Fetch Data ---
   const fetchNodes = async () => {
     setLoading(true);
@@ -1085,28 +1087,60 @@ const PreMigrationPage = () => {
   };
 
   const confirmDelete = async () => {
-    if (!deleteTarget) return;
+  if (!deleteTarget || deleteConfirmText !== "DELETE") return;
+  setLoading(true);
 
-    // If it's a file, delete from storage too
-    if (deleteTarget.type === "file" && deleteTarget.storage_path) {
-      await supabase.storage
-        .from("migration-assets")
-        .remove([deleteTarget.storage_path]);
+  try {
+    let filesToDelete = [];
+    let recordIdsToDelete = [deleteTarget.id];
+
+    if (deleteTarget.type === "folder") {
+      // 1. Recursively find all children (files and subfolders)
+      // Note: This matches the "Proper Delete" protocol to prevent orphaned files
+      const { data: descendants, error: fetchErr } = await supabase
+        .rpc('get_all_descendants', { root_id: deleteTarget.id });
+
+      if (fetchErr) throw fetchErr;
+
+      if (descendants) {
+        filesToDelete = descendants
+          .filter(d => d.type === 'file' && d.storage_path)
+          .map(d => d.storage_path);
+        
+        recordIdsToDelete = [...recordIdsToDelete, ...descendants.map(d => d.id)];
+      }
+    } else if (deleteTarget.storage_path) {
+      filesToDelete = [deleteTarget.storage_path];
     }
 
-    const { error } = await supabase
+    // 2. Physical Storage Cleanup (The "Firewall" step)
+    if (filesToDelete.length > 0) {
+      const { error: storageErr } = await supabase.storage
+        .from("migration-assets")
+        .remove(filesToDelete);
+      
+      if (storageErr) console.error("Storage cleanup partial failure:", storageErr);
+    }
+
+    // 3. Database Cleanup
+    // We use in() to catch all collected IDs at once
+    const { error: dbErr } = await supabase
       .from("files")
       .delete()
-      .eq("id", deleteTarget.id);
+      .in("id", recordIdsToDelete);
 
-    if (error) {
-      toast.error("Delete failed");
-    } else {
-      setNodes(nodes.filter((n) => n.id !== deleteTarget.id));
-      setDeleteOpen(false);
-      toast.success("Item deleted");
-    }
-  };
+    if (dbErr) throw dbErr;
+
+    setNodes((prev) => prev.filter((n) => n.id !== deleteTarget.id));
+    toast.success("Cleanup complete");
+    setDeleteOpen(false);
+    setDeleteConfirmText("");
+  } catch (err) {
+    toast.error(`Operation failed: ${err.message}`);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleDownload = async (node) => {
     if (!node.storage_path) return;
@@ -1537,24 +1571,46 @@ const PreMigrationPage = () => {
       </Dialog>
 
       {/* Dialogs: Delete */}
-      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete "{deleteTarget?.name}"?</DialogTitle>
-          </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            This action is permanent and cannot be undone.
-          </p>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteOpen(false)}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={confirmDelete}>
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+    <Dialog open={deleteOpen} onOpenChange={(open) => {
+  setDeleteOpen(open);
+  if (!open) setDeleteConfirmText(""); // Reset when closed
+}}>
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Delete "{deleteTarget?.name}"?</DialogTitle>
+      <DialogDescription>
+        {deleteTarget?.type === "folder"
+          ? "This will permanently remove this folder, all subfolders, and every file inside from Supabase storage and the database."
+          : "This will permanently remove this file from storage and the database."}
+      </DialogDescription>
+    </DialogHeader>
+    
+    <div className="py-4 space-y-2">
+      <Label className="text-destructive">Type <b>DELETE</b> to confirm</Label>
+      <Input 
+        value={deleteConfirmText}
+        onChange={(e) => setDeleteConfirmText(e.target.value)}
+        placeholder="DELETE"
+        className="border-destructive/50 focus-visible:ring-destructive"
+      />
+    </div>
+
+    <DialogFooter>
+      <Button variant="outline" onClick={() => setDeleteOpen(false)} disabled={loading}>
+        Cancel
+      </Button>
+      <Button 
+        variant="destructive" 
+        onClick={confirmDelete} 
+        disabled={loading || deleteConfirmText !== "DELETE"}
+      >
+        {loading ? "Wiping Data..." : "Permanently Delete"}
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+
+
     </div>
   );
 };
