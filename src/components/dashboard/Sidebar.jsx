@@ -43,7 +43,8 @@ import {
   ShieldCheck,
   Moon,
   Sun,
-  FileArchiveIcon, File
+  FileArchiveIcon, File,
+  HardDriveUpload
 } from "lucide-react";
 
 const navItems = [
@@ -77,7 +78,7 @@ const navSections = [
       // { title: "Reports", url: "/reports", icon: BarChart3 },
       { title: "Safer Recruitment", url: "/hrList", icon: UserCog },
       { title: "Repository", url: "/repository", icon: FileArchiveIcon },
-      { title: "Pre-Migration", url: "/pre-migration", icon: File },
+      { title: "Pre-Migration", url: "/pre-migration", icon: HardDriveUpload },
     ],
   },
   // {
