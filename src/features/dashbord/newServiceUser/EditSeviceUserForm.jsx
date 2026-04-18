@@ -45,11 +45,11 @@
 // export default function EditServiceUser() {
 //   const router = useRouter();
 //   const { id } = useParams();
-  
+
 //   const [loading, setLoading] = useState(false);
 //   const [fetching, setFetching] = useState(true);
 //   const [approvedByList, setApprovedByList] = useState([]);
-  
+
 //   // States for files and data
 //   const [customDocuments, setCustomDocuments] = useState([]);
 //   const [filePaths, setFilePaths] = useState({
@@ -197,7 +197,7 @@
 //         <button onClick={() => router.back()} className="flex items-center gap-2 text-[#1f6b4a] font-semibold"><ArrowLeft size={20}/> Back</button>
 
 //         <form onSubmit={handleSubmit} className="space-y-10">
-          
+
 //           {/* 1. PERSONAL DETAILS */}
 //           <section className="bg-[#fbf8f2] p-8 rounded-2xl border border-[#e1dbd2]">
 //             <div className="flex items-center gap-4 mb-8 border-b pb-4">
@@ -304,9 +304,18 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-  Plus, Trash2, FileText, Loader2, Save, User, 
-  CheckCircle2, Youtube, Instagram, Music2, ArrowLeft 
+import {
+  Plus,
+  Trash2,
+  FileText,
+  Loader2,
+  Save,
+  User,
+  CheckCircle2,
+  Youtube,
+  Instagram,
+  Music2,
+  ArrowLeft,
 } from "lucide-react";
 import { createClient } from "@/lib/superbase/clientUtils";
 import { toast } from "sonner";
@@ -325,7 +334,17 @@ import {
 
 const supabase = createClient();
 
-const DocumentSection = ({ title, field, icon: Icon, formData, addListEntry, updateListField, removeListEntry, uploadingFields, handleFileUpload }) => (
+const DocumentSection = ({
+  title,
+  field,
+  icon: Icon,
+  formData,
+  addListEntry,
+  updateListField,
+  removeListEntry,
+  uploadingFields,
+  handleFileUpload,
+}) => (
   <Card className="bg-[#FFFDD0] border-black/10 shadow-sm mb-6">
     <CardHeader className="border-b border-black/5 flex flex-row items-center justify-between">
       <CardTitle className="text-black text-lg flex items-center gap-2 font-black uppercase tracking-widest">
@@ -342,20 +361,31 @@ const DocumentSection = ({ title, field, icon: Icon, formData, addListEntry, upd
     </CardHeader>
     <CardContent className="space-y-4 pt-6">
       {formData[field]?.map((item, index) => (
-        <div key={item.id || index} className="flex gap-4 items-end bg-[#FFFDD0] p-4 border border-black/5 rounded-xl shadow-sm">
+        <div
+          key={item.id || index}
+          className="flex gap-4 items-end bg-[#FFFDD0] p-4 border border-black/5 rounded-xl shadow-sm"
+        >
           <div className="flex-2 space-y-2">
-            <Label className="text-[10px] font-black uppercase text-black/50 tracking-tighter">Document Title / Description</Label>
+            <Label className="text-[10px] font-black uppercase text-black/50 tracking-tighter">
+              Document Title / Description
+            </Label>
             <Input
               value={item.name}
-              onChange={(e) => updateListField(field, index, "name", e.target.value)}
+              onChange={(e) =>
+                updateListField(field, index, "name", e.target.value)
+              }
               placeholder="Enter document details here..."
               className="bg-white border-black/10 focus:ring-black w-full"
             />
           </div>
           <div className="flex-1 space-y-2">
             <Label className="text-[10px] font-black uppercase text-black/50 flex justify-between">
-              File 
-              {item.url && <span className="text-black flex items-center gap-1"><CheckCircle2 size={12}/> Attached</span>}
+              File
+              {item.url && (
+                <span className="text-black flex items-center gap-1">
+                  <CheckCircle2 size={12} /> Attached
+                </span>
+              )}
             </Label>
             <Input
               type="file"
@@ -370,7 +400,11 @@ const DocumentSection = ({ title, field, icon: Icon, formData, addListEntry, upd
             onClick={() => removeListEntry(field, index)}
             className="text-black/40 hover:text-red-600 hover:bg-red-50 mb-1"
           >
-            {uploadingFields[`${field}-${index}`] ? <Loader2 className="animate-spin" /> : <Trash2 className="h-4 w-4" />}
+            {uploadingFields[`${field}-${index}`] ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              <Trash2 className="h-4 w-4" />
+            )}
           </Button>
         </div>
       ))}
@@ -387,10 +421,12 @@ export default function EditServiceUserForm() {
 
   const [formData, setFormData] = useState({
     service_user_name: "",
+    property_name: "",
+    status: "",
     about_file_url: "",
     about_file_path: "",
-    profile_image_url: "",   // Added
-  profile_image_path: "",
+    profile_image_url: "", // Added
+    profile_image_path: "",
     // eet_documents: [],
     onboarding_documents: [],
     additional_documents: [],
@@ -428,12 +464,15 @@ export default function EditServiceUserForm() {
   const addListEntry = (field) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: [...prev[field], { id: crypto.randomUUID(), name: "", url: "", file_path: "" }],
+      [field]: [
+        ...prev[field],
+        { id: crypto.randomUUID(), name: "", url: "", file_path: "" },
+      ],
     }));
   };
 
   const updateListField = (field, index, key, value) => {
-    setFormData(prev => {
+    setFormData((prev) => {
       const updatedList = [...prev[field]];
       updatedList[index] = { ...updatedList[index], [key]: value };
       return { ...prev, [field]: updatedList };
@@ -458,72 +497,81 @@ export default function EditServiceUserForm() {
     toast.success("Document removed");
   };
 
-
   const handleFileUpload = async (e, field, index = null) => {
-  const file = e.target.files[0];
-  if (!file) return;
+    const file = e.target.files[0];
+    if (!file) return;
 
-  const uploadKey = index !== null ? `${field}-${index}` : field;
-  setUploadingFields(prev => ({ ...prev, [uploadKey]: true }));
+    const uploadKey = index !== null ? `${field}-${index}` : field;
+    setUploadingFields((prev) => ({ ...prev, [uploadKey]: true }));
 
-  try {
-    const fileExt = file.name.split(".").pop();
-    const fileName = index !== null ? `${field}_${index}.${fileExt}` : `${field}.${fileExt}`;
-    
-    // PATH: always stays as /UUID/folder/file.ext
-    const filePath = `${id}/${field}/${fileName}`;
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName =
+        index !== null ? `${field}_${index}.${fileExt}` : `${field}.${fileExt}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from("service-user-intake-docs")
-      .upload(filePath, file, { upsert: true });
+      // PATH: always stays as /UUID/folder/file.ext
+      const filePath = `${id}/${field}/${fileName}`;
 
-    if (uploadError) throw uploadError;
+      const { error: uploadError } = await supabase.storage
+        .from("service-user-intake-docs")
+        .upload(filePath, file, { upsert: true });
 
-    const { data } = supabase.storage.from("service-user-intake-docs").getPublicUrl(filePath);
+      if (uploadError) throw uploadError;
 
-    if (index !== null) {
-      const updatedList = [...formData[field]];
-      updatedList[index] = { ...updatedList[index], url: data.publicUrl, file_path: filePath };
-      setFormData({ ...formData, [field]: updatedList });
-    } else {
-      setFormData({ ...formData, [`${field}_url`]: data.publicUrl, [`${field}_path`]: filePath });
+      const { data } = supabase.storage
+        .from("service-user-intake-docs")
+        .getPublicUrl(filePath);
+
+      if (index !== null) {
+        const updatedList = [...formData[field]];
+        updatedList[index] = {
+          ...updatedList[index],
+          url: data.publicUrl,
+          file_path: filePath,
+        };
+        setFormData({ ...formData, [field]: updatedList });
+      } else {
+        setFormData({
+          ...formData,
+          [`${field}_url`]: data.publicUrl,
+          [`${field}_path`]: filePath,
+        });
+      }
+      toast.success("File updated");
+    } catch (error) {
+      toast.error("Update failed");
+    } finally {
+      setUploadingFields((prev) => ({ ...prev, [uploadKey]: false }));
     }
-    toast.success("File updated");
-  } catch (error) {
-    toast.error("Update failed");
-  } finally {
-    setUploadingFields(prev => ({ ...prev, [uploadKey]: false }));
-  }
-};
+  };
 
   const handleSave = async () => {
-  if (!formData.service_user_name?.trim()) {
-    return toast.error("Service User Name is required.");
-  }
+    if (!formData.service_user_name?.trim()) {
+      return toast.error("Service User Name is required.");
+    }
 
-  setLoading(true);
-  try {
-    // 1. Strip protected fields
-    const { id: profileId, created_at, ...payload } = formData;
+    setLoading(true);
+    try {
+      // 1. Strip protected fields
+      const { id: profileId, created_at, ...payload } = formData;
 
-    // 2. Simple Update
-    const { error } = await supabase
-      .from("service_user_intake")
-      .update(payload)
-      .eq("id", id); // 'id' comes from useParams()
+      // 2. Simple Update
+      const { error } = await supabase
+        .from("service_user_intake")
+        .update(payload)
+        .eq("id", id); // 'id' comes from useParams()
 
-    if (error) throw error;
-    
-    toast.success("Profile updated successfully!");
-    router.push("/service-users");
-    
-  } catch (err) {
-    console.error(err);
-    toast.error("Update failed");
-  } finally {
-    setLoading(false);
-  }
-};
+      if (error) throw error;
+
+      toast.success("Profile updated successfully!");
+      router.push("/service-users");
+    } catch (err) {
+      console.error(err);
+      toast.error("Update failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (fetching) {
     return (
@@ -538,107 +586,184 @@ export default function EditServiceUserForm() {
       <div className="max-w-4xl mx-auto">
         <div className="mb-8 flex justify-between items-center">
           <div>
-            <Button variant="ghost" onClick={() => router.back()} className="mb-4 -ml-4 hover:bg-black/5">
+            <Button
+              variant="ghost"
+              onClick={() => router.back()}
+              className="mb-4 -ml-4 hover:bg-black/5"
+            >
               <ArrowLeft className="mr-2 h-4 w-4" /> Back
             </Button>
-            <h1 className="text-4xl font-black text-black tracking-tight">Edit Intake Record</h1>
-            <p className="text-black/50 font-medium">Updating documentation for {formData.service_user_name}</p>
+            <h1 className="text-4xl font-black text-black tracking-tight">
+              Edit Intake Record
+            </h1>
+            <p className="text-black/50 font-medium">
+              Updating documentation for {formData.service_user_name}
+            </p>
           </div>
-          
+
           <div className="flex gap-3">
-             <div className="p-3 bg-black text-white rounded-2xl">
-               <User size={24} />
-             </div>
+            <div className="p-3 bg-black text-white rounded-2xl">
+              <User size={24} />
+            </div>
           </div>
         </div>
 
         <Card className="mb-6 border-black/10">
           <CardContent className="pt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-
             <div className="space-y-4 md:col-span-2 border-b border-black/5 pb-6 mb-2">
-  <Label className="font-black uppercase tracking-widest text-[10px]">Profile Picture</Label>
-  <div className="flex items-center gap-6">
-    {/* Preview Circle */}
-    <div className="h-24 w-24 rounded-2xl border-2 border-black/10 flex items-center justify-center overflow-hidden bg-white shadow-inner">
-      {formData.profile_image_url ? (
-        <img 
-          src={formData.profile_image_url} 
-          alt="Profile" 
-          className="h-full w-full object-cover" 
-        />
-      ) : (
-        <User className="h-10 w-10 text-black/20" />
-      )}
-    </div>
+              <Label className="font-black uppercase tracking-widest text-[10px]">
+                Profile Picture
+              </Label>
+              <div className="flex items-center gap-6">
+                {/* Preview Circle */}
+                <div className="h-24 w-24 rounded-2xl border-2 border-black/10 flex items-center justify-center overflow-hidden bg-white shadow-inner">
+                  {formData.profile_image_url ? (
+                    <img
+                      src={formData.profile_image_url}
+                      alt="Profile"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <User className="h-10 w-10 text-black/20" />
+                  )}
+                </div>
 
-    {/* Upload Controls */}
-    <div className="flex-1 space-y-2">
-      <Input 
-        type="file" 
-        accept="image/*" 
-        onChange={(e) => handleFileUpload(e, "profile_image")} 
-        disabled={uploadingFields["profile_image"]}
-        className="border-black/10 focus:ring-black h-10"
-      />
-      <p className="text-[10px] font-bold text-black/40 uppercase">
-        {uploadingFields["profile_image"] ? "Uploading..." : "JPG or PNG. Max 2MB."}
-      </p>
-    </div>
-  </div>
-</div>
-
-<div className="space-y-2">
-  <Label className="font-black uppercase tracking-widest text-[10px]">Property</Label>
-  <Select 
-    value={formData.property_name} 
-    onValueChange={(val) => setFormData({...formData, property_name: val})}
-  >
-    <SelectTrigger className="border-black/10 focus:ring-black h-12">
-      <SelectValue placeholder="Select Property" />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectItem value="Malborne House">Malborne House</SelectItem>
-      <SelectItem value="215 St Pauls">215 St Pauls</SelectItem>
-      <SelectItem value="217-219 St Pauls">217-219 St Pauls</SelectItem>
-    </SelectContent>
-  </Select>
-</div>
+                {/* Upload Controls */}
+                <div className="flex-1 space-y-2">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileUpload(e, "profile_image")}
+                    disabled={uploadingFields["profile_image"]}
+                    className="border-black/10 focus:ring-black h-10"
+                  />
+                  <p className="text-[10px] font-bold text-black/40 uppercase">
+                    {uploadingFields["profile_image"]
+                      ? "Uploading..."
+                      : "JPG or PNG. Max 2MB."}
+                  </p>
+                </div>
+              </div>
+            </div>
 
             <div className="space-y-2">
-              <Label className="font-black uppercase text-[10px] tracking-widest text-black/60">Service User Name <span className="text-red-500">*</span></Label>
-              <Input 
+              <Label className="font-black uppercase tracking-widest text-[10px]">
+                Property
+              </Label>
+              <Select
+                value={formData.property_name}
+                onValueChange={(val) =>
+                  setFormData({ ...formData, property_name: val })
+                }
+              >
+                <SelectTrigger className="border-black/10 focus:ring-black h-12">
+                  <SelectValue placeholder="Select Property" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Malborne House">Malborne House</SelectItem>
+                  <SelectItem value="215 St Pauls">215 St Pauls</SelectItem>
+                  <SelectItem value="217-219 St Pauls">
+                    217-219 St Pauls
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="font-black uppercase tracking-widest text-[10px]">
+                Status
+              </Label>
+              <Select
+                value={formData.status}
+                onValueChange={(val) =>
+                  setFormData({ ...formData, status: val })
+                }
+              >
+                <SelectTrigger className="border-black/10 focus:ring-black h-12">
+                  <SelectValue placeholder="Select Property" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="Inactive">Inactive</SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="font-black uppercase text-[10px] tracking-widest text-black/60">
+                Service User Name <span className="text-red-500">*</span>
+              </Label>
+              <Input
                 placeholder="Enter full name"
                 value={formData.service_user_name}
-                onChange={(e) => setFormData({...formData, service_user_name: e.target.value})}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    service_user_name: e.target.value,
+                  })
+                }
                 className="border-black/10 focus:ring-black h-12 font-bold"
               />
             </div>
             <div className="space-y-2">
-              <Label className="font-black uppercase text-[10px] tracking-widest text-black/60">About Me File (Primary Doc)</Label>
-              <Input 
-                type="file" 
-                onChange={(e) => handleFileUpload(e, "about_file")} 
-                disabled={uploadingFields["about_file"]} 
+              <Label className="font-black uppercase text-[10px] tracking-widest text-black/60">
+                About Me File (Primary Doc)
+              </Label>
+              <Input
+                type="file"
+                onChange={(e) => handleFileUpload(e, "about_file")}
+                disabled={uploadingFields["about_file"]}
                 className="border-black/10 focus:ring-black h-12"
               />
               {formData.about_file_url && (
-                <p className="text-[10px] font-bold text-black/40">Current file is active</p>
+                <p className="text-[10px] font-bold text-black/40">
+                  Current file is active
+                </p>
               )}
             </div>
           </CardContent>
         </Card>
 
         {/* <DocumentSection title="EET Documents" field="eet_documents" icon={FileText} {...{formData, addListEntry, updateListField, removeListEntry, uploadingFields, handleFileUpload}} /> */}
-        <DocumentSection title="Onboarding Documents" field="onboarding_documents" icon={User} {...{formData, addListEntry, updateListField, removeListEntry, uploadingFields, handleFileUpload}} />
-        <DocumentSection title="Additional Documents" field="additional_documents" icon={Plus} {...{formData, addListEntry, updateListField, removeListEntry, uploadingFields, handleFileUpload}} />
+        <DocumentSection
+          title="Onboarding Documents"
+          field="onboarding_documents"
+          icon={User}
+          {...{
+            formData,
+            addListEntry,
+            updateListField,
+            removeListEntry,
+            uploadingFields,
+            handleFileUpload,
+          }}
+        />
+        <DocumentSection
+          title="Additional Documents"
+          field="additional_documents"
+          icon={Plus}
+          {...{
+            formData,
+            addListEntry,
+            updateListField,
+            removeListEntry,
+            uploadingFields,
+            handleFileUpload,
+          }}
+        />
 
         <div className="mt-10 pt-8 border-t border-black/10 flex justify-center">
-          <Button 
-            onClick={handleSave} 
-            disabled={loading} 
+          <Button
+            onClick={handleSave}
+            disabled={loading}
             className="bg-black text-[#fdfbf7] hover:bg-black/80 px-16 py-7 text-lg rounded-2xl shadow-xl transition-all font-black uppercase tracking-widest"
           >
-            {loading ? <Loader2 className="animate-spin mr-2" /> : <Save className="mr-2 h-5 w-5" />}
+            {loading ? (
+              <Loader2 className="animate-spin mr-2" />
+            ) : (
+              <Save className="mr-2 h-5 w-5" />
+            )}
             Save Changes
           </Button>
         </div>

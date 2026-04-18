@@ -116,65 +116,164 @@
 // }
 
 
+// "use client";
+// import React, { useEffect, useState } from "react";
+
+// export default function Hero() {
+
+//   return (
+//     <div className="flex items-center justify-center min-h-screen background p-4 sm:p-8 lg:p-12 perspective-[1000px] overflow-hidden">
+
+//       {/* THE 3D FRAME */}
+
+//       {/* THE 3D FRAME - Flattened class strings to prevent hydration mismatch */}
+
+//       <div
+
+//         className="group relative p-8 card border-16 border-[#123d2b] rounded-[3rem] shadow-[20px_20px_60px_rgba(18,61,43,0.3),-10px_-10px_30px_rgba(255,255,255,0.5),inset_5px_5px_10px_rgba(0,0,0,0.2)] max-w-4xl w-full transition-all duration-500 ease-out 
+//         hover:transform-[rotateX(2deg)_rotateY(-2deg)] hover:shadow-[30px_30px_70px_rgba(18,61,43,0.4)]"
+
+//       >
+
+//         {/* Metallic Inner Inset */}
+
+//         <div className="absolute inset-0 rounded-[2.2rem] border-2 border-[#1f6b4a]/40 m-1 pointer-events-none" />
+
+
+//         {/* Elegant 'Mat' / Inner Border */}
+
+//         <div className="relative aspect-16/10 overflow-hidden rounded-2xl border border-border/50 
+//         shadow-[inset_0_10px_20px_rgba(0,0,0,0.3)] bg-white">
+//           <video
+//             src="https://res.cloudinary.com/dcfl8iot4/video/upload/v1775683315/WhatsApp_Video_2026-04-08_at_22.18.14_knciym.mp4"
+//             className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
+//             autoPlay
+//             loop
+//             muted
+//             playsInline
+//           >
+//             Your browser does not support the video tag.
+//           </video>
+
+
+
+//           {/* 3D Glass Reflection Overlay */}
+//           <div className="absolute inset-0 pointer-events-none bg-linear-to-tr from-white/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 duration-700 
+//           -translate-x-10 group-hover:translate-x-10 transition-transform" />
+//         </div>
+
+
+//         {/* Reactive 3D 'Light' Corner Accents */}
+//         <div className="absolute top-4 left-4 w-3 h-3 rounded-full bg-linear-to-br from-[#1f6b4a] to-[#123d2b] shadow-md border border-white/20" />
+//         <div className="absolute top-4 right-4 w-3 h-3 rounded-full bg-linear-to-br from-[#1f6b4a] to-[#123d2b] shadow-md border border-white/20" />
+//         <div className="absolute bottom-4 left-4 w-3 h-3 rounded-full bg-linear-to-br from-[#1f6b4a] to-[#123d2b] shadow-md border border-white/20" />
+//         <div className="absolute bottom-4 right-4 w-3 h-3 rounded-full bg-linear-to-br from-[#1f6b4a] to-[#123d2b] shadow-md border border-white/20" />
+
+//         {/* Floating Tag */}
+//         <div className="absolute -bottom-6 right-12 bg-[#123d2b] text-[#f7f2e9] px-4 py-1 rounded-md 
+//         text-xs font-medium shadow-lg opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all">
+//           Welcome to Kenley Poperty Systems
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { motion } from "framer-motion";
+import { ArrowDown, Heart } from "lucide-react";
 
-export default function Hero() {
-
+const Hero = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen background p-4 sm:p-8 lg:p-12 perspective-[1000px] overflow-hidden">
+    <section className="relative min-h-[100vh] md:min-h-[90vh] flex items-center overflow-hidden bg-background">
+      {/* Background image with overlay */}
+      <div className="absolute inset-0">
+        <img
+          src="https://res.cloudinary.com/dcfl8iot4/image/upload/v1776429304/hero-community_hhwmnu.jpg"
+          alt="Kenley Group community"
+          className="h-full w-full object-cover"
+        />
+        {/* Gradients for text legibility */}
+        <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-transparent md:to-background/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+      </div>
 
-      {/* THE 3D FRAME */}
-
-      {/* THE 3D FRAME - Flattened class strings to prevent hydration mismatch */}
-
-      <div
-
-        className="group relative p-8 card border-16 border-[#123d2b] rounded-[3rem] shadow-[20px_20px_60px_rgba(18,61,43,0.3),-10px_-10px_30px_rgba(255,255,255,0.5),inset_5px_5px_10px_rgba(0,0,0,0.2)] max-w-4xl w-full transition-all duration-500 ease-out 
-        hover:transform-[rotateX(2deg)_rotateY(-2deg)] hover:shadow-[30px_30px_70px_rgba(18,61,43,0.4)]"
-
-      >
-
-        {/* Metallic Inner Inset */}
-
-        <div className="absolute inset-0 rounded-[2.2rem] border-2 border-[#1f6b4a]/40 m-1 pointer-events-none" />
-
-
-        {/* Elegant 'Mat' / Inner Border */}
-
-        <div className="relative aspect-16/10 overflow-hidden rounded-2xl border border-border/50 
-        shadow-[inset_0_10px_20px_rgba(0,0,0,0.3)] bg-white">
-          <video
-            src="https://res.cloudinary.com/dcfl8iot4/video/upload/v1775683315/WhatsApp_Video_2026-04-08_at_22.18.14_knciym.mp4"
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 group-hover:scale-110"
-            autoPlay
-            loop
-            muted
-            playsInline
+      <div className="container relative z-10 mx-auto px-6 py-24 md:py-32 lg:px-12">
+        <div className="max-w-3xl">
+          {/* Badge Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            Your browser does not support the video tag.
-          </video>
+            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-foreground/20 bg-foreground/10 px-5 py-2.5 backdrop-blur-sm">
+              <Heart className="h-5 w-5 text-red-500 fill-red-500/20" /> 
+              <span className="text-sm md:text-base font-semibold tracking-wide text-foreground">
+                Homes with a Heartbeat
+              </span>
+            </div>
+          </motion.div>
 
+          {/* Heading */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            className="mb-8 text-5xl font-black leading-[1.1] tracking-tight text-foreground sm:text-6xl lg:text-8xl"
+          >
+            Stable Homes
+            <br />
+            <span className="text-muted-foreground/80">Built on Love</span>
+          </motion.h1>
 
+          {/* Paragraph */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            className="mb-12 max-w-xl text-lg leading-relaxed text-foreground/80 md:text-xl lg:text-2xl"
+          >
+            Kenley Group is an award-winning provider of Supported and Semi-Independent 
+            Accommodation — an integrated Social Care, Housing and Development 
+            Company working for the most vulnerable.
+          </motion.p>
 
-          {/* 3D Glass Reflection Overlay */}
-          <div className="absolute inset-0 pointer-events-none bg-linear-to-tr from-white/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 duration-700 
-          -translate-x-10 group-hover:translate-x-10 transition-transform" />
-        </div>
-
-
-        {/* Reactive 3D 'Light' Corner Accents */}
-        <div className="absolute top-4 left-4 w-3 h-3 rounded-full bg-linear-to-br from-[#1f6b4a] to-[#123d2b] shadow-md border border-white/20" />
-        <div className="absolute top-4 right-4 w-3 h-3 rounded-full bg-linear-to-br from-[#1f6b4a] to-[#123d2b] shadow-md border border-white/20" />
-        <div className="absolute bottom-4 left-4 w-3 h-3 rounded-full bg-linear-to-br from-[#1f6b4a] to-[#123d2b] shadow-md border border-white/20" />
-        <div className="absolute bottom-4 right-4 w-3 h-3 rounded-full bg-linear-to-br from-[#1f6b4a] to-[#123d2b] shadow-md border border-white/20" />
-
-        {/* Floating Tag */}
-        <div className="absolute -bottom-6 right-12 bg-[#123d2b] text-[#f7f2e9] px-4 py-1 rounded-md 
-        text-xs font-medium shadow-lg opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all">
-          Welcome to Kenley Poperty Systems
+          {/* Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="flex flex-col gap-4 sm:flex-row sm:items-center"
+          >
+            <a href="#story" className="w-full sm:w-auto">
+              <button className="w-full rounded-full bg-foreground px-10 py-4 text-base font-bold text-background transition-transform hover:scale-105 active:scale-95 shadow-lg">
+                Our Story
+              </button>
+            </a>
+            <a href="#video" className="w-full sm:w-auto">
+              <button className="w-full rounded-full border-2 border-foreground px-10 py-4 text-base font-bold text-foreground transition-all hover:bg-foreground hover:text-background active:scale-95">
+                Watch Video
+              </button>
+            </a>
+          </motion.div>
         </div>
       </div>
-    </div>
+
+      {/* Animated scroll indicator - Hidden on very small screens to save space */}
+      <motion.div
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden sm:block"
+        animate={{ y: [0, 12, 0] }}
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <div className="h-12 w-7 rounded-full border-2 border-foreground/40 flex items-start justify-center pt-2">
+          <ArrowDown />
+          <div className="h-2 w-1 rounded-full bg-foreground" />
+        </div>
+      </motion.div>
+    </section>
   );
-}
+};
+
+export default Hero;

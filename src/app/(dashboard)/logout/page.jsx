@@ -35,25 +35,25 @@ export default function LogoutPage() {
 }, [router]);
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center bg-white">
+    <div className="flex h-screen flex-col items-center justify-center">
       
       {/* Animated Spinner */}
       <div className="relative">
         <div
           className="h-16 w-16 rounded-full border-4 border-t-transparent animate-spin"
-          style={{ borderColor: "#123d2b", borderTopColor: "transparent" }}
+          style={{ borderColor: "black", borderTopColor: "transparent" }}
         /> 
         
         <div
           className="absolute inset-0 m-auto h-4 w-4 rounded-full animate-pulse"
-          style={{ backgroundColor: "#123d2b" }}
+          style={{ backgroundColor: "black" }}
         />
       </div>
 
       {/* Text */}
       <p
         className="mt-6 text-sm font-medium tracking-wide animate-pulse"
-        style={{ color: "#123d2b" }}
+        style={{ color: "black" }}
       >
         Logging you out...
       </p>

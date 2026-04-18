@@ -603,6 +603,7 @@ export default function ServiceUserIntakeForm() {
   const [formData, setFormData] = useState({
     service_user_name: "",
     property_name: "",
+    status: "",
     profile_image_url: "", // New field
     profile_image_path: "",
     about_file_url: "",
@@ -897,6 +898,24 @@ export default function ServiceUserIntakeForm() {
                   </SelectContent>
                 </Select>
               </div>
+
+              <div className="space-y-2">
+                      <Label className="font-black uppercase tracking-widest text-[10px]">Status</Label>
+                      <Select 
+                        value={formData.status} 
+                        onValueChange={(val) => setFormData({...formData, status: val})}
+                      >
+                        <SelectTrigger className="border-black/10 focus:ring-black h-12">
+                          <SelectValue placeholder="Select Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Active">Active</SelectItem>
+                          <SelectItem value="Inactive">Inactive</SelectItem>
+                          <SelectItem value="Pending">Pending</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
             </div>
           </div>
         </CardContent>

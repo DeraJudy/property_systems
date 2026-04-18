@@ -1190,7 +1190,7 @@ export default function ServiceUserList() {
                     </TableCell>
                     <TableCell>
                       <span className="px-3 py-1 bg-black/5 rounded-full text-[10px] font-black uppercase text-black">
-                        Active
+                        {user.status || "Unassigned" }
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
