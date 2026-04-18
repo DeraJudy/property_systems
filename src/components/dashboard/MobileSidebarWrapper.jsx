@@ -15,7 +15,7 @@ import {
   CheckSquare,
   FolderOpen,
   BarChart3,
-  FileArchiveIcon
+  FileArchiveIcon, File
 } from "lucide-react";
 
 const navItems = [
@@ -25,6 +25,7 @@ const navItems = [
   { title: "Properties", url: "/properties", icon: Home },
   { title: "Service Users", url: "/service-users", icon: UserCircle },
   { title: "Repository", url: "/repository", icon: FileArchiveIcon },
+  { title: "Pre-Migration", url: "/pre-migration", icon: File },
   // { title: "Support Logs", url: "/support-logs", icon: FileText },
   // { title: "Cases", url: "/cases", icon: AlertTriangle },
   // { title: "Finance", url: "/finance", icon: PoundSterling },

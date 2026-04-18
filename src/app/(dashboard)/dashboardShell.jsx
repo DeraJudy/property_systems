@@ -44,23 +44,23 @@ import {
   ShieldCheck,
   Moon,
   Sun,
-  FileArchiveIcon
+  FileArchiveIcon, File
 } from "lucide-react";
 
-const navItems = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Organisations", url: "/organisations", icon: Building2 },
-  { title: "Users", url: "/users", icon: Users },
-  { title: "Properties", url: "/properties", icon: Home },
-  { title: "AddProperties", url: "/addProperties", icon: Home },
-  { title: "Service Users", url: "/service-users", icon: UserCircle },
-  // { title: "Support Logs", url: "/support-logs", icon: FileText },
-  { title: "Cases", url: "/cases", icon: AlertTriangle },
-  { title: "Finance", url: "/finance", icon: PoundSterling },
-  { title: "Approvals", url: "/approvals", icon: CheckSquare },
-  { title: "Documents", url: "/documents", icon: FolderOpen },
-  { title: "Reports", url: "/reports", icon: BarChart3 },
-];
+// const navItems = [
+//   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+//   { title: "Organisations", url: "/organisations", icon: Building2 },
+//   { title: "Users", url: "/users", icon: Users },
+//   { title: "Properties", url: "/properties", icon: Home },
+//   { title: "AddProperties", url: "/addProperties", icon: Home },
+//   { title: "Service Users", url: "/service-users", icon: UserCircle },
+//   // { title: "Support Logs", url: "/support-logs", icon: FileText },
+//   { title: "Cases", url: "/cases", icon: AlertTriangle },
+//   { title: "Finance", url: "/finance", icon: PoundSterling },
+//   { title: "Approvals", url: "/approvals", icon: CheckSquare },
+//   { title: "Documents", url: "/documents", icon: FolderOpen },
+//   { title: "Reports", url: "/reports", icon: BarChart3 },
+// ];
 
 const navSections = [
   {
@@ -79,6 +79,7 @@ const navSections = [
       // { title: "Reports", url: "/reports", icon: BarChart3 },
       { title: "Safer Recruitment", url: "/hrList", icon: UserCog },
       { title: "Repository", url: "/repository", icon: FileArchiveIcon },
+      { title: "Pre-Migration", url: "/pre-migration", icon: File },
     ],
   },
   // {
