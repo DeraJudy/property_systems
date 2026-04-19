@@ -187,7 +187,7 @@ import { ArrowDown, Heart } from "lucide-react";
 
 const Hero = () => {
   return (
-    <section className="relative min-h-[100vh] md:min-h-[90vh] flex items-center overflow-hidden bg-background">
+    <section className="relative min-h-screen md:min-h-[90vh] flex items-center overflow-hidden bg-background">
       {/* Background image with overlay */}
       <div className="absolute inset-0">
         <img
@@ -196,8 +196,9 @@ const Hero = () => {
           className="h-full w-full object-cover"
         />
         {/* Gradients for text legibility */}
-        <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-transparent md:to-background/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-r from-background/95 via-background/80 to-transparent 
+        md:to-background/40" />
+        <div className="absolute inset-0 bg-linear-to-t from-background via-transparent to-transparent" />
       </div>
 
       <div className="container relative z-10 mx-auto px-6 py-24 md:py-32 lg:px-12">
@@ -208,7 +209,8 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-foreground/20 bg-foreground/10 px-5 py-2.5 backdrop-blur-sm">
+            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-foreground/20 
+            bg-foreground/10 px-5 py-2.5 backdrop-blur-sm">
               <Heart className="h-5 w-5 text-red-500 fill-red-500/20" /> 
               <span className="text-sm md:text-base font-semibold tracking-wide text-foreground">
                 Homes with a Heartbeat
@@ -221,7 +223,8 @@ const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="mb-8 text-5xl font-black leading-[1.1] tracking-tight text-foreground sm:text-6xl lg:text-8xl"
+            className="mb-8 text-5xl font-black leading-[1.1] tracking-tight text-foreground sm:text-6xl 
+            lg:text-8xl"
           >
             Stable Homes
             <br />
@@ -248,12 +251,14 @@ const Hero = () => {
             className="flex flex-col gap-4 sm:flex-row sm:items-center"
           >
             <a href="#story" className="w-full sm:w-auto">
-              <button className="w-full rounded-full bg-foreground px-10 py-4 text-base font-bold text-background transition-transform hover:scale-105 active:scale-95 shadow-lg">
+              <button className="w-full rounded-full bg-foreground px-10 py-4 text-base font-bold 
+              text-background transition-transform hover:scale-105 active:scale-95 shadow-lg">
                 Our Story
               </button>
             </a>
             <a href="#video" className="w-full sm:w-auto">
-              <button className="w-full rounded-full border-2 border-foreground px-10 py-4 text-base font-bold text-foreground transition-all hover:bg-foreground hover:text-background active:scale-95">
+              <button className="w-full rounded-full border-2 border-foreground px-10 py-4 text-base font-bold 
+              text-foreground transition-all hover:bg-foreground hover:text-background active:scale-95">
                 Watch Video
               </button>
             </a>

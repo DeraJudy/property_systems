@@ -1,6 +1,8 @@
-// import { motion } from "framer-motion";
+"use client";
+
+import { motion } from "framer-motion";
 import { Users, Home, Shield, Heart } from "lucide-react";
-import propertyExterior from "@/assets/property-exterior.jpg";
+
 
 const values = [
   { icon: Heart, title: "Purpose Led", description: "Driven by values, not just targets. Every decision centres on the wellbeing of our young people." },
@@ -33,9 +35,9 @@ const StorySection = () => {
           >
             <div className="overflow-hidden rounded-3xl">
               <img
-                src={propertyExterior}
+                src="https://res.cloudinary.com/dcfl8iot4/image/upload/v1776548512/property-exterior_nu4cek.jpg"
                 alt="Kenley Group property"
-                className="w-full h-auto object-cover aspect-[4/3]"
+                className="w-full h-auto object-cover aspect-4/3"
                 loading="lazy"
                 width={1920}
                 height={1080}

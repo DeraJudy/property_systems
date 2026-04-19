@@ -911,7 +911,8 @@ export default function RepositoryPage() {
 
             <div className="grid grid-cols-2 gap-4">
               {/* DOCUMENT UPLOAD BOX */}
-              <div className="border-2 border-dashed border-black/10 p-4 rounded-xl text-center relative flex flex-col items-center justify-center min-h-[110px] bg-slate-50/50">
+              <div className="border-2 border-dashed border-black/10 p-4 rounded-xl text-center relative 
+              flex flex-col items-center justify-center min-h-27.5 bg-slate-50/50">
                 <input type="file" id="d-up" className="hidden" accept=".pdf,.doc,.docx" onChange={(e) => handleImmediateUpload(e.target.files[0], "doc")} disabled={isUploadingDoc} />
                 <label htmlFor="d-up" className={`cursor-pointer text-[10px] font-black uppercase ${isUploadingDoc ? 'text-slate-400' : 'text-blue-600'}`}>
                   {isUploadingDoc ? "Uploading..." : "Upload Doc"}
@@ -929,7 +930,8 @@ export default function RepositoryPage() {
               </div>
 
               {/* MEDIA UPLOAD BOX */}
-              <div className="border-2 border-dashed border-black/10 p-4 rounded-xl text-center relative flex flex-col items-center justify-center min-h-[110px] bg-slate-50/50">
+              <div className="border-2 border-dashed border-black/10 p-4 rounded-xl text-center relative 
+              flex flex-col items-center justify-center min-h-27.5 bg-slate-50/50">
                 <input type="file" id="m-up" className="hidden" accept="image/*,video/*" onChange={(e) => handleImmediateUpload(e.target.files[0], "media")} disabled={isUploadingMedia} />
                 <label htmlFor="m-up" className={`cursor-pointer text-[10px] font-black uppercase ${isUploadingMedia ? 'text-slate-400' : 'text-blue-600'}`}>
                   {isUploadingMedia ? "Uploading..." : "Upload Media"}

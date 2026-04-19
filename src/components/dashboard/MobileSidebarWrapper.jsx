@@ -26,6 +26,7 @@ const navItems = [
   { title: "Service Users", url: "/service-users", icon: UserCircle },
   { title: "Repository", url: "/repository", icon: FileArchiveIcon },
   { title: "Pre-Migration", url: "/pre-migration", icon: HardDriveUpload },
+  { title: "Core Documents", url: "/core-documents", icon: DownloadCloud },
   // { title: "Support Logs", url: "/support-logs", icon: FileText },
   // { title: "Cases", url: "/cases", icon: AlertTriangle },
   // { title: "Finance", url: "/finance", icon: PoundSterling },
