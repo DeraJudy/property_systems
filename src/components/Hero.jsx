@@ -182,10 +182,22 @@
 
 "use client";
 import React from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowDown, Heart } from "lucide-react";
 
 const Hero = () => {
+
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return <div className="min-h-screen" />;
+  }
+
   return (
     <section className="relative min-h-screen md:min-h-[90vh] flex items-center overflow-hidden bg-background">
       {/* Background image with overlay */}
