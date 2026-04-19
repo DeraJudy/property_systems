@@ -71,7 +71,7 @@ export default function LoginForm() {
 
   return (
     <div className="flex min-h-screen">
-      <div className="flex flex-1 flex-col items-center justify-center px-6 py-12">
+      <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 background">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -79,7 +79,8 @@ export default function LoginForm() {
           className="w-full max-w-sm"
         >
           <Link href="/" className="mb-8 flex items-center gap-2 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg primary transition-transform group-hover:scale-110">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg primary 
+            transition-transform group-hover:scale-110">
               <Building2 className="h-5 w-5 primary-foreground-text" />
             </div>
             <span className="text-lg font-bold foreground-text ">
@@ -94,7 +95,7 @@ export default function LoginForm() {
             Sign in to your account to continue
           </p>
 
-          <div className="grid grid-cols-3 gap-3 mb-6">
+          {/* <div className="grid grid-cols-3 gap-3 mb-6">
             {[
               <svg key="g" className="h-4 w-4" viewBox="0 0 24 24">
                 <path
@@ -146,14 +147,14 @@ export default function LoginForm() {
                 </Button>
               </motion.div>
             ))}
-          </div>
+          </div> */}
 
-          <div className="relative mb-6">
+          {/* <div className="relative mb-6">
             <Separator />
             <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 background px-3 text-xs muted-foreground-text ">
               or register with email
             </span>
-          </div>
+          </div> */}
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
@@ -168,7 +169,7 @@ export default function LoginForm() {
                   type="email"
                   placeholder="name@organisation.com"
                   className="pl-10 h-11 
-                focus-visible:ring-[#1F6B4A] focus-visible:border-[#1F6B4A]"
+                focus-visible:ring-black focus-visible:border-black"
                 />
               </div>
             </div>
@@ -185,7 +186,7 @@ export default function LoginForm() {
                   type={showPassword ? "text" : "password"}
                   placeholder="Min. 8 characters"
                   className="pl-10 pr-10 h-11 
-                focus-visible:ring-[#1F6B4A] focus-visible:border-[#1F6B4A]"
+                focus-visible:ring-black focus-visible:border-black"
                 />
                 <button
                   type="button"
@@ -208,7 +209,7 @@ export default function LoginForm() {
             </motion.div>
           </form>
 
-          <p className="mt-6 text-center text-sm muted-foreground-text">
+          {/* <p className="mt-6 text-center text-sm muted-foreground-text">
             Don't have an account?{" "}
             <Link
               href="/register"
@@ -216,7 +217,7 @@ export default function LoginForm() {
             >
               Create account
             </Link>
-          </p>
+          </p> */}
         </motion.div>
       </div>
 
@@ -228,9 +229,9 @@ export default function LoginForm() {
           sizes="100vw"
           className="absolute inset-0 object-cover"
         />
-        <div className="absolute inset-0 bg-[linear-gradient(135deg,#1F6B4A,#2A8C5F,#123D2B)] opacity-85" />
+        <div className="absolute inset-0 bg-black/75 z-10" />
 
-        <div className="relative flex flex-1 items-center justify-center p-12">
+        <div className="relative flex flex-1 items-center justify-center p-12 z-20">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

@@ -32,7 +32,8 @@
 }
 
 .primary {
-  background-color: #1f6b4a;
+  /* background-color: #1f6b4a; */
+  background-color: #000000;
 }
 
 .primary-foreground {
@@ -143,7 +144,8 @@
 
 /* text-colors  */
 .foreground-text {
-  color: #123d2b;
+  /* color: #123d2b; */
+  color: black;
 }
 
 .card-text {
