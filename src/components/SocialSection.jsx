@@ -18,27 +18,31 @@ const TikTokIcon = () => (
 
 const SocialSection = () => {
   return (
-    <section id="connect" className="bg-foreground py-24 md:py-32">
-      <div className="container px-4 md:px-6">
+    /* Increased py-32 to py-48 for high-impact vertical spacing */
+    <section id="connect" className="bg-foreground py-32 md:py-48">
+      /* px-8 md:px-12 to align with Video and Footer containers */
+      <div className="container mx-auto px-8 md:px-12">
+        
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mb-16 text-center"
+          className="mb-24 text-center" /* Increased mb-20 to mb-24 */
         >
-          <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-background/50">
+          <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-background/50">
             Stay Connected
           </p>
-          <h2 className="mb-4 text-3xl font-extrabold tracking-tight text-background md:text-4xl lg:text-5xl">
+          <h2 className="mb-6 text-4xl font-extrabold tracking-tight text-background md:text-5xl lg:text-6xl">
             Follow Our Journey
           </h2>
-          <p className="mx-auto max-w-lg text-lg text-background/60">
+          <p className="mx-auto max-w-xl text-lg text-background/60 leading-relaxed">
             Join our community across social media and stay updated on our latest work.
           </p>
         </motion.div>
 
-        <div className="mx-auto grid max-w-3xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Social Grid with p-12 for larger card interiors */}
+        <div className="mx-auto grid max-w-5xl gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {socials.map((social, i) => {
             const Icon = social.icon;
             return (
@@ -51,11 +55,13 @@ const SocialSection = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.5 }}
-                className="group flex flex-col items-center gap-3 rounded-2xl border border-background/10 bg-background/5 p-8 transition-all duration-300 hover:bg-background/10 hover:-translate-y-1"
+                className="group flex flex-col items-center gap-6 rounded-3xl border border-background/10 bg-background/5 p-12 transition-all duration-300 hover:bg-background/10 hover:-translate-y-2"
               >
-                <Icon className="h-8 w-8 text-background transition-transform group-hover:scale-110" />
-                <span className="text-base font-bold text-background">{social.label}</span>
-                <span className="text-xs text-background/50">{social.handle}</span>
+                <Icon className="h-10 w-10 text-background transition-transform group-hover:scale-110" />
+                <div className="text-center">
+                  <span className="block text-lg font-bold text-background">{social.label}</span>
+                  <span className="text-xs text-background/40">{social.handle}</span>
+                </div>
               </motion.a>
             );
           })}
@@ -68,39 +74,51 @@ const SocialSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="group flex flex-col items-center gap-3 rounded-2xl border border-background/10 bg-background/5 p-8 transition-all duration-300 hover:bg-background/10 hover:-translate-y-1"
+            className="group flex flex-col items-center gap-6 rounded-3xl border border-background/10 bg-background/5 p-12 transition-all duration-300 hover:bg-background/10 hover:-translate-y-2"
           >
-            <TikTokIcon />
-            <span className="text-base font-bold text-background">TikTok</span>
-            <span className="text-xs text-background/50">@kenleygroup</span>
+            <div className="text-background h-10 w-10 flex items-center justify-center transition-transform group-hover:scale-110">
+                <TikTokIcon />
+            </div>
+            <div className="text-center">
+                <span className="block text-lg font-bold text-background">TikTok</span>
+                <span className="text-xs text-background/40">@kenleygroup</span>
+            </div>
           </motion.a>
         </div>
 
-        {/* Contact info */}
+        {/* Contact Info: mt-32 and p-12/p-20 for a massive, grounded contact block */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mx-auto mt-16 max-w-2xl rounded-2xl border border-background/10 bg-background/5 p-8 md:p-10"
+          className="mx-auto mt-32 max-w-5xl rounded-3xl border border-background/10 bg-background/5 p-12 md:p-20"
         >
-          <h3 className="mb-6 text-center text-xl font-bold text-background">Get in Touch</h3>
-          <div className="grid gap-6 sm:grid-cols-3">
-            <a href="mailto:office@kenleygroup.co.uk" className="flex flex-col items-center gap-2 text-center group">
-              <Mail className="h-5 w-5 text-background/60 group-hover:text-background transition-colors" />
-              <span className="text-sm text-background/80 group-hover:text-background transition-colors">
+          <h3 className="mb-12 text-center text-3xl font-bold text-background">Get in Touch</h3>
+          <div className="grid gap-12 sm:grid-cols-3">
+            <a href="mailto:office@kenleygroup.co.uk" className="flex flex-col items-center gap-4 text-center group">
+              <div className="p-4 rounded-full bg-background/5 group-hover:bg-background/10 transition-colors">
+                <Mail className="h-6 w-6 text-background/60 group-hover:text-background" />
+              </div>
+              <span className="text-base text-background/80 group-hover:text-background transition-colors break-all font-medium">
                 office@kenleygroup.co.uk
               </span>
             </a>
-            <a href="tel:+441733567888" className="flex flex-col items-center gap-2 text-center group">
-              <Phone className="h-5 w-5 text-background/60 group-hover:text-background transition-colors" />
-              <span className="text-sm text-background/80 group-hover:text-background transition-colors">
+            <a href="tel:+441733567888" className="flex flex-col items-center gap-4 text-center group">
+              <div className="p-4 rounded-full bg-background/5 group-hover:bg-background/10 transition-colors">
+                <Phone className="h-6 w-6 text-background/60 group-hover:text-background" />
+              </div>
+              <span className="text-base text-background/80 group-hover:text-background transition-colors font-medium">
                 01733 567888
               </span>
             </a>
-            <div className="flex flex-col items-center gap-2 text-center">
-              <MapPin className="h-5 w-5 text-background/60" />
-              <span className="text-sm text-background/80">217-219 St Pauls Road, PE1 3EH</span>
+            <div className="flex flex-col items-center gap-4 text-center">
+              <div className="p-4 rounded-full bg-background/5">
+                <MapPin className="h-6 w-6 text-background/60" />
+              </div>
+              <span className="text-base text-background/80 font-medium">
+                217-219 St Pauls Road, PE1 3EH
+              </span>
             </div>
           </div>
         </motion.div>

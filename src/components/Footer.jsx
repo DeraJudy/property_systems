@@ -28,14 +28,27 @@
 
 
 "use client";
+import { useState, useEffect } from "react";
 
 const Footer = () => {
+  const [year, setYear] = useState("");
+
+  // Use useEffect to set the year only after the component mounts on the client
+  useEffect(() => {
+    setYear(new Date().getFullYear().toString());
+  }, []);
+
   return (
-    <footer className="border-t mx-auto border-border/50 bg-background py-10">
-      <div className="container flex flex-col items-center justify-between gap-4 px-4 md:flex-row md:px-6">
-        <span className="text-base font-bold text-foreground">Kenley Group</span>
+    /* Increased py-10 to py-16 or py-20 for more vertical padding */
+    /* Added px-8 for more horizontal breathing room on small screens */
+    <footer className="border-t border-border/50 bg-background py-16 px-8">
+      <div className="container mx-auto flex flex-col items-center justify-between gap-6 md:flex-row">
+        <span className="text-xl font-black tracking-tight text-foreground">
+          Kenley Group
+        </span>
+        
         <p className="text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Kenley Group — All Rights Reserved.
+          © {year || "2026"} Kenley Group — All Rights Reserved.
         </p>
       </div>
     </footer>

@@ -110,10 +110,11 @@
 //   );
 // }
 
+
 "use client";
+import React, { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -122,29 +123,49 @@ const Navbar = () => {
 
   return (
     <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/90 backdrop-blur-md">
-      <div className="container flex h-16 items-center justify-between px-4 md:px-6">
+      {/* Increased height from h-16 to h-20 and standardized horizontal padding */}
+      <div className="container mx-auto flex h-20 items-center justify-between px-8 md:px-12">
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-xl font-extrabold tracking-tight text-foreground">
+          {/* Matched logo style to Footer logo */}
+          <span className="text-xl font-black tracking-tighter text-foreground uppercase">
             Kenley Group
           </span>
         </Link>
 
-        <div className="hidden items-center gap-8 md:flex">
-          <a href="#story" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Our Story</a>
-          <a href="#video" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Watch</a>
-          <a href="#connect" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Social</a>
+        {/* Desktop Links */}
+        <div className="hidden items-center gap-10 md:flex">
+          <a href="#story" className="text-sm font-semibold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">
+            Our Story
+          </a>
+          <a href="#video" className="text-sm font-semibold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">
+            Watch
+          </a>
+          <a href="#connect" className="text-sm font-semibold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">
+            Social
+          </a>
         </div>
 
-        <div className="hidden items-center gap-3 md:flex">
-          <Link href="/login"><Button variant="ghost" size="sm">Sign in</Button></Link>
-          <Link href="/register"><Button size="sm">Get Started</Button></Link>
+        {/* Auth Actions */}
+        <div className="hidden items-center gap-4 md:flex">
+          <Link href="/login">
+            <Button variant="ghost" className="font-bold text-sm">Sign in</Button>
+          </Link>
+          <Link href="/register">
+            <Button className="rounded-full px-6 font-bold text-sm">Get Started</Button>
+          </Link>
         </div>
 
-        <button className="md:hidden" onClick={() => setMobileOpen(!mobileOpen)}>
+        {/* Mobile Toggle */}
+        <button 
+          className="p-2 md:hidden" 
+          onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label="Toggle menu"
+        >
           {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
 
+      {/* Mobile Menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -153,13 +174,18 @@ const Navbar = () => {
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden border-t border-border/50 bg-background md:hidden"
           >
-            <div className="flex flex-col gap-4 p-6">
-              <a href="#story" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-foreground">Our Story</a>
-              <a href="#video" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-foreground">Watch</a>
-              <a href="#connect" onClick={() => setMobileOpen(false)} className="text-sm font-medium text-foreground">Social</a>
-              <div className="flex gap-3 pt-2">
-                <Link href="/login"><Button variant="ghost" size="sm">Sign in</Button></Link>
-                <Link href="/register"><Button size="sm">Get Started</Button></Link>
+            <div className="flex flex-col gap-6 p-8"> {/* Increased padding for mobile menu */}
+              <a href="#story" onClick={() => setMobileOpen(false)} className="text-lg font-bold text-foreground">Our Story</a>
+              <a href="#video" onClick={() => setMobileOpen(false)} className="text-lg font-bold text-foreground">Watch</a>
+              <a href="#connect" onClick={() => setMobileOpen(false)} className="text-lg font-bold text-foreground">Social</a>
+              <hr className="border-border/50" />
+              <div className="flex flex-col gap-3">
+                <Link href="/login" onClick={() => setMobileOpen(false)}>
+                  <Button variant="outline" className="w-full rounded-full py-6 font-bold">Sign in</Button>
+                </Link>
+                <Link href="/register" onClick={() => setMobileOpen(false)}>
+                  <Button className="w-full rounded-full py-6 font-bold">Get Started</Button>
+                </Link>
               </div>
             </div>
           </motion.div>
