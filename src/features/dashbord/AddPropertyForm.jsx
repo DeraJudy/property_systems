@@ -1348,7 +1348,7 @@ export default function AddPropertyForm() {
                   { value: "basic", label: "Identity", icon: FileText },
                   { value: "details", label: "Financials", icon: Building2 },
                   { value: "compliance", label: "Compliance", icon: ClipboardCheck },
-                  { value: "maintenance", label: "Maintenance", icon: Wrench },
+                  // { value: "maintenance", label: "Maintenance", icon: Wrench },
                 ].map((tab) => (
                   <TabsTrigger 
                     key={tab.value}
@@ -1695,7 +1695,7 @@ export default function AddPropertyForm() {
                 </div>
               </TabsContent>
 
-              MAINTENANCE TAB - NEW & BEAUTIFIED
+              {/* MAINTENANCE TAB - NEW & BEAUTIFIED */}
               <TabsContent value="maintenance" className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
                 <div className="flex items-center justify-between border-b border-[#e1dbd2] pb-4">
                   <div className="flex items-center gap-3">

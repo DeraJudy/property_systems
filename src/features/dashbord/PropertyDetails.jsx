@@ -74,6 +74,7 @@ export default function PropertyDetails() {
       setLoading(false);
     }
   }
+  
 
   if (loading) {
     return (
