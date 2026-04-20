@@ -1397,7 +1397,7 @@ const AddEmployeeForm = () => {
       const { error } = await supabase.from("employees").insert([formData]);
       if (error) throw error;
       toast.success("Employee saved successfully");
-      router.push("/hrList");
+      router.push(`/hrList/${formData.id}`);
     } catch (error) {
       toast.error(error.message);
     } finally {
