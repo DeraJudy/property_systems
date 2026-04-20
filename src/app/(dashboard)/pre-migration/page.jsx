@@ -1065,11 +1065,12 @@ const PreMigrationPage = () => {
                     <span key={p.id || "root"} className="flex items-center gap-1.5">
                       <BreadcrumbItem>
                         {i === pathStack.length - 1 ? (
-                          <BreadcrumbPage className="flex items-center gap-1.5 truncate max-w-[200px]">
+                          <BreadcrumbPage className="flex items-center gap-1.5 truncate max-w-50">
                             {i === 0 && <HomeIcon className="h-3.5 w-3.5" />}{p.name}
                           </BreadcrumbPage>
                         ) : (
-                          <BreadcrumbLink onClick={() => goToCrumb(i)} className="flex items-center gap-1.5 cursor-pointer truncate max-w-[160px]">
+                          <BreadcrumbLink onClick={() => goToCrumb(i)} 
+                          className="flex items-center gap-1.5 cursor-pointer truncate max-w-40">
                             {i === 0 && <HomeIcon className="h-3.5 w-3.5" />}{p.name}
                           </BreadcrumbLink>
                         )}
@@ -1094,7 +1095,8 @@ const PreMigrationPage = () => {
         </Card>
 
         {/* Dropzone & Explorer View */}
-        <div onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }} onDragLeave={() => setIsDragging(false)} onDrop={onDrop} className="relative min-h-[400px]">
+        <div onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }} onDragLeave={() => setIsDragging(false)} onDrop={onDrop} 
+        className="relative min-h-100">
           <AnimatePresence>
             {isDragging && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-20 flex items-center justify-center rounded-xl border-2 border-dashed border-primary bg-primary/5 backdrop-blur-sm pointer-events-none">

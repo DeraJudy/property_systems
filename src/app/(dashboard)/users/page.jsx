@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/superbase/client"
-import UsersTable from "@/components/dashboard/UsersTable";
+// import UsersTable from "@/components/dashboard/UsersTable";
+import UsersTable from "@/features/dashbord/Users/UsersTable";
 
 export default function UsersPage() {
 

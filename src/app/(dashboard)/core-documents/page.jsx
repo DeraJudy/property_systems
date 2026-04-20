@@ -606,7 +606,7 @@ const CoreDocumentPage = () => {
         </div>
       </Card>
 
-      <div className="relative min-h-[400px]">
+      <div className="relative min-h-100">
         <AnimatePresence>
           {isDragging && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-50 flex items-center justify-center bg-primary/10 border-2 border-dashed border-primary rounded-xl backdrop-blur-sm">

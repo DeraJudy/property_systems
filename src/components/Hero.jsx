@@ -20,7 +20,6 @@
 
 //   return (
 
-
 //     <main className="bg-[#f5f0e6] ">
 //       <section className="mx-auto max-w-7xl py-24 md:py-32">
 //         <div className="grid items-center gap-12 lg:grid-cols-2">
@@ -115,7 +114,6 @@
 //   );
 // }
 
-
 // "use client";
 // import React, { useEffect, useState } from "react";
 
@@ -130,7 +128,7 @@
 
 //       <div
 
-//         className="group relative p-8 card border-16 border-[#123d2b] rounded-[3rem] shadow-[20px_20px_60px_rgba(18,61,43,0.3),-10px_-10px_30px_rgba(255,255,255,0.5),inset_5px_5px_10px_rgba(0,0,0,0.2)] max-w-4xl w-full transition-all duration-500 ease-out 
+//         className="group relative p-8 card border-16 border-[#123d2b] rounded-[3rem] shadow-[20px_20px_60px_rgba(18,61,43,0.3),-10px_-10px_30px_rgba(255,255,255,0.5),inset_5px_5px_10px_rgba(0,0,0,0.2)] max-w-4xl w-full transition-all duration-500 ease-out
 //         hover:transform-[rotateX(2deg)_rotateY(-2deg)] hover:shadow-[30px_30px_70px_rgba(18,61,43,0.4)]"
 
 //       >
@@ -139,10 +137,9 @@
 
 //         <div className="absolute inset-0 rounded-[2.2rem] border-2 border-[#1f6b4a]/40 m-1 pointer-events-none" />
 
-
 //         {/* Elegant 'Mat' / Inner Border */}
 
-//         <div className="relative aspect-16/10 overflow-hidden rounded-2xl border border-border/50 
+//         <div className="relative aspect-16/10 overflow-hidden rounded-2xl border border-border/50
 //         shadow-[inset_0_10px_20px_rgba(0,0,0,0.3)] bg-white">
 //           <video
 //             src="https://res.cloudinary.com/dcfl8iot4/video/upload/v1775683315/WhatsApp_Video_2026-04-08_at_22.18.14_knciym.mp4"
@@ -155,13 +152,10 @@
 //             Your browser does not support the video tag.
 //           </video>
 
-
-
 //           {/* 3D Glass Reflection Overlay */}
-//           <div className="absolute inset-0 pointer-events-none bg-linear-to-tr from-white/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 duration-700 
+//           <div className="absolute inset-0 pointer-events-none bg-linear-to-tr from-white/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 duration-700
 //           -translate-x-10 group-hover:translate-x-10 transition-transform" />
 //         </div>
-
 
 //         {/* Reactive 3D 'Light' Corner Accents */}
 //         <div className="absolute top-4 left-4 w-3 h-3 rounded-full bg-linear-to-br from-[#1f6b4a] to-[#123d2b] shadow-md border border-white/20" />
@@ -170,7 +164,7 @@
 //         <div className="absolute bottom-4 right-4 w-3 h-3 rounded-full bg-linear-to-br from-[#1f6b4a] to-[#123d2b] shadow-md border border-white/20" />
 
 //         {/* Floating Tag */}
-//         <div className="absolute -bottom-6 right-12 bg-[#123d2b] text-[#f7f2e9] px-4 py-1 rounded-md 
+//         <div className="absolute -bottom-6 right-12 bg-[#123d2b] text-[#f7f2e9] px-4 py-1 rounded-md
 //         text-xs font-medium shadow-lg opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all">
 //           Welcome to Kenley Poperty Systems
 //         </div>
@@ -179,7 +173,6 @@
 //   );
 // }
 
-
 "use client";
 import React from "react";
 import { useState, useEffect } from "react";
@@ -187,7 +180,6 @@ import { motion } from "framer-motion";
 import { ArrowDown, Heart } from "lucide-react";
 
 const Hero = () => {
-
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -208,8 +200,10 @@ const Hero = () => {
           className="h-full w-full object-cover"
         />
         {/* Gradients for text legibility */}
-        <div className="absolute inset-0 bg-linear-to-r from-background/95 via-background/80 to-transparent 
-        md:to-background/40" />
+        <div
+          className="absolute inset-0 bg-linear-to-r from-background/95 via-background/80 to-transparent 
+        md:to-background/40"
+        />
         <div className="absolute inset-0 bg-linear-to-t from-background via-transparent to-transparent" />
       </div>
 
@@ -221,9 +215,11 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-foreground/20 
-            bg-foreground/10 px-5 py-2.5 backdrop-blur-sm">
-              <Heart className="h-5 w-5 text-red-500 fill-red-500/20" /> 
+            <div
+              className="mb-8 inline-flex items-center gap-2 rounded-full border border-foreground/20 
+            bg-foreground/10 px-5 py-2.5 backdrop-blur-sm"
+            >
+              <Heart className="h-5 w-5 text-red-500 fill-red-500/20" />
               <span className="text-sm md:text-base font-semibold tracking-wide text-foreground">
                 Homes with a Heartbeat
               </span>
@@ -250,9 +246,9 @@ const Hero = () => {
             transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
             className="mb-12 max-w-xl text-lg leading-relaxed text-foreground/80 md:text-xl lg:text-2xl"
           >
-            Kenley Group is an award-winning provider of Supported and Semi-Independent 
-            Accommodation — an integrated Social Care, Housing and Development 
-            Company working for the most vulnerable.
+            Kenley Group is an award-winning provider of Supported and
+            Semi-Independent Accommodation — an integrated Social Care, Housing
+            and Development Company working for the most vulnerable.
           </motion.p>
 
           {/* Buttons */}
@@ -263,14 +259,18 @@ const Hero = () => {
             className="flex flex-col gap-4 sm:flex-row sm:items-center"
           >
             <a href="#story" className="w-full sm:w-auto">
-              <button className="w-full rounded-full bg-foreground px-10 py-4 text-base font-bold 
-              text-background transition-transform hover:scale-105 active:scale-95 shadow-lg">
+              <button
+                className="w-full rounded-full bg-foreground px-10 py-4 text-base font-bold 
+              text-background transition-transform hover:scale-105 active:scale-95 shadow-lg"
+              >
                 Our Story
               </button>
             </a>
             <a href="#video" className="w-full sm:w-auto">
-              <button className="w-full rounded-full border-2 border-foreground px-10 py-4 text-base font-bold 
-              text-foreground transition-all hover:bg-foreground hover:text-background active:scale-95">
+              <button
+                className="w-full rounded-full border-2 border-foreground px-10 py-4 text-base font-bold 
+              text-foreground transition-all hover:bg-foreground hover:text-background active:scale-95"
+              >
                 Watch Video
               </button>
             </a>
@@ -280,14 +280,30 @@ const Hero = () => {
 
       {/* Animated scroll indicator - Hidden on very small screens to save space */}
       <motion.div
+        // 1. Centered on the page, positioned 10px from the bottom on small screens and up.
         className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden sm:block"
-        animate={{ y: [0, 12, 0] }}
-        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        // 2. Continuous "bouncing" animation to indicate a scrollable area.
+        animate={{ y: [0, 10, 0] }}
+        transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
       >
-        <div className="h-12 w-7 rounded-full border-2 border-foreground/40 flex items-start justify-center pt-2">
-          <ArrowDown />
-          <div className="h-2 w-1 rounded-full bg-foreground" />
-        </div>
+        {/* This creates the interactive "button" or "indicator."
+    It is a large, perfectly circular (rounded-full) white background
+    that pulses gently on hover to show interactivity.
+    The content (the arrow) is perfectly centered inside.
+  */}
+        <button
+          aria-label="Scroll down"
+          className="flex items-center justify-center rounded-full bg-white text-black size-16 shadow-2xl hover:scale-105 active:scale-95 transition-all group"
+        >
+          {/* We are replacing the 'pill' with a standard, centered icon.
+      I'm using the 'ChevronsDown' (triple chevron) icon as it 
+      is a very clear and high-visibility scroll indicator.
+    */}
+          <ArrowDown
+            className="size-7 opacity-80 group-hover:opacity-100 transition-opacity"
+            strokeWidth={2.5}
+          />
+        </button>
       </motion.div>
     </section>
   );

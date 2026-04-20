@@ -157,7 +157,7 @@ const Navbar = () => {
               className="relative text-[11px] font-bold uppercase tracking-[0.3em] text-gray-400 hover:text-white transition-colors group"
             >
               {link.name}
-              <span className="absolute -bottom-1 left-0 h-[1px] w-0 bg-white transition-all group-hover:w-full" />
+              <span className="absolute -bottom-1 left-0 h-px w-0 bg-white transition-all group-hover:w-full" />
             </a>
           ))}
         </div>

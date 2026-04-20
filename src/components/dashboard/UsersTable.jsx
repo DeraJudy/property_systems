@@ -398,6 +398,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import {
+  Building2,
+  Mail,
+  Lock,
+  User,
+  ArrowRight,
+  Building,
+  Eye,
+  EyeOff, Plus
+} from "lucide-react";
+
+
+import {
   Table,
   TableBody,
   TableCell,
