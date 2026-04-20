@@ -1285,9 +1285,9 @@ export default function EditPropertyPage() {
     status: "Active",
     rooms: "",
     rent: "",
-    propertyImage: null,
-    leaseFile: null,
-    insuranceFile: null,
+    propertyImage: null, // New file
+    leaseFile: null,     // New file
+    insuranceFile: null, // New file
     existingImage: null,
     existingLease: null,
     existingInsurance: null,
@@ -1335,7 +1335,7 @@ export default function EditPropertyPage() {
           id: c.id,
           type: c.certificate_type,
           expiry: c.expiry_date,
-          file: null,
+          file: null, // No new file initially
           existingUrl: c.document_url
         })));
 
@@ -1357,7 +1357,7 @@ export default function EditPropertyPage() {
 
   const getFileName = (path) => {
     if (!path) return "No file uploaded";
-    return path.split('/').pop().split('_').slice(1).join('_') || "View Document";
+    return path.split('/').pop().split('_').slice(1).join('_');
   };
 
   const handleSubmit = async (e) => {
@@ -1369,8 +1369,9 @@ export default function EditPropertyPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Authentication required");
 
-      const uploadFile = async (file, folder) => {
-        if (!file) return null;
+      // Logic: Only upload if a new file exists
+      const uploadIfNew = async (file, folder) => {
+        if (!file) return null; // Skip if no new file selected
         const cleanName = `${Date.now()}_${file.name.replace(/\s/g, "_")}`;
         const path = `${user.id}/${folder}/${cleanName}`;
         const { data, error } = await supabase.storage.from("property-documents").upload(path, file);
@@ -1380,10 +1381,11 @@ export default function EditPropertyPage() {
 
       const selectedOrg = organisations.find(o => o.id === formData.organisationId);
 
+      // Perform uploads only for fields containing a new File object
       const [newImg, newLease, newIns] = await Promise.all([
-        uploadFile(formData.propertyImage, "property-images"),
-        uploadFile(formData.leaseFile, "lease"),
-        uploadFile(formData.insuranceFile, "insurance")
+        uploadIfNew(formData.propertyImage, "property-images"),
+        uploadIfNew(formData.leaseFile, "lease"),
+        uploadIfNew(formData.insuranceFile, "insurance")
       ]);
 
       const updatePayload = {
@@ -1395,26 +1397,38 @@ export default function EditPropertyPage() {
         status: formData.status,
         rooms: parseInt(formData.rooms) || 0,
         rent: parseFloat(formData.rent) || 0,
+        // Only update the database path if a new file was actually uploaded
+        image_url: newImg || formData.existingImage,
+        lease_url: newLease || formData.existingLease,
+        insurance_url: newIns || formData.existingInsurance
       };
-
-      if (newImg) updatePayload.image_url = newImg;
-      if (newLease) updatePayload.lease_url = newLease;
-      if (newIns) updatePayload.insurance_url = newIns;
 
       const { error: updateError } = await supabase.from("properties").update(updatePayload).eq("id", id);
       if (updateError) throw updateError;
 
+      // Update/Add Certificates
       for (const cert of certificates) {
         let certPath = cert.existingUrl;
-        if (cert.file) certPath = await uploadFile(cert.file, "certificates");
+        
+        // Only upload if this specific certificate has a new file attached
+        if (cert.file) {
+          certPath = await uploadIfNew(cert.file, "certificates");
+        }
 
         if (typeof cert.id === "string" && cert.id.length > 15) {
+          // New Entry
           await supabase.from("property_certificates").insert({
-            property_id: id, certificate_type: cert.type, expiry_date: cert.expiry, document_url: certPath
+            property_id: id, 
+            certificate_type: cert.type, 
+            expiry_date: cert.expiry, 
+            document_url: certPath
           });
         } else {
+          // Update existing
           await supabase.from("property_certificates").update({ 
-            certificate_type: cert.type, expiry_date: cert.expiry, document_url: certPath 
+            certificate_type: cert.type, 
+            expiry_date: cert.expiry, 
+            document_url: certPath 
           }).eq("id", cert.id);
         }
       }
@@ -1434,7 +1448,7 @@ export default function EditPropertyPage() {
 
   return (
     <div className="min-h-screen p-4 md:p-8 bg-transparent">
-      <div className="mx-auto mb-6 flex items-center justify-between max-w-5xl">
+      <div className="mx-auto mb-6 flex items-center justify-between">
         <Button variant="ghost" onClick={() => router.back()} className="text-black font-semibold gap-2">
           <ArrowLeft className="h-4 w-4" /> Back
         </Button>
@@ -1442,16 +1456,16 @@ export default function EditPropertyPage() {
 
       <PageBanner title="Edit Property" subtitle="Update property profile and legal documents" category="properties" />
 
-      <Card className="mx-auto max-w-5xl border-[#e1dbd2] bg-[#FFFDD0] shadow-2xl overflow-hidden mt-8">
+      <Card className="mx-auto border-[#e1dbd2] bg-[#FFFDD0] shadow-2xl overflow-hidden mt-8">
         <CardHeader className="bg-black/5 p-8 border-b border-black/5">
-          <CardTitle className="text-2xl font-black flex items-center gap-3 italic uppercase tracking-tight">
+          <CardTitle className="text-2xl font-black flex items-center gap-3 italic uppercase tracking-tight text-black">
             <div className="p-2 bg-black rounded-lg text-[#FFFDD0]"><Home className="w-6 h-6" /></div>
             Update: {formData.propertyName}
           </CardTitle>
         </CardHeader>
 
         <CardContent className="p-8">
-          <form onSubmit={handleSubmit} className="space-y-10">
+          <form onSubmit={handleSubmit} className="space-y-10 text-black">
             <Tabs defaultValue="basic" className="w-full">
               <TabsList className="bg-[#e8e1d6] p-1 rounded-xl mb-8">
                 <TabsTrigger value="basic" className="rounded-lg px-8 font-bold text-xs uppercase tracking-widest">Identity & Yield</TabsTrigger>
@@ -1477,7 +1491,10 @@ export default function EditPropertyPage() {
                     </div>
                     <input id="image-upload" type="file" className="hidden" onChange={(e) => {
                       const file = e.target.files[0];
-                      if (file) { setFormData({...formData, propertyImage: file}); setImagePreview(URL.createObjectURL(file)); }
+                      if (file) { 
+                        setFormData({...formData, propertyImage: file}); 
+                        setImagePreview(URL.createObjectURL(file)); 
+                      }
                     }} />
                   </div>
 
@@ -1495,22 +1512,22 @@ export default function EditPropertyPage() {
                     <div className="space-y-2">
                       <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Organisation</Label>
                       <Select value={formData.organisationId} onValueChange={(v) => setFormData({...formData, organisationId: v})}>
-                        <SelectTrigger className="bg-white"><SelectValue placeholder="Select Org" /></SelectTrigger>
+                        <SelectTrigger className="bg-white"><SelectValue placeholder="Select" /></SelectTrigger>
                         <SelectContent className="bg-white">{organisations.map(org => <SelectItem key={org.id} value={org.id}>{org.name}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Current Status</Label>
+                      <Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Status</Label>
                       <Select value={formData.status} onValueChange={(v) => setFormData({...formData, status: v})}>
                         <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
                         <SelectContent className="bg-white">
                           <SelectItem value="Active">Active</SelectItem>
                           <SelectItem value="Inactive">Inactive</SelectItem>
-                          <SelectItem value="Under Maintenance">Under Maintenance</SelectItem>
+                          <SelectItem value="Onboarding">Onboarding</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Total Rooms</Label><Input type="number" className="bg-white" value={formData.rooms} onChange={(e) => setFormData({...formData, rooms: e.target.value})} /></div>
+                    <div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Rooms</Label><Input type="number" className="bg-white" value={formData.rooms} onChange={(e) => setFormData({...formData, rooms: e.target.value})} /></div>
                     <div className="space-y-2"><Label className="text-[10px] font-black uppercase tracking-widest opacity-50">Monthly Yield (£)</Label><Input type="number" step="0.01" className="bg-white" value={formData.rent} onChange={(e) => setFormData({...formData, rent: e.target.value})} /></div>
                   </div>
                 </div>
@@ -1518,18 +1535,17 @@ export default function EditPropertyPage() {
 
               <TabsContent value="compliance" className="space-y-8">
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-black uppercase tracking-tighter italic">Compliance Documents</h3>
+                  <h3 className="text-lg font-black uppercase tracking-tighter italic">Certificates</h3>
                   <Button type="button" variant="outline" className="border-black border-2 font-black" onClick={() => setCertificates([...certificates, { id: crypto.randomUUID(), type: "", expiry: "", file: null }])}>
-                    <Plus className="w-4 h-4 mr-2" /> Add Certificate
+                    <Plus className="w-4 h-4 mr-2" /> Add New
                   </Button>
                 </div>
 
-                {/* Certificate List with View Capability */}
                 <div className="space-y-4">
                   {certificates.map((cert, idx) => (
                     <div key={cert.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 bg-white/50 rounded-2xl border border-black/5 items-end">
                       <div className="space-y-2">
-                        <Label className="text-[9px] font-bold uppercase opacity-50">Type</Label>
+                        <Label className="text-[9px] font-bold opacity-50 uppercase">Type</Label>
                         <Select value={cert.type} onValueChange={(v) => { const c = [...certificates]; c[idx].type = v; setCertificates(c); }}>
                           <SelectTrigger className="bg-white"><SelectValue /></SelectTrigger>
                           <SelectContent className="bg-white">
@@ -1538,37 +1554,36 @@ export default function EditPropertyPage() {
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-[9px] font-bold uppercase opacity-50">Expiry</Label>
+                        <Label className="text-[9px] font-bold opacity-50 uppercase">Expiry</Label>
                         <Input type="date" className="bg-white" value={cert.expiry} onChange={(e) => { const c = [...certificates]; c[idx].expiry = e.target.value; setCertificates(c); }} />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-[9px] font-bold uppercase opacity-50">File (Replace)</Label>
+                        <Label className="text-[9px] font-bold opacity-50 uppercase">Replace File</Label>
                         <Input type="file" className="bg-white" onChange={(e) => { const c = [...certificates]; c[idx].file = e.target.files[0]; setCertificates(c); }} />
                       </div>
                       <div className="flex gap-2">
-                        {cert.existingUrl && <Button type="button" variant="outline" className="flex-1 bg-white border-black/10" onClick={() => viewFile(cert.existingUrl)}><Eye className="w-4 h-4 mr-2" />View</Button>}
-                        <Button variant="ghost" className="text-red-500 hover:bg-red-50" onClick={() => setCertificates(certificates.filter((_, i) => i !== idx))}><Trash2 className="w-4 h-4" /></Button>
+                        {cert.existingUrl && <Button type="button" variant="outline" className="flex-1 bg-white border-black/10" onClick={() => viewFile(cert.existingUrl)}><Eye className="w-4 h-4 mr-2" />View Old</Button>}
+                        <Button variant="ghost" className="text-red-500" onClick={() => setCertificates(certificates.filter((_, i) => i !== idx))}><Trash2 className="w-4 h-4" /></Button>
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {/* Main Legal Files Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8 bg-[#e6f2ec]/60 rounded-3xl border border-black/10 mt-10">
                   <div className="space-y-3">
                     <Label className="text-[10px] font-black uppercase tracking-widest">Lease Agreement</Label>
-                    <div className="bg-white p-4 rounded-xl border border-black/5 flex items-center justify-between mb-2">
-                       <span className="text-xs font-bold truncate pr-4">{getFileName(formData.existingLease)}</span>
-                       {formData.existingLease && <Button type="button" size="sm" variant="ghost" className="h-8 w-8" onClick={() => viewFile(formData.existingLease)}><Eye className="w-4 h-4" /></Button>}
+                    <div className="bg-white p-4 rounded-xl border border-black/5 flex items-center justify-between">
+                       <span className="text-xs font-bold truncate pr-4">{formData.existingLease ? getFileName(formData.existingLease) : "No File"}</span>
+                       {formData.existingLease && <Button type="button" size="sm" variant="ghost" onClick={() => viewFile(formData.existingLease)}><Eye className="w-4 h-4" /></Button>}
                     </div>
                     <Input type="file" className="bg-white" onChange={(e) => setFormData({...formData, leaseFile: e.target.files[0]})} />
                   </div>
 
                   <div className="space-y-3">
                     <Label className="text-[10px] font-black uppercase tracking-widest">Insurance Policy</Label>
-                    <div className="bg-white p-4 rounded-xl border border-black/5 flex items-center justify-between mb-2">
-                       <span className="text-xs font-bold truncate pr-4">{getFileName(formData.existingInsurance)}</span>
-                       {formData.existingInsurance && <Button type="button" size="sm" variant="ghost" className="h-8 w-8" onClick={() => viewFile(formData.existingInsurance)}><Eye className="w-4 h-4" /></Button>}
+                    <div className="bg-white p-4 rounded-xl border border-black/5 flex items-center justify-between">
+                       <span className="text-xs font-bold truncate pr-4">{formData.existingInsurance ? getFileName(formData.existingInsurance) : "No File"}</span>
+                       {formData.existingInsurance && <Button type="button" size="sm" variant="ghost" onClick={() => viewFile(formData.existingInsurance)}><Eye className="w-4 h-4" /></Button>}
                     </div>
                     <Input type="file" className="bg-white" onChange={(e) => setFormData({...formData, insuranceFile: e.target.files[0]})} />
                   </div>
@@ -1578,7 +1593,7 @@ export default function EditPropertyPage() {
 
             <div className="pt-6 border-t border-black/5 flex flex-col md:flex-row gap-4">
                <Button type="submit" disabled={saving} className="flex-1 bg-black py-8 rounded-2xl text-xl font-black uppercase tracking-widest text-[#FFFDD0] hover:scale-[1.01] transition-all">
-                {saving ? <Loader2 className="animate-spin mr-2" /> : "Update Records"}
+                {saving ? <Loader2 className="animate-spin mr-2" /> : "Save Changes"}
               </Button>
               <Button type="button" variant="outline" className="md:w-1/3 py-8 rounded-2xl border-2 border-black font-black uppercase tracking-widest" onClick={() => router.push(`/properties/${id}`)}>Cancel</Button>
             </div>
