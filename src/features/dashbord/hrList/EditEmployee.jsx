@@ -1059,6 +1059,7 @@ const EditEmployee = () => {
 
     try {
       const fileExt = file.name.split(".").pop();
+      const originalName = file.name;
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
       const folderName = listName || fieldName;
       const filePath = `${id}/${folderName}/${fileName}`;
@@ -1073,11 +1074,28 @@ const EditEmployee = () => {
         .from("employee-docs")
         .getPublicUrl(filePath);
 
+      // if (listName) {
+      //   updateListField(listName, index, "url", publicUrl);
+      // } else {
+      //   setFormData((prev) => ({ ...prev, [fieldName]: publicUrl }));
+      // }
+
       if (listName) {
-        updateListField(listName, index, "url", publicUrl);
-      } else {
-        setFormData((prev) => ({ ...prev, [fieldName]: publicUrl }));
-      }
+      // Logic to update both URL and Name
+      setFormData((prev) => {
+        const newList = [...prev[listName]];
+        newList[index] = { 
+          ...newList[index], 
+          url: publicUrl,
+          // Only update name if it is currently empty
+          name: newList[index].name || originalName 
+        };
+        return { ...prev, [listName]: newList };
+      });
+    } else {
+      setFormData((prev) => ({ ...prev, [fieldName]: publicUrl }));
+    }
+
       toast.success("File uploaded successfully");
     } catch (error) {
       toast.error("Upload failed: " + error.message);
@@ -1227,25 +1245,62 @@ const EditEmployee = () => {
             </Button>
           </CardHeader>
           <CardContent className="space-y-4 pt-6">
-            {formData[section.id]?.map((item, index) => (
-              <div key={index} className="flex gap-4 items-end bg-white p-3 border rounded-md shadow-sm">
-                <div className="flex-1 space-y-2">
-                  <Label>Name</Label>
-                  <Input value={item.name} onChange={(e) => updateListField(section.id, index, "name", e.target.value)} />
-                </div>
-                <div className="flex-1 space-y-2">
-                  <Label className="flex items-center gap-2">
-                    File {uploadingFields[`${section.id}-${index}`] && <Loader2 className="h-3 w-3 animate-spin" />}
-                    {item.url && <CheckCircle2 className="h-3 w-3 text-green-500" />}
-                  </Label>
-                  <Input type="file" accept=".pdf,.doc,.docx,.xlsx,image/*" onChange={(e) => handleFileUpload(e, null, index, section.id)} />
-                </div>
-                <Button variant="ghost" size="icon" onClick={() => triggerDeleteConfirm(section.id, index)} className="text-red-500">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-          </CardContent>
+  {formData[section.id]?.map((item, index) => (
+    <div key={index} className="flex gap-4 items-end bg-white p-3 border rounded-md shadow-sm">
+      {/* 1. DOCUMENT NAME (Editable) */}
+      <div className="flex-1 space-y-2">
+        <Label>Name</Label>
+        <Input 
+          value={item.name} 
+          placeholder="e.g., Passport Copy"
+          onChange={(e) => updateListField(section.id, index, "name", e.target.value)} 
+        />
+      </div>
+
+      {/* 2. FILE UPLOAD & STATUS */}
+      <div className="flex-1 space-y-2">
+        <Label className="flex items-center justify-between gap-2">
+          <span className="flex items-center gap-2">
+            File 
+            {uploadingFields[`${section.id}-${index}`] && <Loader2 className="h-3 w-3 animate-spin text-blue-500" />}
+            {item.url && <CheckCircle2 className="h-3 w-3 text-green-500" />}
+          </span>
+          
+          {/* Show 'View' link if the file exists */}
+          {item.url && (
+            <a 
+              href={item.url} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-[10px] text-blue-600 hover:underline flex items-center"
+            >
+              View Document
+            </a>
+          )}
+        </Label>
+
+        <Input 
+          type="file" 
+          accept=".pdf,.doc,.docx,.xlsx,image/*" 
+          onChange={(e) => handleFileUpload(e, null, index, section.id)} 
+          className="cursor-pointer"
+        />
+
+        {/* 3. UPLOADED FILENAME INDICATOR */}
+        {item.url && (
+          <p className="text-[11px] text-green-700 font-medium truncate italic">
+            ✓ File uploaded: {item.name || "Document attached"}
+          </p>
+        )}
+      </div>
+
+      {/* DELETE BUTTON */}
+      <Button variant="ghost" size="icon" onClick={() => triggerDeleteConfirm(section.id, index)} className="text-red-500">
+        <Trash2 className="h-4 w-4" />
+      </Button>
+    </div>
+  ))}
+</CardContent>
         </Card>
       ))}
 
