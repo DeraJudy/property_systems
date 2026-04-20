@@ -30,7 +30,7 @@ import {
   RefreshCw,
   Plus,
   FileSpreadsheet,
-  Loader2
+  Loader2, Search
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/superbase/client";
@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import PageBanner from "@/components/dashboard/PageBanner";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.04 } } };
 const item = { hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } };
@@ -58,6 +59,8 @@ const AllEmployees = () => {
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const [searchTerm, setSearchTerm] = useState("");
+
   useEffect(() => {
     fetchEmployees();
   }, []);
@@ -68,6 +71,16 @@ const AllEmployees = () => {
     if (!error) setEmployeeList(data || []);
     setLoading(false);
   };
+
+  // --- Search Filtering Logic ---
+const filteredEmployees = employeeList.filter((employee) => {
+  const searchLower = searchTerm.toLowerCase();
+  return (
+    employee.full_name?.toLowerCase().includes(searchLower) ||
+    employee.job_role?.toLowerCase().includes(searchLower) ||
+    employee.email_address?.toLowerCase().includes(searchLower)
+  );
+});
 
   const getAllFiles = async (folder) => {
   // 🚨 HARD GUARD (this fixes your error)
@@ -440,11 +453,23 @@ const handleDeleteEmployee = async () => {
 
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="p-6 min-h-screen space-y-6 ">
+
+      <PageBanner title="Workforce Directory" subtitle="Manage employee records and compliance" category="people" />
+
       <div className="flex justify-between items-center">
-        <div>
+        {/* <div>
           <h2 className="font-black text-3xl text-black">Workforce Directory</h2>
           <p className="text-[#6b7d74]">Manage employee records and compliance</p>
-        </div>
+        </div> */}
+        <div className="relative w-full max-w-sm">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black/40" />
+                  <Input
+                    placeholder="Search users..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 border-black/10 bg-white focus:ring-black"
+                  />
+                </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={fetchEmployees}><RefreshCw className="mr-2 h-4 w-4 bg-[#FFFDD0] " /> Refresh</Button>
           <Button variant="outline" onClick={exportAllEmployees}><FileSpreadsheet className="mr-2 h-4 w-4 bg-[#FFFDD0] " /> Export</Button>
@@ -458,7 +483,14 @@ const handleDeleteEmployee = async () => {
           <TabsTrigger className="bg-[#FFFDD0]" value="all">All Staff</TabsTrigger>
           {/* <TabsTrigger value="compliance">Compliance</TabsTrigger> */}
         </TabsList>
-        <TabsContent value="all"><EmployeeTable data={employeeList} /></TabsContent>
+        <TabsContent value="all">
+  {/* Pass the filtered list here instead of employeeList */}
+  <EmployeeTable 
+    data={filteredEmployees} 
+    emptyMessage={searchTerm ? `No employees found matching "${searchTerm}"` : "No records found."} 
+  />
+</TabsContent>
+        {/* <TabsContent value="all"><EmployeeTable data={employeeList} /></TabsContent> */}
         {/* <TabsContent value="compliance"><EmployeeTable data={complianceIssuesList} /></TabsContent> */}
       </Tabs>
 

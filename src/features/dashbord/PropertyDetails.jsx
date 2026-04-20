@@ -371,7 +371,7 @@ export default function PropertyViewPage() {
           <ArrowLeft className="h-4 w-4" /> Back to Portfolio
         </Button>
         <Button 
-          onClick={() => router.push(`/properties/edit/${id}`)}
+          onClick={() => router.push(`/properties/${id}/edit`)}
           className="bg-black text-[#FFFDD0] font-bold gap-2 rounded-xl px-6"
         >
           <Edit className="h-4 w-4" /> Edit Property
