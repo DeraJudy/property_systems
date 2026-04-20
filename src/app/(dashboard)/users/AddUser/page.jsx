@@ -1,5 +1,5 @@
 import React from 'react'
-import AddUser from '@/features/dashbord/Users/AddUser'
+import AddUser from '@/features/dashbord/users/AddUser'
 
 const page = () => {
   return (
