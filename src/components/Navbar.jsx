@@ -171,7 +171,7 @@ const Navbar = () => {
           </Link> */}
           <Link href="/login">
             <Button className="h-12 px-10 w-full rounded-xl text-lg font-bold bg-white text-black shadow-xl hover:text-white">
-              Get Started
+              Log In
             </Button>
           </Link>
         </div>
@@ -232,7 +232,7 @@ const Navbar = () => {
                 </Link> */}
                 <Link href="/login" onClick={() => setMobileOpen(false)}>
                   <Button className="h-16 w-full rounded-2xl text-lg font-bold bg-black text-white shadow-xl">
-                    Get Started
+                    Log In
                   </Button>
                 </Link>
               </div>

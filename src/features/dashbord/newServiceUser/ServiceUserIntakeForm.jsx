@@ -608,7 +608,7 @@ export default function ServiceUserIntakeForm() {
     profile_image_path: "",
     about_file_url: "",
     about_file_path: "",
-    // eet_documents: [],
+    Independence_passport : [],
     onboarding_documents: [],
     additional_documents: [],
   });
@@ -938,6 +938,19 @@ export default function ServiceUserIntakeForm() {
       <DocumentSection
         title="Additional Documents"
         field="additional_documents"
+        icon={Plus}
+        {...{
+          formData,
+          addListEntry,
+          updateListField,
+          removeListEntry,
+          uploadingFields,
+          handleFileUpload,
+        }}
+      />
+      <DocumentSection
+        title="Independence Passport"
+        field="Independence_passport"
         icon={Plus}
         {...{
           formData,

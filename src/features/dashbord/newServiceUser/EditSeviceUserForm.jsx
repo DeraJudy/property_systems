@@ -427,7 +427,7 @@ export default function EditServiceUserForm() {
     about_file_path: "",
     profile_image_url: "", // Added
     profile_image_path: "",
-    // eet_documents: [],
+    Independence_passport: [],
     onboarding_documents: [],
     additional_documents: [],
   });
@@ -446,7 +446,7 @@ export default function EditServiceUserForm() {
         if (data) {
           setFormData({
             ...data,
-            // eet_documents: data.eet_documents || [],
+            Independence_passport: data.Independence_passport || [],
             onboarding_documents: data.onboarding_documents || [],
             additional_documents: data.additional_documents || [],
           });
@@ -752,6 +752,21 @@ export default function EditServiceUserForm() {
             handleFileUpload,
           }}
         />
+
+        <DocumentSection
+          title="Independence Passport"
+          field="Independence_passport"
+          icon={Plus}
+          {...{
+            formData,
+            addListEntry,
+            updateListField,
+            removeListEntry,
+            uploadingFields,
+            handleFileUpload,
+          }}
+        />
+
 
         <div className="mt-10 pt-8 border-t border-black/10 flex justify-center">
           <Button

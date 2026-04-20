@@ -223,7 +223,7 @@ export default function AddUserPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-zinc-900 border border-amber-500/30 rounded-2xl p-8 shadow-2xl">
         
         <div className="text-center mb-8">

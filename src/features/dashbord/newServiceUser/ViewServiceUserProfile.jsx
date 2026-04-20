@@ -904,12 +904,12 @@ export default function ViewServiceUserProfile() {
             >
               Documents
             </TabsTrigger>
-            {/* <TabsTrigger
-              value="eet"
+            <TabsTrigger
+              value="Independence_passport"
               className="data-[state=active]:bg-black data-[state=active]:text-white"
             >
-              EET
-            </TabsTrigger> */}
+              Independence Passport
+            </TabsTrigger>
             <TabsTrigger
               value="onboarding"
               className="data-[state=active]:bg-[#FFFDD0] data-[state=active]:text-black"
@@ -1161,7 +1161,7 @@ export default function ViewServiceUserProfile() {
           <TabsContent value="documents">
             <Card className="border border-black shadow-sm bg-[#FFFDD0]">
               <CardHeader>
-                {/* Example for EET Section */}
+                {/* Example for Document Section */}
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-bold text-black flex items-center gap-2">
                     <FileText size={20} /> Additional Documents
@@ -1199,18 +1199,18 @@ export default function ViewServiceUserProfile() {
             </Card>
           </TabsContent>
 
-          {/* EET TAB */}
-          <TabsContent value="eet">
+          {/* Independence_passport TAB */}
+          <TabsContent value="Independence_passport">
             <Card className="border border-black shadow-sm bg-[#FFFDD0]">
               <CardHeader>
-                {/* Example for EET Section */}
+                {/* Example for Independence Passport Section */}
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-bold text-black flex items-center gap-2">
-                    <FileText size={20} /> EET Documents
+                    <FileText size={20} /> Independence Passport
                   </h3>
                   <Button
                     onClick={() => {
-                      setUploadTargetField("eet_documents");
+                      setUploadTargetField("Independence_passport");
                       setIsUploadModalsOpen(true);
                     }}
                     variant="outline"
@@ -1223,15 +1223,15 @@ export default function ViewServiceUserProfile() {
               </CardHeader>
 
               <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {userData.eet_documents?.map((doc, i) => (
+                {userData.Independence_passport?.map((doc, i) => (
                   <DocCard
                     key={i}
-                    title={doc.name || `EET Doc ${i + 1}`}
+                    title={doc.name || `Independence Passport Doc ${i + 1}`}
                     url={doc.url}
                   />
                 )) || (
                   <p className="col-span-2 text-center py-6 italic text-gray-400">
-                    No EET documents.
+                    Independence Passport documents.
                   </p>
                 )}
               </CardContent>
@@ -1242,7 +1242,7 @@ export default function ViewServiceUserProfile() {
           <TabsContent value="onboarding">
             <Card className="border border-black shadow-sm bg-[#FFFDD0]">
               <CardHeader>
-                {/* Example for EET Section */}
+                {/* Example for Onboarding Section */}
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-bold text-black flex items-center gap-2">
                     <FileText size={20} /> Onboarding Documents
