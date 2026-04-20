@@ -670,53 +670,106 @@ export default function ViewServiceUserProfile() {
 
   // This function now handles both single URL fields (like about_file_url) and array fields
   // (like additional_documents)
-  const handleDeleteItem = async (field, itemToDelete = null) => {
-    // itemToDelete is only needed for arrays (additional_documents, etc.)
-    const isArray = Array.isArray(userData[field]);
+  // const handleDeleteItem = async (field, itemToDelete = null) => {
+  //   // itemToDelete is only needed for arrays (additional_documents, etc.)
+  //   const isArray = Array.isArray(userData[field]);
 
-    try {
-      // 1. Determine the storage path
-      let storagePath = "";
-      if (isArray && itemToDelete) {
-        storagePath = itemToDelete.file_path;
-      } else {
-        // For single fields like about_file_url, we need to extract path from URL
-        // or ensure you're storing about_file_path in your DB
-        const url = userData[field];
-        storagePath = url.split("/service-user-intake-docs/")[1];
+  //   try {
+  //     // 1. Determine the storage path
+  //     let storagePath = "";
+  //     if (isArray && itemToDelete) {
+  //       storagePath = itemToDelete.file_path;
+  //     } else {
+  //       // For single fields like about_file_url, we need to extract path from URL
+  //       // or ensure you're storing about_file_path in your DB
+  //       const url = userData[field];
+  //       storagePath = url.split("/service-user-intake-docs/")[1];
+  //     }
+
+  //     // 2. Remove from Supabase Storage
+  //     if (storagePath) {
+  //       await supabase.storage
+  //         .from("service-user-intake-docs")
+  //         .remove([storagePath]);
+  //     }
+
+  //     // 3. Update Database
+  //     let newValue;
+  //     if (isArray) {
+  //       newValue = userData[field].filter(
+  //         (doc) => doc.url !== itemToDelete.url,
+  //       );
+  //     } else {
+  //       newValue = null; // Clear the single field
+  //     }
+
+  //     const { error } = await supabase
+  //       .from("service_user_intake")
+  //       .update({ [field]: newValue })
+  //       .eq("id", id);
+
+  //     if (error) throw error;
+
+  //     setUserData({ ...userData, [field]: newValue });
+  //     toast.success("Item deleted successfully");
+  //   } catch (error) {
+  //     console.error(error);
+  //     toast.error("Failed to delete item");
+  //   }
+  // };
+
+  const handleDeleteItem = async (field, docToDelete) => {
+  // 1. Physical Confirmation
+  const confirm = window.confirm(`Are you sure you want to delete "${docToDelete.name || 'this document'}"?`);
+  if (!confirm) return;
+
+  try {
+    const bucketName = "service-user-intake-docs";
+    
+    // 2. Extract the correct path for Supabase Storage
+    // Ensure docToDelete.file_path is the relative path (e.g., "folder/file.pdf")
+    const filePath = docToDelete.file_path || docToDelete.path;
+
+    if (filePath) {
+      const { error: storageError } = await supabase.storage
+        .from(bucketName)
+        .remove([filePath]);
+
+      if (storageError) {
+        console.error("Storage Error:", storageError);
+        // We continue to DB update even if storage fails to keep UI in sync, 
+        // or you can return here if you want strict deletion.
       }
-
-      // 2. Remove from Supabase Storage
-      if (storagePath) {
-        await supabase.storage
-          .from("service-user-intake-docs")
-          .remove([storagePath]);
-      }
-
-      // 3. Update Database
-      let newValue;
-      if (isArray) {
-        newValue = userData[field].filter(
-          (doc) => doc.url !== itemToDelete.url,
-        );
-      } else {
-        newValue = null; // Clear the single field
-      }
-
-      const { error } = await supabase
-        .from("service_user_intake")
-        .update({ [field]: newValue })
-        .eq("id", id);
-
-      if (error) throw error;
-
-      setUserData({ ...userData, [field]: newValue });
-      toast.success("Item deleted successfully");
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to delete item");
     }
-  };
+
+    // 3. Update the Database
+    let updatedData;
+    if (field === "independence_passport") {
+      updatedData = null; // Reset single object
+    } else {
+      // Filter out the item from the array (Onboarding/Additional)
+      updatedData = userData[field].filter((item) => item.file_path !== filePath);
+    }
+
+    const { error: dbError } = await supabase
+      .from("service_user_intake")
+      .update({ [field]: updatedData })
+      .eq("id", id);
+
+    if (dbError) throw dbError;
+
+    // 4. Update Local State for instant UI feedback
+    setUserData((prev) => ({
+      ...prev,
+      [field]: updatedData,
+    }));
+
+    toast.success("Document deleted successfully");
+  } catch (err) {
+    console.error("Delete operation failed:", err);
+    toast.error("Failed to delete the document");
+  }
+};
 
   // --- Add this near your other delete functions (approx. line 270) ---
   const handleConfirmDeleteAll = async () => {
@@ -1228,6 +1281,9 @@ export default function ViewServiceUserProfile() {
                     key={i}
                     title={doc.name || `Independence Passport Doc ${i + 1}`}
                     url={doc.url}
+                    onDelete={() =>
+                      handleDeleteItem("Independence_passport", doc)
+                    }
                   />
                 )) || (
                   <p className="col-span-2 text-center py-6 italic text-gray-400">

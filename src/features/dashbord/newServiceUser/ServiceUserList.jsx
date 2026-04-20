@@ -1176,7 +1176,8 @@ export default function ServiceUserList() {
                       <span className="bg-gray-100 px-2.5 py-0.5 rounded-full text-xs font-medium text-gray-600">
                         {(user.about_file_path ? 1 : 0) +
                           (user.onboarding_documents?.length || 0) +
-                          (user.additional_documents?.length || 0)}{" "}
+                          (user.additional_documents?.length || 0) +
+                          (user.Independence_passport?.length || 0)}{" "}
                         files
                       </span>
                     </TableCell>

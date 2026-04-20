@@ -1149,7 +1149,7 @@ const EditEmployee = () => {
 
       if (error) throw error;
       toast.success("Employee updated successfully");
-      router.push("/hrList");
+      router.push(`/hrList/${id}`);
     } catch (error) {
       toast.error(error.message);
     } finally {

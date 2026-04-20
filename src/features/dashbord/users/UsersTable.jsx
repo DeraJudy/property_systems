@@ -252,6 +252,7 @@ export default function UsersTable() {
                             <SelectContent>
                               <SelectItem value="active">Activate</SelectItem>
                               <SelectItem value="inactive">Deactivate</SelectItem>
+                              <SelectItem value="pending">Pending</SelectItem>
                             </SelectContent>
                           </Select>
                         </TableCell>
@@ -266,6 +267,7 @@ export default function UsersTable() {
                               <SelectItem value="hr">HR</SelectItem>
                               <SelectItem value="finance">Finance</SelectItem>
                               <SelectItem value="support_worker">Support</SelectItem>
+                              <SelectItem value="auditor">Auditor</SelectItem>
                             </SelectContent>
                           </Select>
                         </TableCell>
