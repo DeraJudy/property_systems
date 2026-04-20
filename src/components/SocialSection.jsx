@@ -7,7 +7,7 @@ import { Facebook, Instagram, Linkedin, Mail, Phone, MapPin } from "lucide-react
 const socials = [
   { icon: Facebook, label: "Facebook", url: "https://www.facebook.com/kenleygroup", handle: "@kenleygroup" },
   { icon: Instagram, label: "Instagram", url: "https://www.instagram.com/kenleygroup", handle: "@kenleygroup" },
-  { icon: Linkedin, label: "LinkedIn", url: "https://www.linkedin.com/kenleygroup", handle: "Kenley Group" },
+  { icon: Linkedin, label: "LinkedIn", url: "https://www.linkedin.com/company/kenley-group/", handle: "Kenley Group" },
 ];
 
 const TikTokIcon = () => (
@@ -55,7 +55,8 @@ const SocialSection = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.5 }}
-                className="group flex flex-col items-center gap-6 rounded-3xl border border-background/10 bg-background/5 p-12 transition-all duration-300 hover:bg-background/10 hover:-translate-y-2"
+                className="group flex flex-col items-center gap-6 rounded-3xl border border-background/10 
+                bg-background/5 p-12 transition-all duration-300 hover:bg-background/10 hover:-translate-y-2"
               >
                 <Icon className="h-10 w-10 text-background transition-transform group-hover:scale-110" />
                 <div className="text-center">
@@ -96,12 +97,12 @@ const SocialSection = () => {
         >
           <h3 className="mb-12 text-center text-3xl font-bold text-background">Get in Touch</h3>
           <div className="grid gap-12 sm:grid-cols-3">
-            <a href="mailto:office@kenleygroup.co.uk" className="flex flex-col items-center gap-4 text-center group">
+            <a href="mailto:abdul@kenleygroup.co.uk" className="flex flex-col items-center gap-4 text-center group">
               <div className="p-4 rounded-full bg-background/5 group-hover:bg-background/10 transition-colors">
                 <Mail className="h-6 w-6 text-background/60 group-hover:text-background" />
               </div>
               <span className="text-base text-background/80 group-hover:text-background transition-colors break-all font-medium">
-                office@kenleygroup.co.uk
+                abdul@kenleygroup.co.uk
               </span>
             </a>
             <a href="tel:+441733567888" className="flex flex-col items-center gap-4 text-center group">
