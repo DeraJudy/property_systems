@@ -676,7 +676,7 @@ export default function PropertiesTable() {
           </div>
           <div className="flex items-center gap-3 w-full md:w-auto">
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[180px] bg-white border-black/10 rounded-xl">
+              <SelectTrigger className="w-45 bg-white border-black/10 rounded-xl">
                 <Filter className="w-4 h-4 mr-2" />
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -715,7 +715,7 @@ export default function PropertiesTable() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="group hover:bg-black/[0.02] border-black/5 transition-colors"
+                    className="group hover:bg-black/2 border-black/5 transition-colors"
                   >
                     <TableCell className="py-5">
                       <div className="flex items-center gap-4">

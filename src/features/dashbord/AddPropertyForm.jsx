@@ -1343,7 +1343,7 @@ export default function AddPropertyForm() {
         <CardContent className="p-6 md:p-10">
           <form onSubmit={handleSubmit} className="space-y-10">
             <Tabs defaultValue="basic" className="w-full">
-              <TabsList className="bg-[#e8e1d6] p-1 border border-[#e1dbd2] overflow-x-auto justify-start h-auto h-auto mb-8">
+              <TabsList className="bg-[#e8e1d6] p-1 border border-[#e1dbd2] overflow-x-auto justify-start h-auto mb-8">
                 {[
                   { value: "basic", label: "Identity", icon: FileText },
                   { value: "details", label: "Financials", icon: Building2 },

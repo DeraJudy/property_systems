@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Facebook, Instagram, Linkedin, Mail, Phone, MapPin } from "lucide-react";
 
@@ -17,6 +18,16 @@ const TikTokIcon = () => (
 );
 
 const SocialSection = () => {
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Prevent rendering on the server if the content is dynamic
+  if (!mounted) return null;
+
   return (
     /* Increased py-32 to py-48 for high-impact vertical spacing */
     <section id="connect" className="bg-foreground py-32 md:py-48">

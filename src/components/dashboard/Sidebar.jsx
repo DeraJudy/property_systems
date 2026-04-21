@@ -153,6 +153,15 @@ export default function Sidebar() {
 
   const [isMounted, setIsMounted] = useState(false);
 
+  // Define which roles see which URLs
+  // const rolePermissions = {
+  //   admin: ["/dashboard", "/users", "/properties", "/service-users", "/hrList", "/repository", "/pre-migration", "/core-documents"],
+  //   hr: ["/dashboard", "/hrList", "/users", "/properties", "/service-users", "/hrList", "/repository", "/pre-migration", "/core-documents"],
+  //   finance: ["/dashboard"],
+  //   support_worker: ["/dashboard", "/service-users", "/properties"],
+  //   auditor: ["/properties", "/service-users", "/hrList",  "/pre-migration", "/core-documents"],
+  // };
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
