@@ -10,6 +10,7 @@ const bannerMap = {
   finance: "https://res.cloudinary.com/dcfl8iot4/image/upload/v1776349340/banner-finance_tsrtyd.jpg",
   compliance: "https://res.cloudinary.com/dcfl8iot4/image/upload/v1776349360/banner-operations_cv4msh.jpg",
   operations: "https://res.cloudinary.com/dcfl8iot4/image/upload/v1776349328/banner-compliance_bwgt91.jpg", 
+  hr: "https://res.cloudinary.com/dcfl8iot4/image/upload/v1776416878/Gemini_Generated_Image_tzc3hytzc3hytzc3_nn2mva.png",
 };
 
 const PageBanner = ({ title, subtitle, category = "operations" }) => {

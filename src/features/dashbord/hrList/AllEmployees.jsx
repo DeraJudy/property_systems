@@ -454,7 +454,7 @@ const handleDeleteEmployee = async () => {
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="p-6 min-h-screen space-y-6 ">
 
-      <PageBanner title="Workforce Directory" subtitle="Manage employee records and compliance" category="people" />
+      <PageBanner title="Workforce Directory" subtitle="Manage employee records and compliance" category="hr" />
 
       <div className="flex justify-between items-center">
         {/* <div>

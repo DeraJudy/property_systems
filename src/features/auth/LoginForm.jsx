@@ -222,7 +222,7 @@ export default function LoginForm() {
 
       <div className="hidden relative flex-1 overflow-hidden lg:flex">
         <Image
-          src="https://res.cloudinary.com/dcfl8iot4/image/upload/v1772186411/auth-bg_kcnllx.jpg"
+          src="https://res.cloudinary.com/dcfl8iot4/image/upload/v1776732259/WhatsApp_Image_2026-04-20_at_22.53.34_pyhvlf.jpg"
           alt="Background Image"
           fill
           sizes="100vw"

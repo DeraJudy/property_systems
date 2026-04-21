@@ -386,6 +386,18 @@ const EmployeeDetailView = () => {
     }
   };
 
+  const getViewableUrl = (url) => {
+  if (!url) return "#";
+  const extension = url.split('.').pop().toLowerCase();
+  
+  // If it's an office doc, use Google's online viewer
+  if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(extension)) {
+    return `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`;
+  }
+  
+  return url; // PDFs and Images work natively in target="_blank"
+};
+
   if (!mounted || loading)
     return (
       <div className="p-20 text-center font-medium font-sans">
@@ -428,14 +440,23 @@ const EmployeeDetailView = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <a
-                    href={doc.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-[11px] font-bold text-black hover:underline bg-[#f1f8f5] px-2 py-1 rounded"
-                  >
-                    VIEW <ExternalLink className="h-3 w-3" />
-                  </a>
+                 <a
+  href={getViewableUrl(doc.url)}
+  target="_blank"
+  rel="noopener noreferrer"
+  // Add the 'title' attribute so users know what they are clicking
+  title="View Document"
+  className="flex items-center gap-1 text-[11px] font-bold text-black hover:underline bg-[#f1f8f5] px-2 py-1 rounded"
+  // This helps some browsers handle the stream correctly
+  onClick={(e) => {
+    if (!doc.url) {
+      e.preventDefault();
+      alert("Document link is missing");
+    }
+  }}
+>
+  VIEW <ExternalLink className="h-3 w-3" />
+</a>
                   <Button
                     variant="ghost"
                     size="icon"
