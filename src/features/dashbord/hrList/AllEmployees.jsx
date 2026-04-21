@@ -4,6 +4,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 import * as XLSX from "xlsx";
 import DataTableHeader from "@/components/dashboard/DataTableHeader";
 import StatusBadge from "@/components/dashboard/StatusBadge";
@@ -44,6 +46,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+
 import PageBanner from "@/components/dashboard/PageBanner";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.04 } } };
@@ -125,161 +128,6 @@ const filteredEmployees = employeeList.filter((employee) => {
     .filter(name => name.startsWith(folderName + "/"));
 };
 
-//   const handleDeleteEmployee = async () => {
-//   if (deleteConfirmation !== "DELETE" || !employeeToDelete) return;
-
-//   setIsDeleting(true);
-
-//   try {
-//     const storageFields = [
-//       "evidence_address_url",
-//       "photo_id_url",
-//       "signed_app_url",
-//       "rtw_check_url",
-//       "insurance_url",
-//       "dbs_doc_url",
-//       "ref1_doc_url",
-//       "ref2_doc_url",
-//       "induction_checklist_url",
-//       "training_record_url",
-//       "appraisal_doc_url"
-//     ];
-
-//     // ✅ Extract file paths from URLs
-//     const files = storageFields
-//       .map(field => employeeToDelete[field])
-//       .filter(Boolean)
-//       .map(url => {
-//         try {
-//           const urlObj = new URL(url);
-//           const path = urlObj.pathname;
-
-//           // 🔥 THIS MUST MATCH YOUR BUCKET NAME
-//           const parts = path.split("/employee-docs/");
-
-//           return parts[1]; // path inside bucket
-//         } catch {
-//           return null;
-//         }
-//       })
-//       .filter(Boolean);
-
-//     console.log("FILES TO DELETE:", files);
-
-//     // ✅ Delete files
-//     if (files.length > 0) {
-//       const { error: storageError } = await supabase.storage
-//         .from("employee-docs")
-//         .remove(files);
-
-//       if (storageError) throw storageError;
-//     }
-
-//     // ✅ Delete DB record
-//     const { error: dbError } = await supabase
-//       .from("employees")
-//       .delete()
-//       .eq("id", employeeToDelete.id);
-
-//     if (dbError) throw dbError;
-
-//     toast.success("Deleted everything");
-//     fetchEmployees();
-
-//   } catch (err) {
-//     console.error(err);
-//     toast.error("Delete failed");
-//   } finally {
-//     setIsDeleting(false);
-//   }
-// };
-
-// const handleDeleteEmployee = async () => {
-//   if (deleteConfirmation !== "DELETE" || !employeeToDelete) return;
-
-//   setIsDeleting(true);
-//   try {
-//     // 1. Collect all storage paths to prevent orphan files
-//     const pathsToDelete = [];
-
-//     // Individual file fields
-//     const storageFields = [
-//       "evidence_address_url",
-//       "photo_id_url",
-//       "signed_app_url",
-//       "rtw_check_url",
-//       "insurance_url",
-//       "dbs_doc_url",
-//       "ref1_doc_url",
-//       "ref2_doc_url",
-//       "induction_checklist_url",
-//       "training_record_url",
-//       "appraisal_doc_url"
-//     ];
-
-//     storageFields.forEach((field) => {
-//       const fileUrl = employeeToDelete[field];
-//       if (fileUrl) {
-//         try {
-//           const urlObj = new URL(fileUrl);
-//           const path = urlObj.pathname.split("/employee-docs/")[1];
-//           if (path) pathsToDelete.push(path);
-//         } catch (e) {
-//           // Fallback if it's already a relative path
-//           pathsToDelete.push(fileUrl);
-//         }
-//       }
-//     });
-
-//     // Handle Arrays (Qualifications, Supervisions, etc.)
-//     [
-//       ...(employeeToDelete.qualifications || []),
-//       ...(employeeToDelete.supervisions || []),
-//       ...(employeeToDelete.other_documents || [])
-//     ].forEach(doc => {
-//       const fileUrl = doc.file_path || doc.url;
-//       if (fileUrl) {
-//         try {
-//           const urlObj = new URL(fileUrl);
-//           const path = urlObj.pathname.split("/employee-docs/")[1];
-//           if (path) pathsToDelete.push(path);
-//         } catch (e) {
-//           pathsToDelete.push(fileUrl);
-//         }
-//       }
-//     });
-
-//     // 2. Storage Cleanup First
-//     if (pathsToDelete.length > 0) {
-//       const { error: storageError } = await supabase.storage
-//         .from("employee-docs")
-//         .remove(pathsToDelete);
-        
-//       if (storageError) console.error("Storage cleanup error:", storageError);
-//     }
-
-//     // 3. Database Delete Second
-//     const { error: dbError } = await supabase
-//       .from("employees")
-//       .delete()
-//       .eq("id", employeeToDelete.id);
-
-//     if (dbError) throw dbError;
-
-//     // Success and Reset
-//     toast.success("Employee and all files deleted permanently");
-//     setEmployeeToDelete(null);
-//     setDeleteConfirmation("");
-//     setIsDeleteDialogOpen(false);
-//     fetchEmployees(); 
-
-//   } catch (err) {
-//     console.error(err);
-//     toast.error("Deletion failed");
-//   } finally {
-//     setIsDeleting(false);
-//   }
-// };
 
 const handleDeleteEmployee = async () => {
   if (deleteConfirmation !== "DELETE" || !employeeToDelete) return;
@@ -403,7 +251,81 @@ const handleDeleteEmployee = async () => {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Report");
     XLSX.writeFile(workbook, `${employee.full_name}_Report.xlsx`);
   };
+  
+  const handleDownloadAll = async (employee) => {
+  const toastId = toast.loading(`Preparing documents for ${employee.full_name}...`);
+  
+  try {
+    const zip = new JSZip();
+    const folder = zip.folder(`${employee.full_name}_Documents`);
+    const spreadsheetData = [];
 
+    // 1. List all files in the employee's storage folder
+    // Based on your AddEmployee.jsx code, path is: employeeId/category/filename
+    const { data: categories, error: listError } = await supabase
+      .storage
+      .from("employee-docs")
+      .list(employee.id.toString());
+
+    if (listError) throw listError;
+
+    // 2. Loop through categories (Staff Documents, Qualifications, etc.)
+    for (const cat of categories) {
+      const { data: files } = await supabase
+        .storage
+        .from("employee-docs")
+        .list(`${employee.id}/${cat.name}`);
+
+      if (files) {
+        for (const file of files) {
+          const filePath = `${employee.id}/${cat.name}/${file.name}`;
+          
+          // Download file blob
+          const { data: blob, error: downloadError } = await supabase
+            .storage
+            .from("employee-docs")
+            .download(filePath);
+
+          if (blob) {
+            // Add to ZIP folder
+            folder.file(`${cat.name}/${file.name}`, blob);
+
+            // Get Public URL for the spreadsheet
+            const { data: urlData } = supabase
+              .storage
+              .from("employee-docs")
+              .getPublicUrl(filePath);
+
+            spreadsheetData.push({
+              Category: cat.name,
+              FileName: file.name,
+              OnlineViewLink: urlData.publicUrl
+            });
+          }
+        }
+      }
+    }
+
+    // 3. Create the Spreadsheet
+    const ws = XLSX.utils.json_to_sheet(spreadsheetData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Document Links");
+    
+    // Convert workbook to buffer
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    folder.file("Document_Index_Links.xlsx", excelBuffer);
+
+    // 4. Generate and save the ZIP
+    const content = await zip.generateAsync({ type: "blob" });
+    saveAs(content, `${employee.full_name}_All_Docs.zip`);
+    
+    toast.success("Download complete!", { id: toastId });
+  } catch (error) {
+    console.error("Error generating bundle:", error);
+    toast.error("Failed to bundle documents.", { id: toastId });
+  }
+};
+  
   // --- Stats Calculations ---
   const complianceIssuesList = employeeList.filter(e => !e.dbs_number || !e.induction_completed_date);
   const expiringContractsList = employeeList.filter(e => e.last_appraisal_date === null); 
@@ -430,9 +352,20 @@ const handleDeleteEmployee = async () => {
               
               <TableCell className="text-right" onClick={(ev) => ev.stopPropagation()}>
                 <div className="flex justify-end gap-1">
-                  <Button variant="ghost" size="sm" onClick={(ev) => downloadEmployeeData(e, ev)}>
+                  {/* <Button variant="ghost" size="sm" onClick={(ev) => downloadEmployeeData(e, ev)}>
                     <Download className="h-4 w-4" />
-                  </Button>
+                  </Button> */}
+                  <Button 
+  variant="outline" 
+  size="sm" 
+  onClick={(ev) => {
+    ev.stopPropagation(); // Prevents the row click (navigation) from firing
+    handleDownloadAll(e);  // Passes the employee object 'e'
+  }}
+  className="flex items-center gap-2 border-[#123d2b] text-[#123d2b] hover:bg-[#123d2b] hover:text-white"
+>
+  <Download className="h-4 w-4" />
+</Button>
                   <Button variant="ghost" size="sm" onClick={() => router.push(`/hrList/${e.id}/edit`)}>
                     <Edit className="h-4 w-4 text-black " />
                   </Button>
