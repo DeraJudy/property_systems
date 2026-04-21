@@ -40,10 +40,11 @@ import {
   Wrench,
   FileCheck,
   Clock,
-  ShieldCheck,
+  ShieldCheck, // Keep this one here
   Moon,
   Sun,
-  FileArchiveIcon, File,
+  FileArchiveIcon, 
+  File,
   HardDriveUpload,
   DownloadCloud
 } from "lucide-react";
@@ -81,6 +82,7 @@ const navSections = [
       { title: "Repository", url: "/repository", icon: FileArchiveIcon },
       { title: "Pre-Migration", url: "/pre-migration", icon: HardDriveUpload },
       { title: "Core Documents", url: "/core-documents", icon: DownloadCloud },
+      { title: "Permissions", url: "/permissions", icon: ShieldCheck },
     ],
   },
   // {

@@ -242,11 +242,11 @@ export default function LoginForm() {
               Supported housing management, simplified
             </h2>
             <p className="mb-8 text-[#f7f2e9]/80 leading-relaxed">
-              Manage properties, service users, cases, and finances all in one
+              Manage properties, service users, employees all in one
               integrated platform designed for supported accommodation
               providers.
             </p>
-            <div className="grid grid-cols-2 gap-4">
+            {/* <div className="grid grid-cols-2 gap-4">
               {[
                 { val: "2,400+", label: "Properties Managed" },
                 { val: "98.2%", label: "Occupancy Rate" },
@@ -264,7 +264,7 @@ export default function LoginForm() {
                   <p className="text-xs text-[#f7f2e9]/70">{stat.label}</p>
                 </motion.div>
               ))}
-            </div>
+            </div> */}
           </motion.div>
         </div>
       </div>
