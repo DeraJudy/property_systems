@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { LayoutDashboard, ClipboardCheck, MapPin, ArrowRight, Building2 } from "lucide-react";
-import { NEXT_SCHEDULED } from "@/features/dashbord/auditData";
+import { NEXT_SCHEDULED } from "@/features/audit/auditData";
 
 const TiltCard = ({ href, badge, title, description, icon, accent, meta }) => {
   const ref = useRef(null);
