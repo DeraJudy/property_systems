@@ -212,7 +212,227 @@
 // }
 
 
+// "use client";
+// import { useEffect, useState, useCallback, useRef } from "react";
+// import Image from "next/image";
+// import Link from "next/link";
+// import {
+//   Building2,
+//   Mail,
+//   Lock,
+//   ArrowRight,
+//   Eye,
+//   EyeOff,
+//   Loader2,
+// } from "lucide-react";
+// import { motion, AnimatePresence } from "framer-motion";
+// import { Button } from "@/components/ui/button";
+// import { Input } from "@/components/ui/input";
+// import { Label } from "@/components/ui/label";
+// import { useRouter } from "next/navigation";
+// import { supabase } from "@/lib/supabase";
+// import { toast } from "sonner";
+
+// export default function LoginForm() {
+//   const router = useRouter();
+//   const [showPassword, setShowPassword] = useState(false);
+//   const [loading, setLoading] = useState(false);
+  
+//   // 10 minutes in milliseconds
+//   const TIMEOUT_DURATION = 10 * 60 * 1000; 
+//   const timeoutRef = useRef(null);
+
+//   // --- 1. SESSION TIMEOUT LOGIC ---
+//   const handleAutoLogout = useCallback(async () => {
+//     const { data: { session } } = await supabase.auth.getSession();
+    
+//     // Only logout if a session actually exists
+//     if (session) {
+//       await supabase.auth.signOut();
+//       toast.error("Session expired", {
+//         description: "You have been logged out due to 10 minutes of inactivity.",
+//       });
+//       router.push("/login");
+//     }
+//   }, [router]);
+
+//   const resetTimer = useCallback(() => {
+//     if (timeoutRef.current) clearTimeout(timeoutRef.current);
+//     timeoutRef.current = setTimeout(handleAutoLogout, TIMEOUT_DURATION);
+//   }, [handleAutoLogout]);
+
+//   useEffect(() => {
+//     // Events that count as 'activity'
+//     const events = ["mousedown", "mousemove", "keypress", "scroll", "touchstart"];
+    
+//     // Initialize timer
+//     resetTimer();
+
+//     // Add listeners to the window
+//     events.forEach((event) => window.addEventListener(event, resetTimer));
+
+//     return () => {
+//       // Clean up to prevent memory leaks
+//       if (timeoutRef.current) clearTimeout(timeoutRef.current);
+//       events.forEach((event) => window.removeEventListener(event, resetTimer));
+//     };
+//   }, [resetTimer]);
+
+
+//   // --- 2. SECURE LOGIN LOGIC ---
+//   async function handleLogin(e) {
+//     e.preventDefault();
+//     setLoading(true);
+
+//     const formData = new FormData(e.target);
+//     const email = formData.get("email");
+//     const password = formData.get("password");
+
+//     if (!email || !password) {
+//       toast.error("Missing credentials", { description: "Please enter both email and password." });
+//       setLoading(false);
+//       return;
+//     }
+
+//     const { data, error } = await supabase.auth.signInWithPassword({
+//       email,
+//       password,
+//     });
+
+//     if (error) {
+//       setLoading(false);
+      
+//       // Handle specific Supabase error codes for better security/UX
+//       switch (error.status) {
+//         case 400:
+//           toast.error("Invalid Login", { description: "The email or password you entered is incorrect." });
+//           break;
+//         case 422:
+//           toast.error("Configuration Error", { description: "Please check your email format." });
+//           break;
+//         case 429:
+//           toast.error("Too many attempts", { description: "Security lock: Please try again in a few minutes." });
+//           break;
+//         default:
+//           toast.error("Authentication Failed", { description: error.message });
+//       }
+//       return;
+//     }
+
+//     toast.success("Account Logged In successfully 🎉", {
+//       description: "Welcome to Kenley Property Systems",
+//     });
+
+//     router.push("/dashboard");
+//   }
+
+//   return (
+//     <div className="flex min-h-screen bg-[#FFFDD0]"> {/* Cream Background */}
+//       <div className="flex flex-1 flex-col items-center justify-center px-6 py-12">
+//         <motion.div
+//           initial={{ opacity: 0, y: 20 }}
+//           animate={{ opacity: 1, y: 0 }}
+//           transition={{ duration: 0.5 }}
+//           className="w-full max-w-sm"
+//         >
+//           <Link href="/" className="mb-8 flex items-center gap-2 group">
+//             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#123D2B] transition-transform group-hover:scale-110">
+//               <Building2 className="h-5 w-5 text-[#FFFDD0]" />
+//             </div>
+//             <span className="text-lg font-bold text-[#123D2B]">
+//               Kenley Property Systems
+//             </span>
+//           </Link>
+
+//           <h1 className="mb-2 text-2xl font-bold text-[#123D2B]">
+//             Welcome back
+//           </h1>
+//           <p className="mb-8 text-sm text-[#123D2B]/70">
+//             Sign in to your account to continue
+//           </p>
+
+//           <form onSubmit={handleLogin} className="space-y-4">
+//             <div className="space-y-2">
+//               <Label htmlFor="email" className="text-[#123D2B]">Email</Label>
+//               <div className="relative">
+//                 <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#123D2B]/50" />
+//                 <Input
+//                   id="email"
+//                   name="email"
+//                   type="email"
+//                   required
+//                   placeholder="name@organisation.com"
+//                   className="pl-10 h-11 border-[#123D2B]/20 focus-visible:ring-[#123D2B]"
+//                 />
+//               </div>
+//             </div>
+
+//             <div className="space-y-2">
+//               <Label htmlFor="password" className="text-[#123D2B]">Password</Label>
+//               <div className="relative">
+//                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#123D2B]/50" />
+//                 <Input
+//                   id="password"
+//                   name="password"
+//                   type={showPassword ? "text" : "password"}
+//                   required
+//                   placeholder="Min. 8 characters"
+//                   className="pl-10 pr-10 h-11 border-[#123D2B]/20 focus-visible:ring-[#123D2B]"
+//                 />
+//                 <button
+//                   type="button"
+//                   onClick={() => setShowPassword(!showPassword)}
+//                   className="absolute right-3 top-1/2 -translate-y-1/2 text-[#123D2B]/50 hover:text-[#123D2B]"
+//                 >
+//                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+//                 </button>
+//               </div>
+//             </div>
+
+//             <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+//               <Button 
+//                 type="submit" 
+//                 disabled={loading}
+//                 className="w-full h-11 bg-[#123D2B] hover:bg-[#123D2B]/90 text-[#FFFDD0]"
+//               >
+//                 {loading ? (
+//                   <Loader2 className="h-4 w-4 animate-spin" />
+//                 ) : (
+//                   <>Sign in <ArrowRight className="ml-2 h-4 w-4" /></>
+//                 )}
+//               </Button>
+//             </motion.div>
+//           </form>
+//         </motion.div>
+//       </div>
+
+//       {/* Decorative Right Panel */}
+//       <div className="hidden relative flex-1 overflow-hidden lg:flex">
+//         <Image
+//           src="https://res.cloudinary.com/dcfl8iot4/image/upload/v1776732259/WhatsApp_Image_2026-04-20_at_22.53.34_pyhvlf.jpg"
+//           alt="Kenley Properties"
+//           fill
+//           priority
+//           className="absolute inset-0 object-cover"
+//         />
+//         <div className="absolute inset-0 bg-[#123D2B]/80 z-10" />
+//         <div className="relative flex flex-1 items-center justify-center p-12 z-20">
+//           <div className="max-w-md text-[#FFFDD0]">
+//             <h2 className="mb-4 text-4xl font-black">
+//               Supported housing management, simplified
+//             </h2>
+//             <p className="text-[#FFFDD0]/80 leading-relaxed">
+//               Secure, role-based access control for Kenley Group employees and auditors.
+//             </p>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
 "use client";
+
 import { useEffect, useState, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -225,20 +445,21 @@ import {
   EyeOff,
   Loader2,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   
-  // 10 minutes in milliseconds
   const TIMEOUT_DURATION = 10 * 60 * 1000; 
   const timeoutRef = useRef(null);
 
@@ -246,11 +467,10 @@ export default function LoginForm() {
   const handleAutoLogout = useCallback(async () => {
     const { data: { session } } = await supabase.auth.getSession();
     
-    // Only logout if a session actually exists
     if (session) {
       await supabase.auth.signOut();
       toast.error("Session expired", {
-        description: "You have been logged out due to 10 minutes of inactivity.",
+        description: "Logged out due to 10 minutes of inactivity.",
       });
       router.push("/login");
     }
@@ -259,27 +479,21 @@ export default function LoginForm() {
   const resetTimer = useCallback(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(handleAutoLogout, TIMEOUT_DURATION);
-  }, [handleAutoLogout]);
+  }, [handleAutoLogout, TIMEOUT_DURATION]);
 
   useEffect(() => {
-    // Events that count as 'activity'
     const events = ["mousedown", "mousemove", "keypress", "scroll", "touchstart"];
-    
-    // Initialize timer
     resetTimer();
-
-    // Add listeners to the window
     events.forEach((event) => window.addEventListener(event, resetTimer));
 
     return () => {
-      // Clean up to prevent memory leaks
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       events.forEach((event) => window.removeEventListener(event, resetTimer));
     };
   }, [resetTimer]);
 
 
-  // --- 2. SECURE LOGIN LOGIC ---
+  // --- 2. AUTH & REDIRECT LOGIC ---
   async function handleLogin(e) {
     e.preventDefault();
     setLoading(true);
@@ -289,45 +503,43 @@ export default function LoginForm() {
     const password = formData.get("password");
 
     if (!email || !password) {
-      toast.error("Missing credentials", { description: "Please enter both email and password." });
+      toast.error("Required fields missing");
       setLoading(false);
       return;
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) {
       setLoading(false);
-      
-      // Handle specific Supabase error codes for better security/UX
-      switch (error.status) {
-        case 400:
-          toast.error("Invalid Login", { description: "The email or password you entered is incorrect." });
-          break;
-        case 422:
-          toast.error("Configuration Error", { description: "Please check your email format." });
-          break;
-        case 429:
-          toast.error("Too many attempts", { description: "Security lock: Please try again in a few minutes." });
-          break;
-        default:
-          toast.error("Authentication Failed", { description: error.message });
+      // Enhanced error handling for your specific environment
+      if (error.status === 400) {
+        toast.error("Invalid credentials", { description: "Please check your email and password." });
+      } else if (error.status === 429) {
+        toast.error("Too many attempts", { description: "Security lockout active. Try again later." });
+      } else {
+        toast.error("Authentication failed", { description: error.message });
       }
       return;
     }
 
-    toast.success("Account Logged In successfully 🎉", {
-      description: "Welcome to Kenley Property Systems",
-    });
+    toast.success("Welcome back!");
 
-    router.push("/dashboard");
+    // --- INTEGRATED REDIRECT LOGIC ---
+    // 1. Check for 'redirect' from Middleware (e.g., /login?redirect=/users)
+    // 2. Default to '/portal' (your workspace chooser) if no specific path was requested
+    const redirectTo = searchParams.get("redirect") || "/portal";
+
+    setLoading(false);
+    router.push(redirectTo);
   }
 
   return (
-    <div className="flex min-h-screen bg-[#FFFDD0]"> {/* Cream Background */}
+    <div className="flex min-h-screen bg-[#FFFDD0]"> 
+      {/* Left: Login Form */}
       <div className="flex flex-1 flex-col items-center justify-center px-6 py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -335,95 +547,102 @@ export default function LoginForm() {
           transition={{ duration: 0.5 }}
           className="w-full max-w-sm"
         >
-          <Link href="/" className="mb-8 flex items-center gap-2 group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#123D2B] transition-transform group-hover:scale-110">
-              <Building2 className="h-5 w-5 text-[#FFFDD0]" />
-            </div>
-            <span className="text-lg font-bold text-[#123D2B]">
-              Kenley Property Systems
-            </span>
-          </Link>
 
-          <h1 className="mb-2 text-2xl font-bold text-[#123D2B]">
-            Welcome back
-          </h1>
-          <p className="mb-8 text-sm text-[#123D2B]/70">
-            Sign in to your account to continue
-          </p>
+           <Link href="/" className="mb-8 flex items-center gap-2 group">
+             <div className="flex h-9 w-9 items-center justify-center rounded-lg primary transition-transform group-hover:scale-110">
+               <Building2 className="h-5 w-5 primary-foreground-text" />
+             </div>
+             <span className="text-lg font-bold foreground-text ">
+               Kenley Property Systems
+             </span>
+           </Link>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+           <h1 className="mb-2 text-2xl font-bold foreground-text">
+             Welcome back
+           </h1>
+           <p className="mb-8 text-sm muted-foreground-text ">
+             Sign in to your account to continue
+           </p>
+
+          <form onSubmit={handleLogin} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-[#123D2B]">Email</Label>
+              <Label htmlFor="email" className="text-black font-semibold">Email Address</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#123D2B]/50" />
+                <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-black/40" />
                 <Input
                   id="email"
                   name="email"
                   type="email"
                   required
-                  placeholder="name@organisation.com"
-                  className="pl-10 h-11 border-[#123D2B]/20 focus-visible:ring-[#123D2B]"
+                  placeholder="name@kenley.com"
+                  className="pl-10 h-12 border-black/20 focus-visible:ring-black bg-white/30 text-black placeholder:text-black/30"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-[#123D2B]">Password</Label>
+              <Label htmlFor="password" className="text-black font-semibold">Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#123D2B]/50" />
+                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-black/40" />
                 <Input
                   id="password"
                   name="password"
                   type={showPassword ? "text" : "password"}
                   required
-                  placeholder="Min. 8 characters"
-                  className="pl-10 pr-10 h-11 border-[#123D2B]/20 focus-visible:ring-[#123D2B]"
+                  placeholder="••••••••"
+                  className="pl-10 pr-10 h-12 border-black/20 focus-visible:ring-black bg-white/30 text-black placeholder:text-black/30"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#123D2B]/50 hover:text-[#123D2B]"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-black/40 hover:text-black"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
             </div>
 
-            <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-              <Button 
-                type="submit" 
-                disabled={loading}
-                className="w-full h-11 bg-[#123D2B] hover:bg-[#123D2B]/90 text-[#FFFDD0]"
-              >
-                {loading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <>Sign in <ArrowRight className="ml-2 h-4 w-4" /></>
-                )}
-              </Button>
-            </motion.div>
+            <Button 
+              type="submit" 
+              disabled={loading}
+              className="w-full h-12 bg-black hover:bg-black/80 text-[#FFFDD0] rounded-xl transition-all shadow-lg"
+            >
+              {loading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <div className="flex items-center justify-center gap-2">
+                  <span>Continue</span>
+                  <ArrowRight className="h-4 w-4" />
+                </div>
+              )}
+            </Button>
           </form>
         </motion.div>
       </div>
 
-      {/* Decorative Right Panel */}
+      {/* Right: Brand Image Panel */}
       <div className="hidden relative flex-1 overflow-hidden lg:flex">
         <Image
           src="https://res.cloudinary.com/dcfl8iot4/image/upload/v1776732259/WhatsApp_Image_2026-04-20_at_22.53.34_pyhvlf.jpg"
-          alt="Kenley Properties"
+          alt="Kenley Assets"
           fill
           priority
           className="absolute inset-0 object-cover"
         />
-        <div className="absolute inset-0 bg-[#123D2B]/80 z-10" />
-        <div className="relative flex flex-1 items-center justify-center p-12 z-20">
-          <div className="max-w-md text-[#FFFDD0]">
-            <h2 className="mb-4 text-4xl font-black">
-              Supported housing management, simplified
-            </h2>
-            <p className="text-[#FFFDD0]/80 leading-relaxed">
-              Secure, role-based access control for Kenley Group employees and auditors.
-            </p>
+        <div className="absolute inset-0 bg-black/70 z-10" />
+        <div className="relative flex flex-1 items-center justify-center p-16 z-20">
+          <div className="max-w-md">
+            
+            <Building2 className="mb-6 h-12 w-12 text-[#FFFDD0]" />
+            <h2 className="mb-4 text-3xl lg:text-4xl font-black text-[#FFFDD0]">
+               Supported housing management, simplified
+             </h2>
+             <p className="mb-8 text-[#f7f2e9]/80 leading-relaxed">
+             Manage properties, service users, employees all in one
+               integrated platform designed for supported accommodation
+               providers.
+             </p>
+
           </div>
         </div>
       </div>

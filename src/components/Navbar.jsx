@@ -116,9 +116,30 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/lib/supabase"; // Ensure this path is correct
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // 1. Check current session
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+      setLoading(false);
+    };
+
+    getSession();
+
+    // 2. Listen for auth changes (login/logout)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (mobileOpen) {
@@ -135,11 +156,7 @@ const Navbar = () => {
   ];
 
   return (
-    /* CHANGE BACKGROUND COLOR HERE:
-       bg-[#0d0d0d] is that deep black we generated.
-       border-white/5 gives it a very subtle 'top' edge.
-    */
-    <nav className="sticky top-0 z-100 border-b border-white/5 bg-background/90 shadow-2xl">
+    <nav className="sticky top-0 z-100 border-b border-white/5 bg-background/90 shadow-2xl backdrop-blur-md">
       <div className="container mx-auto flex h-20 items-center justify-between px-6 md:px-12">
         {/* Logo */}
         <Link href="/" className="z-110 group">
@@ -162,18 +179,32 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Desktop Auth */}
+        {/* Dynamic Desktop Auth Buttons */}
         <div className="hidden items-center gap-6 md:flex">
-          {/* <Link href="/login">
-            <Button variant="ghost" className="font-bold text-xs uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/5">
-              Sign in
-            </Button>
-          </Link> */}
-          <Link href="/login">
-            <Button className="h-12 px-10 w-full rounded-xl text-lg font-bold bg-white text-black shadow-xl hover:text-white">
-              Log In
-            </Button>
-          </Link>
+          {!loading && (
+            <>
+              {user ? (
+                <>
+                  <Link href="/portal">
+                    <Button variant="ghost" className="font-bold text-xs uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/5">
+                      Portal
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard">
+                    <Button className="h-12 px-10 rounded-xl text-sm font-bold bg-white text-black shadow-xl hover:bg-gray-200 transition-all">
+                      Dashboard
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <Link href="/login">
+                  <Button className="h-12 px-10 rounded-xl text-sm font-bold bg-black text-white shadow-xl hover:bg-black/80 transition-all">
+                    Log In
+                  </Button>
+                </Link>
+              )}
+            </>
+          )}
         </div>
 
         {/* Mobile Toggle */}
@@ -225,16 +256,28 @@ const Navbar = () => {
               </div>
 
               <div className="mt-auto flex flex-col gap-4">
-                {/* <Link href="/login" onClick={() => setMobileOpen(false)}>
-                  <Button variant="outline" className="h-16 w-full rounded-2xl text-lg font-bold border-white/10 bg-white/5 text-white">
-                    Sign in
-                  </Button>
-                </Link> */}
-                <Link href="/login" onClick={() => setMobileOpen(false)}>
-                  <Button className="h-16 w-full rounded-2xl text-lg font-bold bg-black text-white shadow-xl">
-                    Log In
-                  </Button>
-                </Link>
+                {!loading && (
+                  user ? (
+                    <>
+                      <Link href="/portal" onClick={() => setMobileOpen(false)}>
+                        <Button variant="outline" className="h-16 w-full rounded-2xl text-lg font-bold border-black/10 text-black">
+                          Portal
+                        </Button>
+                      </Link>
+                      <Link href="/dashboard" onClick={() => setMobileOpen(false)}>
+                        <Button className="h-16 w-full rounded-2xl text-lg font-bold bg-black text-white shadow-xl">
+                          Dashboard
+                        </Button>
+                      </Link>
+                    </>
+                  ) : (
+                    <Link href="/login" onClick={() => setMobileOpen(false)}>
+                      <Button className="h-16 w-full rounded-2xl text-lg font-bold bg-black text-white shadow-xl">
+                        Log In
+                      </Button>
+                    </Link>
+                  )
+                )}
               </div>
             </div>
           </motion.div>
